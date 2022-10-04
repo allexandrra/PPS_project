@@ -19,6 +19,8 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
+#include "test-app.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
@@ -28,8 +30,8 @@ main(int argc, char *argv[])
 {
 
   Time::SetResolution(Time::NS);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  //LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  //LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
 
   // Create the 10 nodes for the topology
@@ -105,30 +107,68 @@ main(int argc, char *argv[])
 
 
   // Create the UDP echo server to test the communication between 2 adjacent nodes
-  NS_LOG_INFO("Create UDP echo server");
+ // NS_LOG_INFO("Create UDP echo server");
+//
+ // UdpEchoServerHelper echoServer(9);
+ // ApplicationContainer serverApps = echoServer.Install(c.Get(0));
+ // serverApps.Start(Seconds(1.0));
+ // serverApps.Stop(Seconds(10.0));
 
-  UdpEchoServerHelper echoServer(9);
-  ApplicationContainer serverApps = echoServer.Install(c.Get(0));
-  serverApps.Start(Seconds(1.0));
-  serverApps.Stop(Seconds(10.0));
 
+  //// Create the UDP echo client echo to test the communication between 2 adjacent nodes
+  //NS_LOG_INFO("Create UDP echo client");
+//
+  //// Set information about the server on the client application
+  //UdpEchoClientHelper echoClient(i1i2.GetAddress(0), 9);
+  //echoClient.SetAttribute("MaxPackets", UintegerValue(1));
+  //echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+  //echoClient.SetAttribute("PacketSize", UintegerValue(1024));
+//
+  //ApplicationContainer clientApps = echoClient.Install(c.Get(1));
+  //clientApps.Start(Seconds(2.0));
+  //clientApps.Stop(Seconds(10.0));
+//
 
-  // Create the UDP echo client echo to test the communication between 2 adjacent nodes
-  NS_LOG_INFO("Create UDP echo client");
-
-  // Set information about the server on the client application
-  UdpEchoClientHelper echoClient(i1i2.GetAddress(0), 9);
-  echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-  echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
-  echoClient.SetAttribute("PacketSize", UintegerValue(1024));
-
-  ApplicationContainer clientApps = echoClient.Install(c.Get(1));
-  clientApps.Start(Seconds(2.0));
-  clientApps.Stop(Seconds(10.0));
 
   // Run the simulation
+  //Simulator::Run();
+  //Simulator::Destroy();
+  //return 0;
+
+  Packet::EnablePrinting (); 
+
+  //Create our Two UDP applications
+  Ptr <TestApp> udp0 = CreateObject <TestApp> ();
+  Ptr <TestApp> udp1 = CreateObject <TestApp> ();
+  
+  //Set the start & stop times
+  udp0->SetStartTime (Seconds(0));
+  udp0->SetStopTime (Seconds (10));
+  udp1->SetStartTime (Seconds(0));
+  udp1->SetStopTime (Seconds (10));
+  
+  //install one application at node 0, and the other at node 1
+  c.Get(0)->AddApplication (udp0);
+  c.Get(1)->AddApplication (udp1);
+  
+  //This is the IP address of node 1
+  Ipv4Address dest_ip(i1i2.GetAddress(1));
+
+  //Schedule an event to send a packet using udp0 targeting IP of node 0, and port 7777
+  std::ostringstream msg; 
+  msg << "Hello World!" << '\0';
+  uint16_t packetSize = msg.str().length()+1;
+  Ptr<Packet> packet1 = Create<Packet>((uint8_t*) msg.str().c_str(), packetSize);
+  Simulator::Schedule(Seconds(1), &TestApp::SendPacket, udp0, packet1, dest_ip, 7777);
+  
+  //Another packet of size 800, targeting the same IP address, but a different port.
+  Ptr <Packet> packet2 = Create <Packet> (800);
+  Simulator::Schedule (Seconds (2), &TestApp::SendPacket, udp0, packet2, dest_ip, 9999);
+    
+  LogComponentEnable ("TestApp", LOG_LEVEL_INFO);
+
+  Simulator::Stop(Seconds (10));
   Simulator::Run();
   Simulator::Destroy();
-  return 0;
 
 }
