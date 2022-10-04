@@ -1,5 +1,7 @@
 #include <stdint.h>
-#include <vector>
+#include <vector.h>
+
+using std::vector;
 
 class MessageUpdate {
     private:
@@ -19,8 +21,8 @@ class MessageUpdate {
         }
 
         uint16_t get_unfeasable_route_len() { return unfeasable_route_len; }
-        vector<int> get_withdrawn_routes() { return withdrawn_routes; }
+        vector<int> get_withdrawn_routes() { return withdrawn_routes(); }
         uint16_t get_total_path_atr_len() { return total_path_atr_len; }
-        vector<int> get_path_atr() { return path_atr; }
-        vector<int> get_NLRI() { return NLRI; }
+        vector<int> get_path_atr() { return path_atr(); }
+        vector<int> get_NLRI() { return NLRI(); }
 };

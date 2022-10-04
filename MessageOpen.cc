@@ -1,5 +1,7 @@
 #include <stdint.h>
-#include <vector>
+#include <vector.h>
+
+using std::vector;
 
 class MessageOpen {
     private:
@@ -25,5 +27,5 @@ class MessageOpen {
         uint16_t get_hold_time() { return hold_time; }
         uint32_t get_BGP_id() { return BGP_id; }
         uint8_t get_opt_param_len() { return opt_param_len; }
-        vector<int> get_opt_param() { return opt_param; }
+        vector<int> get_opt_param() { return opt_param(); }
 };
