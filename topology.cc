@@ -19,20 +19,17 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
-#include "test-app.h"
+#include "tcp-receiver.h"
+#include "tcp-sender.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
 
-int 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
   Time::SetResolution(Time::NS);
-  //LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  //LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
-
 
   // Create the 10 nodes for the topology
   NS_LOG_INFO("Create nodes");
@@ -104,71 +101,46 @@ main(int argc, char *argv[])
 
   // Create router nodes, initialize routing database and set up the routing tables in the nodes
   Ipv4GlobalRoutingHelper::PopulateRoutingTables();
-
-
-  // Create the UDP echo server to test the communication between 2 adjacent nodes
- // NS_LOG_INFO("Create UDP echo server");
-//
- // UdpEchoServerHelper echoServer(9);
- // ApplicationContainer serverApps = echoServer.Install(c.Get(0));
- // serverApps.Start(Seconds(1.0));
- // serverApps.Stop(Seconds(10.0));
-
-
-  //// Create the UDP echo client echo to test the communication between 2 adjacent nodes
-  //NS_LOG_INFO("Create UDP echo client");
-//
-  //// Set information about the server on the client application
-  //UdpEchoClientHelper echoClient(i1i2.GetAddress(0), 9);
-  //echoClient.SetAttribute("MaxPackets", UintegerValue(1));
-  //echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
-  //echoClient.SetAttribute("PacketSize", UintegerValue(1024));
-//
-  //ApplicationContainer clientApps = echoClient.Install(c.Get(1));
-  //clientApps.Start(Seconds(2.0));
-  //clientApps.Stop(Seconds(10.0));
-//
-
-
-  // Run the simulation
-  //Simulator::Run();
-  //Simulator::Destroy();
-  //return 0;
-
+  // Enable packet printing
   Packet::EnablePrinting (); 
 
-  //Create our Two UDP applications
-  Ptr <TestApp> udp0 = CreateObject <TestApp> ();
-  Ptr <TestApp> udp1 = CreateObject <TestApp> ();
-  
-  //Set the start & stop times
-  udp0->SetStartTime (Seconds(0));
-  udp0->SetStopTime (Seconds (10));
-  udp1->SetStartTime (Seconds(0));
-  udp1->SetStopTime (Seconds (10));
-  
-  //install one application at node 0, and the other at node 1
-  c.Get(0)->AddApplication (udp0);
-  c.Get(1)->AddApplication (udp1);
-  
-  //This is the IP address of node 1
-  Ipv4Address dest_ip(i1i2.GetAddress(1));
+  LogComponentEnable("TcpReceiver", LOG_LEVEL_INFO);
+  LogComponentEnable("TcpSender", LOG_LEVEL_INFO);
 
-  //Schedule an event to send a packet using udp0 targeting IP of node 0, and port 7777
-  std::ostringstream msg; 
-  msg << "Hello World!" << '\0';
-  uint16_t packetSize = msg.str().length()+1;
-  Ptr<Packet> packet1 = Create<Packet>((uint8_t*) msg.str().c_str(), packetSize);
-  Simulator::Schedule(Seconds(1), &TestApp::SendPacket, udp0, packet1, dest_ip, 7777);
-  
-  //Another packet of size 800, targeting the same IP address, but a different port.
-  Ptr <Packet> packet2 = Create <Packet> (800);
-  Simulator::Schedule (Seconds (2), &TestApp::SendPacket, udp0, packet2, dest_ip, 9999);
-    
-  LogComponentEnable ("TestApp", LOG_LEVEL_INFO);
+  // Settings
+  uint16_t serverPort   = 179;
+  // Set timings
+  Time startClient    = Seconds(1.);
+  Time stopClient     = Seconds(300.);
+  Time startServer    = Seconds(0.);
+  Time stopServer     = Seconds(300.0);
+  Time stopSimulation = Seconds(310.0);  // giving some more time than the server stop
 
-  Simulator::Stop(Seconds (10));
-  Simulator::Run();
-  Simulator::Destroy();
+  // Applications
+  // Tcp RECEIVER -> now on as1 which is directly linked (p2p) with as2
+  Address receiverAddress (InetSocketAddress (i1i2.GetAddress(0), serverPort));
+  Ptr<TcpReceiver> receiverApp = CreateObject<TcpReceiver>();
+  receiverApp->Setup(serverPort, startClient);
+
+  // Install and load the server
+  as1as2.Get(0)->AddApplication(receiverApp);
+  receiverApp->SetStartTime(startServer);
+  receiverApp->SetStopTime(stopServer);
+
+  // Tcp SENDER -> now on the fas2
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (as1as2.Get(1), TcpSocketFactory::GetTypeId ());
+  Ptr<TcpSender> senderApp = CreateObject<TcpSender> ();
+  senderApp->Setup (ns3TcpSocket, receiverAddress, startClient, stopClient);
+
+  // Install and load the client
+  as1as2.Get(1)->AddApplication (senderApp);
+  senderApp->SetStartTime (startClient);
+  senderApp->SetStopTime (stopClient);
+
+  Simulator::Stop (stopSimulation);
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+  return 0;
 
 }
