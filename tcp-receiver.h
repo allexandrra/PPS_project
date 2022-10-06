@@ -11,7 +11,7 @@ class TcpReceiver : public Application {
 	public:
 		TcpReceiver ();
 		virtual ~TcpReceiver ();
-        void Setup(uint16_t serverPort, Time startTime);
+                void Setup(uint16_t serverPort, Time startTime);
 
 	private:
         virtual void StartApplication();
@@ -36,7 +36,7 @@ class TcpReceiver : public Application {
         uint32_t                m_packetsReceived;
         Time                    m_startTime;
         uint8_t*                m_recvBuffer;
-        char*                   m_timeStringContainer;
+        std::ostringstream      m_timeStringContainer;
         int32_t                 m_readReturn;
         int32_t                 m_toComplete;
         uint32_t                m_dataSize;

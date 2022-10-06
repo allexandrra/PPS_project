@@ -96,9 +96,6 @@ int main(int argc, char *argv[])
   ipv4.SetBase("160.0.0.28", "255.255.255.252"); 
   Ipv4InterfaceContainer i10i6 = ipv4.Assign(d10d6);
 
-  NS_LOG_INFO("IP address of server: " << i1i2.GetAddress(0));
-  NS_LOG_INFO("IP address of client: " << i1i2.GetAddress(1));
-
   // Create router nodes, initialize routing database and set up the routing tables in the nodes
   Ipv4GlobalRoutingHelper::PopulateRoutingTables();
   // Enable packet printing
@@ -116,26 +113,40 @@ int main(int argc, char *argv[])
   Time stopServer     = Seconds(300.0);
   Time stopSimulation = Seconds(310.0);  // giving some more time than the server stop
 
+  NS_LOG_INFO("IP address of server on as2: " << i1i2.GetAddress(1));
+  NS_LOG_INFO("IP address of client1 on as1: " << i1i2.GetAddress(0));
+  NS_LOG_INFO("IP address of client2 on as7: " << i2i7.GetAddress(1));
+
   // Applications
-  // Tcp RECEIVER -> now on as1 which is directly linked (p2p) with as2
-  Address receiverAddress (InetSocketAddress (i1i2.GetAddress(0), serverPort));
+  // Tcp RECEIVER -> now on as2 which is directly linked (p2p) with as1
+  Address receiverAddress (InetSocketAddress (i1i2.GetAddress(1), serverPort));
   Ptr<TcpReceiver> receiverApp = CreateObject<TcpReceiver>();
   receiverApp->Setup(serverPort, startClient);
 
-  // Install and load the server
-  as1as2.Get(0)->AddApplication(receiverApp);
+  // Install and load the server on as2
+  as1as2.Get(1)->AddApplication(receiverApp);
   receiverApp->SetStartTime(startServer);
   receiverApp->SetStopTime(stopServer);
 
-  // Tcp SENDER -> now on the fas2
-  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (as1as2.Get(1), TcpSocketFactory::GetTypeId ());
+  // Tcp SENDER -> now on the as1
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (as1as2.Get(0), TcpSocketFactory::GetTypeId ());
   Ptr<TcpSender> senderApp = CreateObject<TcpSender> ();
   senderApp->Setup (ns3TcpSocket, receiverAddress, startClient, stopClient);
 
-  // Install and load the client
-  as1as2.Get(1)->AddApplication (senderApp);
+  // Install and load the client on as1
+  as1as2.Get(0)->AddApplication (senderApp);
   senderApp->SetStartTime (startClient);
   senderApp->SetStopTime (stopClient);
+
+  // Tcp SENDER -> now on the as7
+  Ptr<Socket> ns3TcpSocket2 = Socket::CreateSocket (as2as7.Get(1), TcpSocketFactory::GetTypeId ());
+  Ptr<TcpSender> senderApp2 = CreateObject<TcpSender> ();
+  senderApp2->Setup (ns3TcpSocket2, receiverAddress, startClient, stopClient);
+
+  // Install and load the client on as7
+  as2as7.Get(1)->AddApplication (senderApp2);
+  senderApp2->SetStartTime (startClient);
+  senderApp2->SetStopTime (stopClient);
 
   Simulator::Stop (stopSimulation);
   Simulator::Run ();

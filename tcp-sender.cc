@@ -142,7 +142,7 @@ namespace ns3 {
     m_socket->SetRecvCallback (MakeCallback (&TcpSender::HandleReadFB2, this));
 
     // Call the default function to start scheduling packets send
-    NS_LOG_INFO("Start sending packets");
+    //NS_LOG_INFO("Start sending packets");
     MySendPacket();
   }
 
@@ -210,9 +210,15 @@ namespace ns3 {
       Time rightNow = Simulator::Now() - m_start;
       m_packetsSent++;
 
+      Address addr;
+      m_socket->GetSockName(addr);
+      InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
+
       NS_LOG_INFO ("[S] #" << m_packetsSent << " - '"
         << pktContentVector[m_packetsSent-1].str().c_str()
-        << "' - SENT at: "
+        << "' - SENT from Client with IP "
+        << iaddr.GetIpv4 () << ":" << iaddr.GetPort () 
+        << " at: "
         << rightNow.GetSeconds()
         << "s"
         << " - Dimension: "
@@ -222,6 +228,7 @@ namespace ns3 {
       // Send
       m_socket->Send(packet);
       MySendPacket();
+      //NS_LOG_INFO("Packet sent");
     }
   }
 
@@ -273,22 +280,27 @@ namespace ns3 {
   void
   TcpSender::HandleReadFB2 (Ptr<Socket> socket)
   {
+    //NS_LOG_INFO("Received feedback prima");
     NS_LOG_FUNCTION(this << socket);
+    //NS_LOG_INFO("Received feedback dopo");
 
     Ptr<Packet> packet;
     Address from;
     Address localAddress;
-    while (packet = socket->Recv()) {
+    while (packet = socket->RecvFrom(from)) {
       uint8_t *buffer = new uint8_t[packet->GetSize ()];
       packet->CopyData(buffer, packet->GetSize ());
       std::string packetData = std::string((char*)buffer);
       Time rightNow = Simulator::Now() - m_startTime;
       m_FBReceived++;
+      InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
 
       // Log print
-      NS_LOG_INFO( "[F]<- #" << m_FBReceived << " Feedback '"
+      NS_LOG_INFO( "[F]<- " << " Feedback '"
         << packetData
-        << "' RECEIVED from Client at: "
+        << "' RECEIVED from Client with IP " 
+        << iaddr.GetIpv4 () << ":" << iaddr.GetPort ()  
+        << " at: "
         << rightNow.GetSeconds()
         << " of size: "
         << packet->GetSize()

@@ -57,19 +57,6 @@ namespace ns3 {
     //NS_LOG_INFO("Setup receiver");
     m_port      = serverPort;
     m_startTime = startTime;
-
-    std::ostringstream msg;
-    msg << "Hello World!" << '\0';
-    uint16_t packetSize = msg.str().length()+1;
-    pktDimensionVector.push_back((uint32_t)packetSize);
-
-    msg << "Ciao" << '\0';
-    packetSize = msg.str().length()+1;
-    pktDimensionVector.push_back((uint32_t)packetSize);
-
-    msg << "Hola amigos :)" << '\0';
-    packetSize = msg.str().length()+1;
-    pktDimensionVector.push_back((uint32_t)packetSize);
   }
 
   // Getters
@@ -216,17 +203,17 @@ namespace ns3 {
             << currentPktSize
           );
 
-          // Call MyFBSend to schedule the Feedback packet send
-          m_timeStringContainer = (char*) malloc ((size_t)318);
-          snprintf(m_timeStringContainer, 318, "%f", rightNow.GetSeconds());
-          SetFill(m_timeStringContainer);
-
-          // Free buffers
-          free(m_recvBuffer);
-          free(m_timeStringContainer);
-
-          // Call FeedBack Send
-          MyFBSend();
+          //// Call MyFBSend to schedule the Feedback packet send
+          //m_timeStringContainer = (char*) malloc ((size_t)318);
+          //snprintf(m_timeStringContainer, 318, "%f", rightNow.GetSeconds());
+          //SetFill(m_timeStringContainer);
+//
+          //// Free buffers
+          //free(m_recvBuffer);
+          //free(m_timeStringContainer);
+//
+          //// Call FeedBack Send
+          //MyFBSend();
         }
       }
     }
@@ -238,32 +225,30 @@ namespace ns3 {
     Ptr<Packet> packet;
     Address from;
     Address localAddress;
-    while (packet = socket->Recv()) {
+    while (packet = socket->RecvFrom(from)) {
       uint8_t *buffer = new uint8_t[packet->GetSize ()];
       packet->CopyData(buffer, packet->GetSize ());
       std::string packetData = std::string((char*)buffer);
       m_packetsReceived++;
       Time rightNow = Simulator::Now() - m_startTime;
+      InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
       // Log print
       NS_LOG_INFO( "[R] #" << m_packetsReceived << " '"
         << packetData << "'"
-        << " - RECV at: "
+        << " RECEIVED from Client with IP " 
+        << iaddr.GetIpv4 () << ":" << iaddr.GetPort () 
+        << " - at: "
         << rightNow.GetSeconds()
         << " - Dimension: "
         << packet->GetSize()
       );
 
-      // Call MyFBSend to schedule the Feedback packet send
-      m_timeStringContainer = (char*) malloc ((size_t)318);
-      snprintf(m_timeStringContainer, 318, "%f", rightNow.GetSeconds());
-      SetFill(m_timeStringContainer);
+      m_timeStringContainer.str("");
+      m_timeStringContainer << rightNow.GetSeconds()  << '\0';
 
-      // Free buffers
-      free(m_recvBuffer);
-      free(m_timeStringContainer);
-
-      // Call FeedBack Send
+      //// Call FeedBack Send
       MyFBSend();
+      //NS_LOG_INFO("MYFBSend called");
     }
   }
 
@@ -277,21 +262,9 @@ namespace ns3 {
   {
     // Scheduling 'now' (0 seconds) but this can be changed to give a timeout
     m_sendEvent = Simulator::Schedule (Seconds(.0), &TcpReceiver::SendNowFB, this);
+    //NS_LOG_INFO("Scheduling Feedback packet send");
   }
 
-  /** Set Fill
-   * Function to fill the new packets to prepare the send
-   */
-  void
-  TcpReceiver::SetFill (char* fill)
-  {
-    NS_LOG_FUNCTION (fill);
-    uint32_t dataSize = sizeof(fill);
-    m_data = new uint8_t [dataSize];
-    m_dataSize = dataSize;
-    // Actually copying the content inside the buffer
-    memcpy (m_data, fill, dataSize);
-  }
 
   /** Send Now FeedBack
    * Function that actually sends the FeedBack packet
@@ -300,14 +273,10 @@ namespace ns3 {
   TcpReceiver::SendNowFB(void)
   {
     NS_LOG_FUNCTION_NOARGS ();
+    //NS_LOG_INFO("Sending Feedback now");
 
-    Ptr<Packet> feedback;
-    if (m_dataSize)
-    {
-      // SetFill has been called
-      feedback = Create<Packet> (m_data, m_dataSize);
-      delete[] m_data;
-    }
+    Ptr<Packet> feedback = Create<Packet>((uint8_t*) m_timeStringContainer.str().c_str(), m_timeStringContainer.str().length()+1);
+
     // TODO: Implement else: if SetFill has not been called what can we do? Write SimulatorNow() in pkt?
     /*else
     {
@@ -318,14 +287,25 @@ namespace ns3 {
     // Retry the connected socket
     if(m_socketList.size() != 0) {
       Ptr <Socket> sock = m_socketList.front();
+      m_socketList.pop_front();
+      m_socketList.push_back(sock);
+
+      //NS_LOG_INFO("Entro");
+
+      Address addr;
+      sock->GetPeerName (addr);
+      InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
+
       Time rightNow = Simulator::Now() - m_startTime;
-      m_FBSent++;
-      NS_LOG_INFO("[F]-> #"
-                  << m_FBSent << " Feedback '"
+      //m_FBSent++;
+      NS_LOG_INFO("[F]-> "
+                  << " Feedback '"
                   << rightNow.GetSeconds() << "' "
                   << " SENT from server at: "
                   << rightNow.GetSeconds()
-                  << "s of size "
+                  << "s to client "
+                  << iaddr.GetIpv4 () <<  ":" << iaddr.GetPort ()
+                  << " of size "
                   << feedback->GetSize()
       );
 
