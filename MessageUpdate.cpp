@@ -1,26 +1,28 @@
 #include <stdint.h>
 #include <vector>
 
-class MessageUpdate {
+#include "MessageBGP.h"
+
+class MessageUpdate : public MessageBGP {
     private:
         uint16_t unfeasable_route_len;
-        vector<int> withdrawn_routes();
+        std::vector<int> withdrawn_routes;
         uint16_t total_path_atr_len;
-        vector<int> path_atr();
-        vector<int> NLRI();
+        std::vector<int> path_atr;
+        std::vector<int> NLRI;
 
     public:
-        MessageUpdate(uint16_t unfeasable_route_len, vector<int> withdraw_routes, uint16_t total_path_atr_len, vector<int> path_atr, vector<int> NLRI) {
-            unfeasable_route_len = unfeasable_route_len;
-            withdrawn_routes = withdrawn_routes;
-            total_path_atr_len = total_path_atr_len;
-            path_atr = path_atr;
-            NLRI = NLRI;
+        MessageUpdate(uint16_t unfeasable_route_len, std::vector<int> withdraw_routes, uint16_t total_path_atr_len, std::vector<int> path_atr, std::vector<int> NLRI) {
+            this->unfeasable_route_len = unfeasable_route_len;
+            this->withdrawn_routes = withdrawn_routes;
+            this->total_path_atr_len = total_path_atr_len;
+            this->path_atr = path_atr;
+            this->NLRI = NLRI;
         }
 
         uint16_t get_unfeasable_route_len() { return unfeasable_route_len; }
-        vector<int> get_withdrawn_routes() { return withdrawn_routes; }
+        std::vector<int> get_withdrawn_routes() { return withdrawn_routes; }
         uint16_t get_total_path_atr_len() { return total_path_atr_len; }
-        vector<int> get_path_atr() { return path_atr; }
-        vector<int> get_NLRI() { return NLRI; }
+        std::vector<int> get_path_atr() { return path_atr; }
+        std::vector<int> get_NLRI() { return NLRI; }
 };
