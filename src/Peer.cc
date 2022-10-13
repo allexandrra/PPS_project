@@ -1,17 +1,11 @@
 #include "Peer.h"
 
-using namespace std;
-using std::vector;
+Peer::Peer(std::string nw, std::string nh, std::string path) {
+    this->network = nw;
+    this->next_hop = nh;
+    this->path = path;
+}
 
-namespace Peer {
-
-    Peer::Peer(string nw, string nh, string path) {
-        this->network = nw;
-        this->next_hop = nh;
-        this->path = path;
-    }
-
-        string Peer::get_peer_nw() { return this->network; }
-        string Peer::get_peer_nh() { return this->next_hop; }
-        string Peer::get_peer_path() { return this->path; }
-};
+std::string Peer::get_peer_nw() { return this->network; }
+std::string Peer::get_peer_nh() { return this->next_hop; }
+std::string Peer::get_peer_path() { return this->path; }

@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <vector>
-
 #include "MessageBGP.h"
-
 
 MessageBGP::MessageBGP(int8_t* marker, int16_t lenght, int8_t type) {
     this->marker = marker;

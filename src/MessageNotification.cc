@@ -1,6 +1,3 @@
-#include <stdint.h>
-#include <vector>
-
 #include "MessageBGP.h"
 
 class MessageNotification : public MessageBGP {

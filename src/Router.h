@@ -1,33 +1,34 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
-#include <string.h>
-#include <stdint.h>
-#include <vector.h>
+#include <fstream>
+#include <iostream>
+#include <sstream> 
+#include <iomanip>
+#include <cstring>
+#include <vector>
+
 #include "Interface.h"
 #include "Peer.h"
 
-using namespace Interface;
-using namespace Peer;
+using namespace std;
 
-namespace Router {
-    class Router {
-        public:
-            Router(int router_ID, int AS, vector<Interface::Interface> interfaces(), vector<int> neighbours(), vector<Peer::Peer> routing_table());
+class Router {
+    public:
+        Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table);
 
-            int get_router_ID();
-            int get_router_AD();
-            vector<Interface::Interface> get_router_int();
-            vector<int> get_router_neigh();
-            vector<Peer::Peer> get_router_rt();
+        int get_router_ID();
+        int get_router_AD();
+        std::vector<Interface> get_router_int();
+        std::vector<int> get_router_neigh();
+        std::vector<Peer> get_router_rt();
 
-        private:
-            int router_ID;
-            int AS;
-            vector<Interface::Interface> interfaces();
-            vector<int> neighbours();
-            vector<Peer::Peer> routing_table();
-    };
-}
+    private:
+        int router_ID;
+        int AS;
+        std::vector<Interface> interfaces;
+        std::vector<int> neighbours;
+        std::vector<Peer> routing_table;
+};
 
 #endif

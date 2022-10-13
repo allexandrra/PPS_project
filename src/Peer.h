@@ -1,24 +1,26 @@
 #ifndef PEER_H
 #define PEER_H
 
-#include <string.h>
-#include <stdint.h>
-#include <vector.h>
+#include <fstream>
+#include <iostream>
+#include <sstream> 
+#include <iomanip>
+#include <cstring>
 
-namespace Peer {
-    class Peer {
-        public:
-            Peer(string nw, string nh, string path);
+using namespace std;
+
+class Peer {
+    public:
+        Peer(std::string nw, std::string nh, std::string path);
             
-            string get_peer_nw();
-            string get_peer_nh();
-            string get_peer_path();
+        std::string get_peer_nw();
+        std::string get_peer_nh();
+        std::string get_peer_path();
 
-        private:
-            string network;
-            string next_hop;
-            string path;
-    };
-}
+    private:
+        std::string network;
+        std::string next_hop;
+        std::string path;
+};
 
 #endif

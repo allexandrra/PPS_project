@@ -1,27 +1,29 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <string.h>
-#include <stdint.h>
-#include <vector.h>
+#include <fstream>
+#include <iostream>
+#include <sstream> 
+#include <iomanip>
+#include <cstring>
 
-namespace Interface {
-    class Interface {
-        public:
-            Interface(string name, string IP, string mask);
+using namespace std;
+
+class Interface {
+    public:
+        Interface(std::string name, std::string IP, std::string mask);
             
-            void set_status(bool status);
-            string get_int_name();
-            string get_int_IP();
-            string get_int_mask();
+        void set_status(bool status);
+        std::string get_int_name();
+        std::string get_int_IP();
+        std::string get_int_mask();
 
-        private:
-            string name;
-            string IP_addr;
-            string mask;
-            bool status;
+    private:
+        std::string name;
+        std::string IP_addr;
+        std::string mask;
+        bool status;
 
-    };
-}
+};
 
 #endif

@@ -1,8 +1,3 @@
-#include <stdint.h>
-#include <vector.h>
-
-using std::vector;
-
 #include "MessageBGP.h"
 
 class MessageOpen : public MessageBGP {

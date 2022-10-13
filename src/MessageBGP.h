@@ -1,8 +1,14 @@
 #ifndef NS3_MESSAGE_BGP_H
 #define NS3_MESSAGE_BGP_H
 
-#include <stdint.h>
+#include <fstream>
+#include <iostream>
+#include <sstream> 
+#include <iomanip>
+#include <cstring>
 #include <vector>
+ 
+using namespace std;
 
 class MessageBGP {
     //private:

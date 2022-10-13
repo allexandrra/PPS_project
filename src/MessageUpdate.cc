@@ -1,8 +1,3 @@
-#include <stdint.h>
-#include <vector.h>
-
-using std::vector;
-
 #include "MessageBGP.h"
 
 class MessageUpdate : public MessageBGP {
@@ -27,4 +22,40 @@ class MessageUpdate : public MessageBGP {
         uint16_t get_total_path_atr_len() { return total_path_atr_len; }
         std::vector<int> get_path_atr() { return path_atr; }
         std::vector<int> get_NLRI() { return NLRI; }
+
+        void check_neighbour() {
+            
+        }
+
+        void parse_message() {
+
+        }
+
+        void check_preferences() {
+
+        }
+
+        void apply_policy() {
+
+        }
+
+        void add_to_RT() {
+
+        }
+
+        void add_to_RIBin() {
+
+        }
+
+        void add_to_RIBout() {
+
+        }
+
+        void add_to_FIB() {
+
+        }
+
+        void add_to_locRIB() {
+
+        }
 };
