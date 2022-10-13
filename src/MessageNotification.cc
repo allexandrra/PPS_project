@@ -1,17 +1,19 @@
 #include <stdint.h>
 #include <vector>
 
-class MessageNotification {
+#include "MessageBGP.h"
+
+class MessageNotification : public MessageBGP {
     private:
         int8_t error_code;
         int8_t error_subcode;
         char* data;
 
-    public:
+    public: 
         MessageNotification(int8_t error_code, int8_t error_subcode, char* data) {
-            error_code = error_code;
-            error_subcode = error_subcode;
-            data = data;
+            this->error_code = error_code;
+            this->error_subcode = error_subcode;
+            this->data = data;
         }
 
         int8_t get_error_code() { return error_code; }
