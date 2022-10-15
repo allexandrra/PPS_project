@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <vector>
 
-#include "MessageBGP.h"
+#include "MessageHeader.h"
 
-class MessageUpdate : public MessageBGP {
+class MessageUpdate : public MessageHeader {
     private:
         uint16_t unfeasable_route_len;
         std::vector<int> withdrawn_routes;
@@ -12,7 +12,8 @@ class MessageUpdate : public MessageBGP {
         std::vector<int> NLRI;
 
     public:
-        MessageUpdate(uint16_t unfeasable_route_len, std::vector<int> withdraw_routes, uint16_t total_path_atr_len, std::vector<int> path_atr, std::vector<int> NLRI) {
+        MessageUpdate(uint16_t unfeasable_route_len, std::vector<int> withdraw_routes, uint16_t total_path_atr_len, std::vector<int> path_atr, std::vector<int> NLRI) 
+        : MessageHeader() {
             this->unfeasable_route_len = unfeasable_route_len;
             this->withdrawn_routes = withdrawn_routes;
             this->total_path_atr_len = total_path_atr_len;
