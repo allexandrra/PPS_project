@@ -7,6 +7,10 @@
 #include "Router.h"
 #include "MessageBGP.h"
 
+void parse_message() {
+
+}
+
 int main() {
     
 

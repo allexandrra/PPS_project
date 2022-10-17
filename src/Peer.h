@@ -21,6 +21,8 @@ class Peer {
         std::string network;
         std::string next_hop;
         std::string path;
+        int weight;
+        
 };
 
 #endif
