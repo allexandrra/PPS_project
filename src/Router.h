@@ -8,7 +8,7 @@
 #include <cstring>
 #include <vector>
 
-#include "Interface.h"
+//#include "Interface.h"
 //#include "Peer.h"
 
 struct Peer {
@@ -21,6 +21,13 @@ struct Peer {
     char origin_code;
     int MED;
     bool e_vs_i;
+};
+
+struct Interface {
+    string name;
+    string ip;
+    string mask;
+    bool status;
 };
 
 using namespace std;
