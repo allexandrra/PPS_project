@@ -24,9 +24,9 @@ struct Peer {
 };
 
 struct Interface {
-    string name;
-    string ip;
-    string mask;
+    std::string name;
+    std::string ip;
+    std::string mask;
     bool status;
 };
 

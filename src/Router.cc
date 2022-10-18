@@ -1,4 +1,4 @@
-#include "Router.h"
+#include "../include/Router.h"
 
 Router::Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table) {
     this->router_ID = router_ID;

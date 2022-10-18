@@ -19,12 +19,12 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
-//#include "tcp-re<ceiver.h"
-//#include "tcp-sender.h">
-
-#include "TCP-common.h"
-#include "BGP-client.h"
-#include "BGP-server.h"
+#include "../include/TCP-common.h"
+#include "../include/BGP-client.h"
+#include "../include/BGP-server.h"
+#include "../include/MessageHeader.h"
+#include "../include/MessageOpen.h"
+#include "../include/MessageNotification.h"
 
 using namespace ns3;
 
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     LogComponentEnable("BGPServer", LOG_LEVEL_INFO);
     LogComponentEnable("BGPClient", LOG_LEVEL_INFO);
 	LogComponentEnable("TCPCommon", LOG_LEVEL_INFO);
+    //LogComponentEnable("MessageBGP", LOG_LEVEL_INFO);
 
     // Settings
     uint16_t serverPort   = 179;
@@ -144,11 +145,37 @@ int main(int argc, char *argv[])
     clientApp->SetStartTime(startClient);
     clientApp->SetStopTime(stopClient);
 
-    std::ostringstream msg1;
-    msg1 << "Hello World" << '\0';
+    std::stringstream msg1;
+    //MessageOpen msg = MessageOpen(3556, 0, 16908288, 0);
+    //msg.set_lenght(1050);
+    //msg.set_type('1');
+    MessageNotification msg = MessageNotification(1,1, "test");
+    msg1 << msg << '\0';
+
+
+    /*MessageNotification msgRic;
+    msg1 >> msgRic;
+
+    std::cout << "Lunghezza: " << msgRic.get_lenght() << std::endl;
+    std::cout << "Type: " << msgRic.get_type() << std::endl;
+    std::vector<uint8_t> vec = msgRic.get_marker();
+    std::cout << "Marker: ";
+    for(int i = 0; i < 128; i++)
+        std::cout << vec[i];
+    std::cout << std::endl;  
+    std::cout << "Error code: " << msgRic.get_error_code() << std::endl;
+    std::cout << "Error subcode: " << msgRic.get_error_subcode() << std::endl;
+    std::cout << "Data: " << msgRic.get_data() << std::endl; */
+    //std::cout << "Version: " << msgRic.get_version() << std::endl;
+    //std::cout << "AS: " << msgRic.get_AS() << std::endl;  
+    //std::cout << "Hold Time: " << msgRic.get_hold_time() << std::endl;
+    //std::cout << "BGP ID: " << msgRic.get_BGP_id() << std::endl;
+    //std::cout << "Opt Parm Len: " << msgRic.get_opt_param_len() << std::endl;
+
+
 	clientApp->AddPacketsToQueue(msg1, Seconds(2.0));
 
-	std::ostringstream msg2;
+	std::stringstream msg2;
     msg2 << "Ciao" << '\0';
 	clientApp->AddPacketsToQueue(msg2, Seconds(3.0));
 
@@ -163,14 +190,13 @@ int main(int argc, char *argv[])
     clientApp2->SetStartTime (startClient);
     clientApp2->SetStopTime (stopClient);
 
-	std::ostringstream msg3;
+	std::stringstream msg3;
     msg3 << "Hello World client 2" << '\0';
 	clientApp2->AddPacketsToQueue(msg3, Seconds(4.0));
 
-	std::ostringstream msg4;
+	std::stringstream msg4;
     msg4 << "Ciao client 2" << '\0';
 	clientApp2->AddPacketsToQueue(msg4, Seconds(6.0));
-
 
     Simulator::Stop (stopSimulation);
     Simulator::Run ();

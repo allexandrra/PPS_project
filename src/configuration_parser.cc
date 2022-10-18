@@ -1,7 +1,7 @@
 #include <iostream>
-#include <libconfig.h++>
 
-#include "configuration_parser.h"
+#include "../include/libconfig.h++"
+#include "../include/configuration_parser.h"
 
 using namespace libconfig;
 using namespace std;

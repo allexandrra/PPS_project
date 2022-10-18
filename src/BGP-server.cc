@@ -16,7 +16,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-#include "BGP-server.h"
+#include "../include/BGP-server.h"
 
 
 namespace ns3 {

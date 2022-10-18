@@ -16,7 +16,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-#include "BGP-client.h"
+#include "../include/BGP-client.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -128,7 +128,7 @@ namespace ns3 {
 		//NS_LOG_INFO("Sent");
 	}
 
-	void BGPClient::AddPacketsToQueue(std::ostringstream& msg, Time atTime) {
+	void BGPClient::AddPacketsToQueue(std::stringstream& msg, Time atTime) {
 		Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length()+1);
 		m_pktDelayList.push_back(atTime);
 		m_pktList.push_back(packet);
