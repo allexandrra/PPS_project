@@ -26,6 +26,14 @@ public:
      * @param router name of another AS to link to
      */
     void add_link(string router);
+
+    /**
+     * @brief Set physical links the router is connected to
+     * 
+     * @param links 
+     */
+    void set_links(vector<string> links);
+
 };
 
 #endif
