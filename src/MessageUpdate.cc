@@ -8,28 +8,34 @@
 #include <cstring>
 #include <vector>
 
-MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<int> withdraw_routes, uint16_t total_path_atr_len, std::vector<int> path_atr, std::vector<int> NLRI) 
-: MessageHeader() {
+MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<Route> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
+: MessageHeader(2) {
     this->unfeasable_route_len = unfeasable_route_len;
-    this->withdrawn_routes = withdrawn_routes;
+    this->withdrawn_routes.assign(withdraw_routes.begin(), withdraw_routes.end());
     this->total_path_atr_len = total_path_atr_len;
-    this->path_atr = path_atr;
-    this->NLRI = NLRI;
+    this->path_atr.assign(path_atr.begin(), path_atr.end());
+    this->NLRI.assign(NLRI.begin(), NLRI.end());
 }
 
-MessageUpdate::MessageUpdate() : MessageHeader() {
+MessageUpdate::MessageUpdate() : MessageHeader(2) {
     //TODO
+    this->unfeasable_route_len = 0;
+    this->withdrawn_routes.resize(0);
+    this->total_path_atr_len = 0;
+    this->path_atr.resize(0);
+    this->NLRI.resize(0);
 }
 
 
 uint16_t MessageUpdate::get_unfeasable_route_len() { return unfeasable_route_len; }
-std::vector<int> MessageUpdate::get_withdrawn_routes() { return withdrawn_routes; }
+std::vector<Route> MessageUpdate::get_withdrawn_routes() { return withdrawn_routes; }
 uint16_t MessageUpdate::get_total_path_atr_len() { return total_path_atr_len; }
-std::vector<int> MessageUpdate::get_path_atr() { return path_atr; }
-std::vector<int> MessageUpdate::get_NLRI() { return NLRI; }
+std::vector<Path_atrs> MessageUpdate::get_path_atr() { return path_atr; }
+std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
 
 std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     //TODO
+    std::stringstream strStreamData;
     return stream;
 }
 
@@ -58,11 +64,20 @@ vector<Route> MessageUpdate::check_preferences(vector<Route> new_routes, vector<
                         // compara greutatea
                         // daca mai mare treci mai departe
                         // daca mai mica inlocuieste ruta actuala cu ruta noua in tabelul de rutare
-                        break;
+                        if (std::stoi(atr.value) < p.weight) {
+                            loc_RIB.push_back(r);
+                            break;
+                        }
                     case 2: //loc_pref
-                        break;
-                    case 3: // 
-                        break;
+                        if (std::stoi(atr.value) < p.loc_pref) {
+                            loc_RIB.push_back(r);
+                            break;
+                        }
+                    case 3: // MED
+                        if (std::stoi(atr.value) < p.MED) {
+                            loc_RIB.push_back(r);
+                            break;
+                        }
                     default:
                         break;
                     }

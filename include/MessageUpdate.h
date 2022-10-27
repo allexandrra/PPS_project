@@ -12,7 +12,7 @@
 #include "MessageHeader.h"
 #include "Router.h"
 
-struct NLRI {
+struct NLRIs {
     uint8_t prefix_lenght;
     std::string prefix;
 };
@@ -28,27 +28,27 @@ struct Path_atrs {
 };
 
 struct Route {
-    NLRI nlri;
+    NLRIs nlri;
     std::vector<Path_atrs> path_atr;
 };
 
 class MessageUpdate : public MessageHeader{
     private:
         uint16_t unfeasable_route_len;
-        std::vector<int> withdrawn_routes;
+        std::vector<Route> withdrawn_routes;
         uint16_t total_path_atr_len;
-        std::vector<int> path_atr;
-        std::vector<int> NLRI;
+        std::vector<Path_atrs> path_atr;
+        std::vector<NLRIs> NLRI;
 
     public:
-        MessageUpdate(uint16_t unfeasable_route_len, std::vector<int> withdraw_routes, uint16_t total_path_atr_len, std::vector<int> path_atr, std::vector<int> NLRI);
+        MessageUpdate(uint16_t unfeasable_route_len, std::vector<Route> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI);
         MessageUpdate();
 
         uint16_t get_unfeasable_route_len();
-        std::vector<int> get_withdrawn_routes();
+        std::vector<Route> get_withdrawn_routes();
         uint16_t get_total_path_atr_len();
-        std::vector<int> get_path_atr();
-        std::vector<int> get_NLRI();
+        std::vector<Path_atrs> get_path_atr();
+        std::vector<NLRIs> get_NLRI();
 
         friend std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg);
         friend std::istream & operator>>(std::istream & stream, MessageUpdate& msg);
