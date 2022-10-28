@@ -11,14 +11,18 @@ class AS
 {
 public:
     string name;
+    string ip;
+    string netmask;
     vector<string> links;
 
     /**
      * @brief Construct a new AS object
-     *
-     * @param n
+     * 
+     * @param n Name of the AS
+     * @param ip 
+     * @param netmask 
      */
-    AS(string n);
+    AS(string n, string ip, string netmask);
 
     /**
      * @brief Add a physical link to another AS
@@ -33,6 +37,7 @@ public:
      * @param links 
      */
     void set_links(vector<string> links);
+ 
 
 };
 

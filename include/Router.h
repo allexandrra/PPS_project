@@ -21,6 +21,7 @@ struct Peer {
     char origin_code;
     int MED;
     bool e_vs_i;
+    float trust;
 };
 
 struct Interface {
@@ -38,6 +39,7 @@ class Router {
 
         int get_router_ID();
         int get_router_AS();
+        float get_router_trust();
         std::vector<Interface> get_router_int();
         std::vector<int> get_router_neigh();
         std::vector<Peer> get_router_rt();
