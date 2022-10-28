@@ -7,8 +7,9 @@
 #include <iomanip>
 #include <cstring>
 #include <vector>
+#include <bits/stdc++.h> 
 
-MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<Route> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
+MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
 : MessageHeader(2) {
     this->unfeasable_route_len = unfeasable_route_len;
     this->withdrawn_routes.assign(withdraw_routes.begin(), withdraw_routes.end());
@@ -26,9 +27,8 @@ MessageUpdate::MessageUpdate() : MessageHeader(2) {
     this->NLRI.resize(0);
 }
 
-
 uint16_t MessageUpdate::get_unfeasable_route_len() { return unfeasable_route_len; }
-std::vector<Route> MessageUpdate::get_withdrawn_routes() { return withdrawn_routes; }
+std::vector<NLRIs> MessageUpdate::get_withdrawn_routes() { return withdrawn_routes; }
 uint16_t MessageUpdate::get_total_path_atr_len() { return total_path_atr_len; }
 std::vector<Path_atrs> MessageUpdate::get_path_atr() { return path_atr; }
 std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
@@ -41,6 +41,101 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
 std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
     //TODO
+    // message header
+    std::bitset<128> bit_marker;
+    std::bitset<16> bit_length;
+    std::bitset<8> bit_type;
+    // update message fields
+    std::bitset<16> bit_unfeasable_route_len;
+    std::bitset<16> bit_total_path_atr_len;
+
+    std::vector<uint8_t> marker(128);
+    for (int i = 0; i < (int)marker.size(); i++) {
+        marker[i] = (bit_marker[i] == 1) ? '1' : '0';
+    }
+
+    stream >> bit_marker >> bit_length >> bit_type >> bit_unfeasable_route_len;
+
+    msg.unfeasable_route_len = (uint16_t)bit_unfeasable_route_len.to_ulong();
+
+    if (msg.unfeasable_route_len > 0) {
+        for(int i = 0; i < (int)msg.unfeasable_route_len; i++) {
+            NLRIs new_withdrawn_route;
+
+            std::bitset<8> length;
+            std::bitset<8> prefix;
+
+            stream >> length >> prefix;
+
+            new_withdrawn_route.prefix_lenght = (uint8_t)length.to_ulong();
+
+            for (int j = 0; j < 3; j++) {
+                stream >> prefix;
+                new_withdrawn_route.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+                new_withdrawn_route.prefix.append(".");
+            }
+            stream >> prefix;
+            new_withdrawn_route.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+
+            msg.withdrawn_routes.push_back(new_withdrawn_route);
+        }
+    }
+
+    stream >> bit_total_path_atr_len;
+
+    msg.total_path_atr_len = (uint16_t)bit_total_path_atr_len.to_ulong();
+
+    if (msg.total_path_atr_len > 0) {
+        for (int i = 0; i < (int)msg.total_path_atr_len; i++) {
+            Path_atrs new_path_atr;
+
+            std::bitset<8> bit_atr_flags;
+            std::bitset<8> bit_atr_type_code;
+            std::bitset<8> bit_atr_len;
+
+            stream >> bit_atr_flags >> bit_atr_type_code >> bit_length;
+
+            new_path_atr.optional = (uint8_t)bit_atr_flags[0];
+            new_path_atr.transitive = (uint8_t)bit_atr_flags[1];
+            new_path_atr.partial = (uint8_t)bit_atr_flags[2];
+            new_path_atr.extended_lenght = (uint8_t)bit_atr_flags[3];
+            new_path_atr.lenght = (uint8_t)bit_atr_len.to_ulong();
+
+            if(new_path_atr.extended_lenght == 0) {
+                std::bitset<8> bit_atr_value;
+                stream >> bit_atr_value;
+                new_path_atr.value = bit_atr_value.to_string();
+            } else {
+                std::bitset<16> bit_atr_value;
+                stream >> bit_atr_value;
+                new_path_atr.value = bit_atr_value.to_string();
+            }
+
+            msg.path_atr.push_back(new_path_atr);
+        }
+    }
+
+    while (!stream.eofbit) {
+        NLRIs new_nlri;
+
+        std::bitset<8> length;
+        std::bitset<8> prefix;
+
+        stream >> length >> prefix;
+
+        new_nlri.prefix_lenght = (uint8_t)length.to_ulong();
+
+        for (int j = 0; j < 3; j++) {
+            stream >> prefix;
+            new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+            new_nlri.prefix.append(".");
+        }
+        stream >> prefix;
+        new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+
+        msg.NLRI.push_back(new_nlri);
+    }
+
     return stream;
 }
 

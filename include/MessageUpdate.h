@@ -35,23 +35,23 @@ struct Route {
 class MessageUpdate : public MessageHeader{
     private:
         uint16_t unfeasable_route_len;
-        std::vector<Route> withdrawn_routes;
+        std::vector<NLRIs> withdrawn_routes;
         uint16_t total_path_atr_len;
         std::vector<Path_atrs> path_atr;
         std::vector<NLRIs> NLRI;
 
     public:
-        MessageUpdate(uint16_t unfeasable_route_len, std::vector<Route> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI);
+        MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI);
         MessageUpdate();
 
         uint16_t get_unfeasable_route_len();
-        std::vector<Route> get_withdrawn_routes();
+        std::vector<NLRIs> get_withdrawn_routes();
         uint16_t get_total_path_atr_len();
         std::vector<Path_atrs> get_path_atr();
         std::vector<NLRIs> get_NLRI();
 
         friend std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg);
-        friend std::istream & operator>>(std::istream & stream, MessageUpdate& msg);
+        friend std::istream& operator>>(std::istream & stream, MessageUpdate& msg);
 
         bool check_neighbour(Router router, int req_router);
 
