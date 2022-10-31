@@ -15,3 +15,7 @@ std::vector<Interface> Router::get_router_int() { return this->interfaces; }
 std::vector<int> Router::get_router_neigh() { return this->neighbours; }
 std::vector<Peer> Router::get_router_rt() { return this->routing_table; }
 
+void Router::push_new_route(Peer new_route) {
+  this->routing_table.push_back(new_route);
+}
+

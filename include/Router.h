@@ -8,8 +8,14 @@
 #include <cstring>
 #include <vector>
 
-//#include "Interface.h"
-//#include "Peer.h"
+#include "ns3/node.h"
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/flow-monitor-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 struct Peer {
     std::string network;
@@ -18,22 +24,21 @@ struct Peer {
     int weight;
     int loc_pref;
     int AS_path_len;
-    char origin_code;
     int MED;
-    bool e_vs_i;
     float trust;
 };
 
 struct Interface {
     std::string name;
-    std::string ip;
-    std::string mask;
+    //std::string ip;
+    //std::string mask;
+    Ipv4AddressHelper ip_address;
     bool status;
 };
 
 using namespace std;
 
-class Router {
+class Router : public Node{
     public:
         Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table);
 
@@ -43,9 +48,10 @@ class Router {
         std::vector<Interface> get_router_int();
         std::vector<int> get_router_neigh();
         std::vector<Peer> get_router_rt();
+        void push_new_route(Peer new_route);
 
     private:
-        int router_ID;
+        int router_ID = Node::GetId();
         int AS;
         std::vector<Interface> interfaces;
         std::vector<int> neighbours;

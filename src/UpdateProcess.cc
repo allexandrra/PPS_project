@@ -13,7 +13,7 @@
 
 #include "../include/TCP-common.h"
 #include "../include/Router.h"
-#include "../include/MessageHeader.h"
+#include "../include/MessageHeader.h"   
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
 
@@ -143,6 +143,8 @@ int main(int argc, char *argv[]) {
     //msg.set_type('1');
     MessageNotification msg = MessageNotification(1,1, "test");
     msg1 << msg << '\0';
+
+    
 
 
     /*MessageNotification msgRic;

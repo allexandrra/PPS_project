@@ -58,8 +58,8 @@ class MessageUpdate : public MessageHeader{
         std::vector<Route> check_preferences(std::vector<Route> new_routes, std::vector<Peer> routing_table);
 
         void apply_policy();
-        void add_to_RT();
-        void add_to_RIBin();
+        void add_to_RT(Router r, std::vector<Route> loc_rib);
+        std::vector<Route> add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri);
         void add_to_RIBout();
         void add_to_FIB();
 

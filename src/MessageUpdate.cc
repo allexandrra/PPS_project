@@ -168,7 +168,17 @@ vector<Route> MessageUpdate::check_preferences(vector<Route> new_routes, vector<
                             loc_RIB.push_back(r);
                             break;
                         }
-                    case 3: // MED
+                    case 3: //originate/next hop
+                        if (atr.value.compare("0.0.0.0") == 0) {
+                            loc_RIB.push_back(r);
+                            break;
+                        }
+                    case 4: //AS path length
+                        if (std::stoi(atr.value) < p.AS_path_len) {
+                            loc_RIB.push_back(r);
+                            break;
+                        }
+                    case 5: // MED
                         if (std::stoi(atr.value) < p.MED) {
                             loc_RIB.push_back(r);
                             break;
@@ -191,12 +201,39 @@ void MessageUpdate::apply_policy() {
 
 }
 
-void MessageUpdate::add_to_RT() {
+void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
 
+    for(Route r : loc_rib) {
+        Peer new_peer;
+        new_peer.network = r.nlri.prefix;
+        new_peer.weight = 0;
+        for(Path_atrs p : r.path_atr) {
+            if (p.type == 2) {
+                new_peer.AS_path_len = p.lenght;
+                new_peer.path = p.value;
+            } else if (p.type == 3) {
+                new_peer.next_hop = p.value;
+            } else if (p.type == 4) {
+                new_peer.MED = std::stoi(p.value);
+            } else if (p.type == 5) {
+                new_peer.loc_pref = std::stoi(p.value);
+            }
+        }  
+        router.push_new_route(new_peer);
+    }
 }
 
-void MessageUpdate::add_to_RIBin() {
-    
+std::vector<Route> MessageUpdate::add_to_RIBin(vector<Path_atrs> path_atr, vector<NLRIs> nlri) {
+    std::vector<Route> rib_in;
+
+    for (NLRIs n : nlri) {
+        Route new_route;
+        new_route.nlri = n;
+        std::copy(path_atr.begin(), path_atr.end(), new_route.path_atr);
+        rib_in.push_back(new_route);
+    }
+
+    return rib_in;
 }
 
 void MessageUpdate::add_to_RIBout() {
