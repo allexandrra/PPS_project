@@ -12,26 +12,6 @@
 #include "MessageHeader.h"
 #include "Router.h"
 
-struct NLRIs {
-    uint8_t prefix_lenght;
-    std::string prefix;
-};
-
-struct Path_atrs {
-    int type;
-    int lenght;
-    std::string value;
-    uint8_t optional;
-    uint8_t transitive;
-    uint8_t partial;
-    uint8_t extended_lenght;
-};
-
-struct Route {
-    NLRIs nlri;
-    std::vector<Path_atrs> path_atr;
-};
-
 class MessageUpdate : public MessageHeader{
     private:
         uint16_t unfeasable_route_len;
@@ -57,7 +37,7 @@ class MessageUpdate : public MessageHeader{
 
         std::vector<Route> check_preferences(std::vector<Route> new_routes, std::vector<Peer> routing_table);
 
-        void apply_policy();
+        void apply_policy(Router router, Route update_route);
         void add_to_RT(Router r, std::vector<Route> loc_rib);
         std::vector<Route> add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri);
         void add_to_RIBout();

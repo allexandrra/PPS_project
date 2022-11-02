@@ -19,3 +19,24 @@ void Router::push_new_route(Peer new_route) {
   this->routing_table.push_back(new_route);
 }
 
+void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
+  for(Peer p : this->routing_table) {
+    if(p.network == network) {
+      for(Path_atrs atr : atrib) {
+        if(atr.type == 1) {
+          p.weight = std::stoi(atr.value);
+        } else if(atr.type == 2) {
+          p.AS_path_len = atr.lenght;
+          p.path = atr.value;
+        } else if(atr.type == 3) {
+          p.next_hop = atr.value;
+        } else if(atr.type == 4) {
+          p.MED = std::stoi(atr.value);
+        } else if(atr.type == 5) {
+          p.loc_pref = std::stoi(atr.value);
+        }
+      }
+    }
+  }
+}
+

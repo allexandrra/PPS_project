@@ -35,7 +35,76 @@ std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
 
 std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     //TODO
+    std::stringstream strStreamMarker;
+    std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
+
     std::stringstream strStreamData;
+    
+    stream << std::bitset<16>(msg.unfeasable_route_len).to_string() << " ";
+
+    if(msg.unfeasable_route_len > 0) {
+        for(NLRIs n : msg.withdrawn_routes) {
+            stream << std::bitset<8>(n.prefix_lenght).to_string() << " ";
+            size_t pos = 0;
+            std::string token;
+            std::string prefix = n.prefix;
+            while((pos = prefix.find(".")) != std::string::npos) {
+                token = prefix.substr(0, pos);
+                stream << token;
+                prefix.erase(0, pos + 1);
+            }
+            stream << " ";
+        }
+    }
+
+    stream << std::bitset<16>(msg.total_path_atr_len).to_string() << " ";
+
+    if(msg.total_path_atr_len > 0) {
+        for(Path_atrs p : msg.path_atr) {
+            std::bitset<8> bit_flags;
+            if(p.optional == 1) {
+                bit_flags[0] = '1';
+            } else {
+                bit_flags[0] = '0';
+            }
+            if(p.transitive == 1) {
+                bit_flags[1] = '1';
+            } else {
+                bit_flags[1] = '0';
+            }
+            if(p.partial == 1) {
+                bit_flags[2] = '1';
+            } else {
+                bit_flags[2] = '0';
+            }
+            if(p.extended_lenght == 1) {
+                bit_flags[3] = '1';
+            } else {
+                bit_flags[3] = '0';
+            }
+            bit_flags[4] = '0';
+            bit_flags[5] = '0';
+            bit_flags[6] = '0';
+            bit_flags[7] = '0';
+
+            stream << bit_flags << " " << std::bitset<8> (p.type).to_string() << " "
+                << std::bitset<8> (p.lenght).to_string() << " " << p.value << " ";
+        }
+
+        for(NLRIs n : msg.NLRI) {
+            stream << std::bitset<8> (n.prefix_lenght).to_string() << " ";
+            size_t pos = 0;
+            std::string token;
+            std::string prefix = n.prefix;
+            while((pos = prefix.find(".")) != std::string::npos) {
+                token = prefix.substr(0, pos);
+                stream << token;
+                prefix.erase(0, pos + 1);
+            }
+            stream << " ";
+        }
+    }    
+
     return stream;
 }
 
@@ -113,27 +182,27 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
 
             msg.path_atr.push_back(new_path_atr);
         }
-    }
 
-    while (!stream.eofbit) {
-        NLRIs new_nlri;
+        while (!stream.eofbit) {
+            NLRIs new_nlri;
 
-        std::bitset<8> length;
-        std::bitset<8> prefix;
+            std::bitset<8> length;
+            std::bitset<8> prefix;
 
-        stream >> length >> prefix;
+            stream >> length >> prefix;
 
-        new_nlri.prefix_lenght = (uint8_t)length.to_ulong();
+            new_nlri.prefix_lenght = (uint8_t)length.to_ulong();
 
-        for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 3; j++) {
+                stream >> prefix;
+                new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+                new_nlri.prefix.append(".");
+            }
             stream >> prefix;
             new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
-            new_nlri.prefix.append(".");
-        }
-        stream >> prefix;
-        new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
 
-        msg.NLRI.push_back(new_nlri);
+            msg.NLRI.push_back(new_nlri);
+        }
     }
 
     return stream;
@@ -197,8 +266,8 @@ vector<Route> MessageUpdate::check_preferences(vector<Route> new_routes, vector<
     return loc_RIB;
 }
 
-void MessageUpdate::apply_policy() {
-
+void MessageUpdate::apply_policy(Router router, Route update_route) {
+    router.update_routing_table(update_route.nlri.prefix, update_route.path_atr);
 }
 
 void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
