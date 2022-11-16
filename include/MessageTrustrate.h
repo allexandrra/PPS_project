@@ -21,7 +21,7 @@ public:
     MessageTrustrate();
     MessageTrustrate(float trust);
     
-    float MessageTrustrate::get_trust();
+    float get_trust();
 
 };
 #endif
