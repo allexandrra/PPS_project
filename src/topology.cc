@@ -2,28 +2,14 @@
 
 //
 // Network topology: Topology 1 image on Drive
-// All links are point-to-point links 
-// To run the simulation: ./ns3 run scratch/PPS_project/Topology.cc
+// All links are point-to-point links
+// To run the simulation: ./ns3 run scratch/PPS_project/src/topology.cc
 // To view the logs: export NS_LOG=Topology=info
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cassert>
-
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/flow-monitor-helper.h"
-#include "ns3/ipv4-global-routing-helper.h"
-
-#include "../include/TCP-common.h"
+#include "../include/AS.h"
 #include "../include/BGP-client.h"
 #include "../include/BGP-server.h"
 #include "../include/MessageHeader.h"
-#include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
 
@@ -31,9 +17,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
 
-int main(int argc, char *argv[])
+int
+start_simulation()
 {
-
+    std::vector<AS> network = load_configuration();
     Time::SetResolution(Time::NS);
 
     // Create the 10 nodes for the topology
@@ -51,7 +38,6 @@ int main(int argc, char *argv[])
     NodeContainer as8as9 = NodeContainer(c.Get(7), c.Get(8));
     NodeContainer as9as10 = NodeContainer(c.Get(8), c.Get(9));
     NodeContainer as10as6 = NodeContainer(c.Get(9), c.Get(5));
-
 
     InternetStackHelper internet;
     internet.Install(c);
@@ -77,7 +63,7 @@ int main(int argc, char *argv[])
     // Add IP addresses to the channels
     NS_LOG_INFO("Assign IP Addresses");
     Ipv4AddressHelper ipv4;
-    
+
     ipv4.SetBase("160.0.0.0", "255.255.255.252");
     Ipv4InterfaceContainer i1i2 = ipv4.Assign(d1d2);
     ipv4.SetBase("160.0.0.4", "255.255.255.252");
@@ -86,39 +72,39 @@ int main(int argc, char *argv[])
     Ipv4InterfaceContainer i3i4 = ipv4.Assign(d3d4);
     ipv4.SetBase("160.0.0.20", "255.255.255.252");
     Ipv4InterfaceContainer i4i5 = ipv4.Assign(d4d5);
-    ipv4.SetBase("160.0.0.24", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.24", "255.255.255.252");
     Ipv4InterfaceContainer i5i6 = ipv4.Assign(d5d6);
-    ipv4.SetBase("160.0.0.8", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.8", "255.255.255.252");
     Ipv4InterfaceContainer i2i7 = ipv4.Assign(d2d7);
-    ipv4.SetBase("160.0.0.16", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.16", "255.255.255.252");
     Ipv4InterfaceContainer i7i5 = ipv4.Assign(d7d5);
-    ipv4.SetBase("160.0.0.40", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.40", "255.255.255.252");
     Ipv4InterfaceContainer i2i8 = ipv4.Assign(d2d8);
-    ipv4.SetBase("160.0.0.36", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.36", "255.255.255.252");
     Ipv4InterfaceContainer i8i9 = ipv4.Assign(d8d9);
-    ipv4.SetBase("160.0.0.32", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.32", "255.255.255.252");
     Ipv4InterfaceContainer i9i10 = ipv4.Assign(d9d10);
-    ipv4.SetBase("160.0.0.28", "255.255.255.252"); 
+    ipv4.SetBase("160.0.0.28", "255.255.255.252");
     Ipv4InterfaceContainer i10i6 = ipv4.Assign(d10d6);
 
     // Create router nodes, initialize routing database and set up the routing tables in the nodes
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     // Enable packet printing
-    Packet::EnablePrinting (); 
+    Packet::EnablePrinting();
 
     LogComponentEnable("BGPServer", LOG_LEVEL_INFO);
     LogComponentEnable("BGPClient", LOG_LEVEL_INFO);
-	LogComponentEnable("TCPCommon", LOG_LEVEL_INFO);
-    //LogComponentEnable("MessageBGP", LOG_LEVEL_INFO);
+    LogComponentEnable("TCPCommon", LOG_LEVEL_INFO);
+    // LogComponentEnable("MessageBGP", LOG_LEVEL_INFO);
 
     // Settings
-    uint16_t serverPort   = 179;
+    uint16_t serverPort = 179;
     // Set timings
-    Time startClient    = Seconds(1.);
-    Time stopClient     = Seconds(300.);
-    Time startServer    = Seconds(0.);
-    Time stopServer     = Seconds(300.0);
-    Time stopSimulation = Seconds(310.0);  // giving some more time than the server stop
+    Time startClient = Seconds(1.);
+    Time stopClient = Seconds(300.);
+    Time startServer = Seconds(0.);
+    Time stopServer = Seconds(300.0);
+    Time stopSimulation = Seconds(310.0); // giving some more time than the server stop
 
     NS_LOG_INFO("IP address of server on as2: " << i1i2.GetAddress(1));
     NS_LOG_INFO("IP address of client1 on as1: " << i1i2.GetAddress(0));
@@ -126,8 +112,8 @@ int main(int argc, char *argv[])
 
     // Applications
     // TCP RECEIVER -> now on as2 which is directly linked (p2p) with as1
-    Address receiverAddress (InetSocketAddress (i1i2.GetAddress(1), serverPort));
-    //Ptr<TcpReceiver> receiverApp = CreateObject<TcpReceiver>();
+    Address receiverAddress(InetSocketAddress(i1i2.GetAddress(1), serverPort));
+    // Ptr<TcpReceiver> receiverApp = CreateObject<TcpReceiver>();
     Ptr<BGPServer> serverApp = CreateObject<BGPServer>();
     serverApp->Setup(serverPort, startClient);
 
@@ -147,42 +133,35 @@ int main(int argc, char *argv[])
     clientApp->SetStopTime(stopClient);
 
     std::stringstream msg1;
-    //MessageOpen msg = MessageOpen(3556, 0, 16908288, 0);
-    //msg.set_lenght(1050);
-    //msg.set_type('1');
-
-    //MessageUpdate msgu = MessageUpdate();
-
-    MessageNotification msg = MessageNotification(1,1, "test");
+    // MessageOpen msg = MessageOpen(3556, 0, 16908288, 0);
+    // msg.set_lenght(1050);
+    // msg.set_type('1');
+    MessageNotification msg = MessageNotification(1, 1, "test");
     msg1 << msg << '\0';
 
-
-    MessageNotification msgRic;
+    /*MessageNotification msgRic;
     msg1 >> msgRic;
-
     std::cout << "Lunghezza: " << msgRic.get_lenght() << std::endl;
     std::cout << "Type: " << msgRic.get_type() << std::endl;
     std::vector<uint8_t> vec = msgRic.get_marker();
     std::cout << "Marker: ";
     for(int i = 0; i < 128; i++)
         std::cout << vec[i];
-    std::cout << std::endl;  
+    std::cout << std::endl;
     std::cout << "Error code: " << msgRic.get_error_code() << std::endl;
     std::cout << "Error subcode: " << msgRic.get_error_subcode() << std::endl;
-    std::cout << "Data: " << msgRic.get_data() << std::endl;
-    //std::cout << "Version: " << msgRic.get_version() << std::endl;
-    //std::cout << "AS: " << msgRic.get_AS() << std::endl;  
-    //std::cout << "Hold Time: " << msgRic.get_hold_time() << std::endl;
-    //std::cout << "BGP ID: " << msgRic.get_BGP_id() << std::endl;
-    //std::cout << "Opt Parm Len: " << msgRic.get_opt_param_len() << std::endl;
+    std::cout << "Data: " << msgRic.get_data() << std::endl; */
+    // std::cout << "Version: " << msgRic.get_version() << std::endl;
+    // std::cout << "AS: " << msgRic.get_AS() << std::endl;
+    // std::cout << "Hold Time: " << msgRic.get_hold_time() << std::endl;
+    // std::cout << "BGP ID: " << msgRic.get_BGP_id() << std::endl;
+    // std::cout << "Opt Parm Len: " << msgRic.get_opt_param_len() << std::endl;
 
+    clientApp->AddPacketsToQueue(msg1, Seconds(2.0));
 
-	clientApp->AddPacketsToQueue(msg1, Seconds(2.0));
-
-	std::stringstream msg2;
+    std::stringstream msg2;
     msg2 << "Ciao" << '\0';
-	clientApp->AddPacketsToQueue(msg2, Seconds(3.0));
-
+    clientApp->AddPacketsToQueue(msg2, Seconds(3.0));
 
     // Tcp SENDER -> now on the as7
     Ptr<Socket> ns3TcpSocket2 = Socket::CreateSocket(as2as7.Get(1), TcpSocketFactory::GetTypeId());
@@ -190,22 +169,90 @@ int main(int argc, char *argv[])
     clientApp2->Setup(ns3TcpSocket2, receiverAddress, startClient, stopClient);
 
     // Install and load the client on as7
-    as2as7.Get(1)->AddApplication (clientApp2);
-    clientApp2->SetStartTime (startClient);
-    clientApp2->SetStopTime (stopClient);
+    as2as7.Get(1)->AddApplication(clientApp2);
+    clientApp2->SetStartTime(startClient);
+    clientApp2->SetStopTime(stopClient);
 
-	std::stringstream msg3;
+    std::stringstream msg3;
     msg3 << "Hello World client 2" << '\0';
-	clientApp2->AddPacketsToQueue(msg3, Seconds(4.0));
+    clientApp2->AddPacketsToQueue(msg3, Seconds(4.0));
 
-	std::stringstream msg4;
+    std::stringstream msg4;
     msg4 << "Ciao client 2" << '\0';
-	clientApp2->AddPacketsToQueue(msg4, Seconds(6.0));
+    clientApp2->AddPacketsToQueue(msg4, Seconds(6.0));
 
-    Simulator::Stop (stopSimulation);
-    Simulator::Run ();
-    Simulator::Destroy ();
+    Simulator::Stop(stopSimulation);
+    Simulator::Run();
+    Simulator::Destroy();
+    return 0;
+}
+
+int
+send_ip_message()
+{
+    return 0;
+}
+
+int
+disable_router_link()
+{
+    return 0;
+}
+
+int
+enable_router_link()
+{
+    return 0;
+}
+
+int
+main()
+{
+    char c;
+
+    start_simulation();
+
+    while (1)
+    {
+        printf("\n\nSelect one of the following: \n\n"
+               "[1] Add a new policy\n"
+               "[2] Disable a link \n"
+               "[3] Enable a link \n"
+               "[4] Quit\n\n"
+               "Choose a number: ");
+
+        cin >> c;
+
+        if (isdigit(c))
+        {
+            switch (c)
+            {
+            case '1':
+                send_ip_message();
+                break;
+
+            case '2':
+                disable_router_link();
+                break;
+
+            case '3':
+                enable_router_link();
+                break;
+
+            case '4':
+                exit(EXIT_SUCCESS);
+                break;
+
+            default:
+                printf("Invalid number, choose a number between 1 and 4. ");
+                break;
+            }
+        }
+        else
+        {
+            printf("Invalid input, choose a number between 1 and 4. ");
+        }
+    }
 
     return 0;
-
 }

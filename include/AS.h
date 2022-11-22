@@ -37,7 +37,6 @@ public:
      * @param links 
      */
     void set_links(vector<string> links);
- 
 
 };
 
