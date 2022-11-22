@@ -216,7 +216,7 @@ bool MessageUpdate::check_neighbour(Router router, int req_router) {
     return false;
 }
 
-vector<Route> MessageUpdate::check_preferences(vector<Route> new_routes, vector<Peer> routing_table) {
+vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, std::vector<Peer> routing_table) {
     vector<Route> loc_RIB;
     for (Route r : new_routes) {
         for (Peer p : routing_table) {

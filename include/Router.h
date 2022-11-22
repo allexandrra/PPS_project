@@ -17,6 +17,8 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/node-container.h"
+#include "ns3/ipv4-address.h"
 
 using namespace ns3;
 using namespace std;
@@ -39,8 +41,17 @@ namespace ns3 {
         std::string name;
         //std::string ip;
         //std::string mask;
-        Ipv4AddressHelper ip_address;
+        Ipv4Address ip_address;
+        Ipv4Address mask;
+        Ipv4Address remote_ip;
         bool status;
+
+        Interface(std::string name, Ipv4Address ip_address, Ipv4Address remote_ip, Ipv4Address mask) : status(true) {
+            this->name = name;
+            this->ip_address = ip_address;
+            this->remote_ip = remote_ip;
+            this->mask = mask;
+        }
     };
 
     struct NLRIs {
@@ -66,7 +77,8 @@ namespace ns3 {
 
     class Router : public Node{
         public:
-            Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table);
+            Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
+            Router(int router_ID, int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
 
             int get_router_ID();
             int get_router_AS();
@@ -76,6 +88,11 @@ namespace ns3 {
             std::vector<Peer> get_router_rt();
             void push_new_route(Peer new_route);
             void update_routing_table(std::string network, std::vector<Path_atrs> atribs);
+            NodeContainer get_router_node();
+            Ipv4Address get_router_ASip();
+            Ipv4Mask get_router_ASmask();
+            void add_interface(Interface interface);
+            void add_neighbour(int neighbour);
 
         private:
             int router_ID = Node::GetId();
@@ -83,6 +100,11 @@ namespace ns3 {
             std::vector<Interface> interfaces;
             std::vector<int> neighbours;
             std::vector<Peer> routing_table;
+            NodeContainer node;
+            Ipv4Address ASip;
+            Ipv4Mask ASmask;
     };
-}
+
+} // namespace ns3
+
 #endif

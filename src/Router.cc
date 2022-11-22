@@ -1,42 +1,73 @@
 #include "../include/Router.h"
+#include "ns3/log.h"
 
-Router::Router(int router_ID, int AS, std::vector<Interface> interfaces,
-               std::vector<int> neighbours, std::vector<Peer> routing_table) {
-  this->router_ID = router_ID;
-  this->AS = AS;
-  this->interfaces = interfaces;
-  this->neighbours = neighbours;
-  this->routing_table = routing_table;
-}
+namespace ns3 {
+  NS_LOG_COMPONENT_DEFINE("Router");
 
-int Router::get_router_ID() { return this->router_ID; }
-int Router::get_router_AS() { return this->AS; }
-std::vector<Interface> Router::get_router_int() { return this->interfaces; }
-std::vector<int> Router::get_router_neigh() { return this->neighbours; }
-std::vector<Peer> Router::get_router_rt() { return this->routing_table; }
+  Router::Router(int router_ID, int AS, std::vector<Interface> interfaces,
+                std::vector<int> neighbours, std::vector<Peer> routing_table, 
+                NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask) {
+    this->router_ID = router_ID;
+    this->AS = AS;
+    this->interfaces = interfaces;
+    this->neighbours = neighbours;
+    this->routing_table = routing_table;
+    this->node = node;
+    this->ASip = ASip;
+    this->ASmask = ASmask;
+  }
 
-void Router::push_new_route(Peer new_route) {
-  this->routing_table.push_back(new_route);
-}
+  Router::Router(int router_ID, int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask) {
+    this->router_ID = router_ID;
+    this->AS = AS;
+    this->node = node;
+    this->ASip = ASip;
+    this->ASmask = ASmask;
+  }
 
-void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
-  for(Peer p : this->routing_table) {
-    if(p.network == network) {
-      for(Path_atrs atr : atrib) {
-        if(atr.type == 1) {
-          p.weight = std::stoi(atr.value);
-        } else if(atr.type == 2) {
-          p.AS_path_len = atr.lenght;
-          p.path = atr.value;
-        } else if(atr.type == 3) {
-          p.next_hop = atr.value;
-        } else if(atr.type == 4) {
-          p.MED = std::stoi(atr.value);
-        } else if(atr.type == 5) {
-          p.loc_pref = std::stoi(atr.value);
+  int Router::get_router_ID() { return this->router_ID; }
+  int Router::get_router_AS() { return this->AS; }
+  std::vector<Interface> Router::get_router_int() { return this->interfaces; }
+  std::vector<int> Router::get_router_neigh() { return this->neighbours; }
+  std::vector<Peer> Router::get_router_rt() { return this->routing_table; }
+  NodeContainer Router::get_router_node() { return this->node; }
+  Ipv4Address Router::get_router_ASip() { return this->ASip; }
+  Ipv4Mask Router::get_router_ASmask() { return this->ASmask; }
+
+  void Router::push_new_route(Peer new_route) {
+    this->routing_table.push_back(new_route);
+  }
+
+  void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
+    for(Peer p : this->routing_table) {
+      if(p.network == network) {
+        for(Path_atrs atr : atrib) {
+          if(atr.type == 1) {
+            p.weight = std::stoi(atr.value);
+          } else if(atr.type == 2) {
+            p.AS_path_len = atr.lenght;
+            p.path = atr.value;
+          } else if(atr.type == 3) {
+            p.next_hop = atr.value;
+          } else if(atr.type == 4) {
+            p.MED = std::stoi(atr.value);
+          } else if(atr.type == 5) {
+            p.loc_pref = std::stoi(atr.value);
+          }
         }
       }
     }
   }
-}
+
+  void Router::add_interface(Interface interface) {
+    this->interfaces.push_back(interface);
+  }
+  
+  void Router::add_neighbour(int neighbour) {
+    this->neighbours.push_back(neighbour);
+    //NS_LOG_INFO("Added neighbour " << neighbour << " to router " << this->router_ID);
+    //NS_LOG_INFO("Router " << this->router_ID << " now has " << this->neighbours.size() << " neighbours");
+  }
+
+}  // namespace ns3
 

@@ -3,10 +3,12 @@
     
     #include <vector>
     #include "AS.h"
+    #include "Router.h"
+
     /**
      * @brief Load configuration file and return a structure of parser parameters
      * 
      */
-    std::vector<AS> load_configuration();
+    std::vector<Router> load_configuration();
 
 #endif
