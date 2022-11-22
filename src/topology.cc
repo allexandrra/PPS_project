@@ -25,6 +25,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
+#include "../include/MessageUpdate.h"
 
 using namespace ns3;
 
@@ -149,11 +150,14 @@ int main(int argc, char *argv[])
     //MessageOpen msg = MessageOpen(3556, 0, 16908288, 0);
     //msg.set_lenght(1050);
     //msg.set_type('1');
+
+    //MessageUpdate msgu = MessageUpdate();
+
     MessageNotification msg = MessageNotification(1,1, "test");
     msg1 << msg << '\0';
 
 
-    /*MessageNotification msgRic;
+    MessageNotification msgRic;
     msg1 >> msgRic;
 
     std::cout << "Lunghezza: " << msgRic.get_lenght() << std::endl;
@@ -165,7 +169,7 @@ int main(int argc, char *argv[])
     std::cout << std::endl;  
     std::cout << "Error code: " << msgRic.get_error_code() << std::endl;
     std::cout << "Error subcode: " << msgRic.get_error_subcode() << std::endl;
-    std::cout << "Data: " << msgRic.get_data() << std::endl; */
+    std::cout << "Data: " << msgRic.get_data() << std::endl;
     //std::cout << "Version: " << msgRic.get_version() << std::endl;
     //std::cout << "AS: " << msgRic.get_AS() << std::endl;  
     //std::cout << "Hold Time: " << msgRic.get_hold_time() << std::endl;

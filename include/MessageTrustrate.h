@@ -12,16 +12,15 @@ financial, technological trust and have a function to weight those metrics.
 - New metric in routing table : trust to take into account to choose best path.
 */
 
-class MessageTrustrate : public MessageHeader
-{
-private:
-    float trust;
+class MessageTrustrate : public MessageHeader {
+    private:
+        float trust;
 
-public:
-    MessageTrustrate();
-    MessageTrustrate(float trust);
-    
-    float MessageTrustrate::get_trust();
+    public:
+        MessageTrustrate();
+        MessageTrustrate(float trust);
+        
+        float get_trust();
 
 };
 #endif

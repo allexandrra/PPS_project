@@ -292,13 +292,16 @@ void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
     }
 }
 
-std::vector<Route> MessageUpdate::add_to_RIBin(vector<Path_atrs> path_atr, vector<NLRIs> nlri) {
+std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri) {
     std::vector<Route> rib_in;
 
     for (NLRIs n : nlri) {
         Route new_route;
         new_route.nlri = n;
-        std::copy(path_atr.begin(), path_atr.end(), new_route.path_atr);
+        for(Path_atrs p : path_atr) {
+            new_route.path_atr.push_back(p);
+        }
+        //std::copy(path_atr.begin(), path_atr.end(), new_route.path_atr);    
         rib_in.push_back(new_route);
     }
 

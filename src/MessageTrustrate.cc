@@ -8,4 +8,4 @@ MessageTrustrate::MessageTrustrate(float trust) : MessageHeader(6) {
   this->trust = trust;
 }
 
-float MessageTrustrate::get_trust() { return this->trust; }
+float MessageTrustrate::get_trust() { return trust; }

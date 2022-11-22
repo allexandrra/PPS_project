@@ -1,7 +1,6 @@
 #ifndef NS3_ROUTER_H
 #define NS3_ROUTER_H
 
-#include <fstream>
 #include <iostream>
 #include <sstream> 
 #include <iomanip>
