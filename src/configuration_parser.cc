@@ -78,7 +78,7 @@ std::vector<Router> load_configuration() {
             internet.Install(node);
             int ASnum = std::stoi(name.substr(2, name.size()-2));
             // TODO: discuss about router_id
-            Router router = Router(ASnum, ASnum, node, ip, netmask);
+            Router router = Router(ASnum, node, ip, netmask);
 
             // Now we add the links
             if (element.contains("links"))
@@ -96,6 +96,7 @@ std::vector<Router> load_configuration() {
                 << ", and netmask: " << netmask << std::endl;
                 
         }
+        
     }
     catch (const std::exception& e)
     {

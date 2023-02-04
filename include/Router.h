@@ -19,6 +19,9 @@
 #include "ns3/node.h"
 #include "ns3/node-container.h"
 #include "ns3/ipv4-address.h"
+#include "../include/BGP-server.h"
+#include "../include/BGP-client.h"
+
 
 using namespace ns3;
 using namespace std;
@@ -45,8 +48,11 @@ namespace ns3 {
         Ipv4Address mask;
         Ipv4Address remote_ip;
         bool status;
+        std::optional<Ptr<BGPClient>> client;
+        std::optional<Ptr<BGPServer>> server;
+        bool isServer;
 
-        Interface(std::string name, Ipv4Address ip_address, Ipv4Address remote_ip, Ipv4Address mask) : status(true) {
+        Interface(std::string name, Ipv4Address ip_address, Ipv4Address remote_ip, Ipv4Address mask) : status(true), isServer(false) {
             this->name = name;
             this->ip_address = ip_address;
             this->remote_ip = remote_ip;
@@ -75,10 +81,10 @@ namespace ns3 {
     };
 
 
-    class Router : public Node{
+    class Router : public NodeContainer{
         public:
             Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
-            Router(int router_ID, int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
+            Router(int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
 
             int get_router_ID();
             int get_router_AS();
@@ -93,14 +99,18 @@ namespace ns3 {
             Ipv4Mask get_router_ASmask();
             void add_interface(Interface interface);
             void add_neighbour(int neighbour);
+            Interface get_router_int_from_name(int num);
+            int get_router_int_num_from_name(int num);
+            void setServer(int int_num, Ptr<BGPServer> server);
+            void setClient(int int_num, Ptr<BGPClient> client);
 
         private:
-            int router_ID = Node::GetId();
+            int router_ID ;//= NodeContainer::GetId();
             int AS;
             std::vector<Interface> interfaces;
             std::vector<int> neighbours;
             std::vector<Peer> routing_table;
-            NodeContainer node;
+            //NodeContainer node;
             Ipv4Address ASip;
             Ipv4Mask ASmask;
     };
