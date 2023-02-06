@@ -21,6 +21,7 @@ namespace ns3 {
             void ConnectionSucceeded(Ptr<Socket>);
             void ConnectionFailed(Ptr<Socket>);
             void SendMyPackets();
+            void HandleRead (Ptr<Socket> socket);
 
             Ptr<Socket>         m_socket;
             Address             m_peer;

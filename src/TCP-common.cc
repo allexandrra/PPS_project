@@ -69,11 +69,12 @@ namespace ns3 {
 		socket->Send(packet);
     }
 
-	void TCPCommon::HandleRead (Ptr<Socket> socket){
+	std::string TCPCommon::HandleRead (Ptr<Socket> socket){
 		NS_LOG_FUNCTION(this << socket);
 
 		Ptr<Packet> packet;
 		Address from, to;
+		std::string packetData;
 
 		// Get receiving address
 		socket->GetSockName(to);
@@ -85,7 +86,7 @@ namespace ns3 {
 				break;
 			uint8_t *buffer = new uint8_t[packet->GetSize ()];
 			packet->CopyData(buffer, packet->GetSize ());
-			std::string packetData = std::string((char*)buffer);
+			packetData = std::string((char*)buffer);
 
 			Time rightNow = Simulator::Now() - m_startTime;
 
@@ -105,6 +106,8 @@ namespace ns3 {
 						<< packet->GetSize()
 			);
     	}
+
+		return packetData;
   	}
 
 	void TCPCommon::DoDispose (void){
@@ -112,7 +115,6 @@ namespace ns3 {
 		
 		// chain up
 		Application::DoDispose ();
-	}
-		
+	}		
 
 } // namespace ns3

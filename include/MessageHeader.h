@@ -9,6 +9,7 @@
 #include <string>
 #include <cassert>
 
+#define MESSAGE_HEADER_LEN 19
 
 class MessageHeader {
     protected:

@@ -43,6 +43,12 @@ namespace ns3 {
 		m_stop    = stopTime;
 	}
 
+	void BGPClient::HandleRead (Ptr<Socket> socket){
+		NS_LOG_FUNCTION(this << socket);
+
+		std::string packet = TCPCommon::HandleRead(socket);
+  	}
+
 
 	/** Start Application
  	* Function that starts the TCP Client application

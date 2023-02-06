@@ -17,7 +17,8 @@
 #include "ns3/simulator.h"
 
 #include "../include/BGP-server.h"
-
+#include "../include/MessageHeader.h"
+#include "../include/Router.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE ("BGPServer");
@@ -96,6 +97,24 @@ namespace ns3 {
 			m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
 		}
 	}
+
+	void BGPServer::HandleRead (Ptr<Socket> socket){
+		NS_LOG_FUNCTION(this << socket);
+
+		std::string packet = TCPCommon::HandleRead(socket);
+
+		MessageHeader msg;
+		std::stringstream(packet) >> msg;
+
+		if(msg.get_type() == 1){
+			NS_LOG_INFO("Received OPEN message");
+
+		} 
+		else {
+			NS_LOG_INFO("Received another type of message");
+		}	
+
+  	}
 
 	void BGPServer::DoDispose (void){
 		NS_LOG_FUNCTION (this);

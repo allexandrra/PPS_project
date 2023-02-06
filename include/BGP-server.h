@@ -23,6 +23,7 @@ namespace ns3 {
             void HandlePeerError (Ptr<Socket> socket);
             void HandleAccept (Ptr<Socket> socket, const Address& from);
             void HandleSuccessClose(Ptr<Socket> socket);
+            void HandleRead (Ptr<Socket> socket);
 
             Ptr<Socket>             m_socket;
             std::list<Ptr<Socket> > m_socketList;

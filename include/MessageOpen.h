@@ -11,24 +11,26 @@
 
 #include "MessageHeader.h"
 
+#define MIN_MESSAGE_OPEN_LEN 10
+
 class MessageOpen : public MessageHeader{
     private:
         uint16_t version;
         uint16_t my_AS;
         uint16_t hold_time;
-        uint32_t BGP_id;
+        std::string BGP_id;
         uint16_t opt_param_len;
         std::vector<uint8_t> opt_param;
 
     public:
-        MessageOpen(uint16_t AS_number, uint16_t hold_time, uint32_t BGP_id, uint16_t opt_param_len, std::vector<uint8_t> opt_param);
-        MessageOpen(uint16_t AS_number, uint16_t hold_time, uint32_t BGP_id, uint16_t opt_param_len);
+        MessageOpen(uint16_t AS_number, uint16_t hold_time, std::string BGP_id, uint16_t opt_param_len, std::vector<uint8_t> opt_param);
+        MessageOpen(uint16_t AS_number, uint16_t hold_time, std::string BGP_id);
         MessageOpen();
 
         uint16_t get_version();
         uint16_t get_AS();
         uint16_t get_hold_time();
-        uint32_t get_BGP_id();
+        std::string get_BGP_id();
         uint16_t get_opt_param_len();
         std::vector<uint8_t> get_opt_param();
 

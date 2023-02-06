@@ -4,7 +4,7 @@
 namespace ns3 {
   NS_LOG_COMPONENT_DEFINE("Router");
 
-  Router::Router(int router_ID, int AS, std::vector<Interface> interfaces,
+  Router::Router(std::string router_ID, int AS, std::vector<Interface> interfaces,
                 std::vector<int> neighbours, std::vector<Peer> routing_table, 
                 NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask) : NodeContainer(node){
     this->router_ID = router_ID;
@@ -19,12 +19,15 @@ namespace ns3 {
 
   Router::Router(int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask) : NodeContainer(node) {
     this->AS = AS;
-    //this->node = node;
+    //Convert ASip to string
+    std::stringstream ip;
+    ASip.Print(ip);
+    this->router_ID = ip.str();
     this->ASip = ASip;
     this->ASmask = ASmask;
   }
 
-  int Router::get_router_ID() { return this->router_ID; }
+  std::string Router::get_router_ID() { return this->router_ID; }
   int Router::get_router_AS() { return this->AS; }
   std::vector<Interface> Router::get_router_int() { return this->interfaces; }
   std::vector<int> Router::get_router_neigh() { return this->neighbours; }

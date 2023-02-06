@@ -83,10 +83,10 @@ namespace ns3 {
 
     class Router : public NodeContainer{
         public:
-            Router(int router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
+            Router(std::string router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
             Router(int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
 
-            int get_router_ID();
+            std::string get_router_ID();
             int get_router_AS();
             float get_router_trust();
             std::vector<Interface> get_router_int();
@@ -105,7 +105,7 @@ namespace ns3 {
             void setClient(int int_num, Ptr<BGPClient> client);
 
         private:
-            int router_ID ;//= NodeContainer::GetId();
+            std::string router_ID;
             int AS;
             std::vector<Interface> interfaces;
             std::vector<int> neighbours;

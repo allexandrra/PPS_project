@@ -11,9 +11,9 @@ namespace ns3 {
 			virtual ~TCPCommon();
 			
 			void Send(Ptr<Socket> socket, Ptr<Packet> packet);
-			void HandleRead(Ptr<Socket> socket);
-			void DoDispose();		
-
+			std::string HandleRead(Ptr<Socket> socket);
+			void DoDispose();
+			
 	};
 }
 #endif
