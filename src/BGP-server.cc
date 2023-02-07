@@ -19,6 +19,7 @@
 #include "../include/BGP-server.h"
 #include "../include/MessageHeader.h"
 #include "../include/Router.h"
+#include "../include/MessageOpen.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE ("BGPServer");
@@ -108,7 +109,13 @@ namespace ns3 {
 
 		if(msg.get_type() == 1){
 			NS_LOG_INFO("Received OPEN message");
-
+			Router *r = this->GetRouter();
+			//NS_LOG_INFO("Router AS: " << r->get_router_AS());
+			std::stringstream msgStream;
+			MessageOpen msg = MessageOpen(r->get_router_AS(), 0, r->get_router_ID());
+			msgStream << msg << '\0';
+			Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+			this->Send(socket,packet);
 		} 
 		else {
 			NS_LOG_INFO("Received another type of message");

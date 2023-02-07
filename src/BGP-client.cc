@@ -17,6 +17,7 @@
 #include "ns3/simulator.h"
 
 #include "../include/BGP-client.h"
+#include "../include/Router.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");

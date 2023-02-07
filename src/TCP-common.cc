@@ -25,6 +25,7 @@ namespace ns3 {
 	// Constructor
 	TCPCommon::TCPCommon() {
 		NS_LOG_FUNCTION (this);
+		m_router = NULL;
 	}
 
 	// Destructor
@@ -116,5 +117,16 @@ namespace ns3 {
 		// chain up
 		Application::DoDispose ();
 	}		
+
+
+	void TCPCommon::SetRouter(Router *router) {
+		NS_LOG_FUNCTION (this << router);
+		this->m_router = router;
+	}
+	
+	Router* TCPCommon::GetRouter() {
+		NS_LOG_FUNCTION (this);
+		return this->m_router;
+	}
 
 } // namespace ns3

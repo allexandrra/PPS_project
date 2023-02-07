@@ -196,6 +196,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the server 
                 routers[i].get_router_node().Get(0)->AddApplication(serverApp);
+                serverApp->SetRouter(&routers[i]);
                 serverApp->SetStartTime(startServer);
                 serverApp->SetStopTime(stopServer);
 
@@ -208,6 +209,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the client on as2
                 routers[neighbourIndex].get_router_node().Get(0)->AddApplication(clientApp);
+                clientApp->SetRouter(&routers[neighbourIndex]);
                 clientApp->SetStartTime(startClient);
                 clientApp->SetStopTime(stopClient);
 
