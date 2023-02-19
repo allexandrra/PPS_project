@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+#include <algorithm>
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -107,15 +108,63 @@ namespace ns3 {
 		MessageHeader msg;
 		std::stringstream(packet) >> msg;
 
-		if(msg.get_type() == 1){
-			NS_LOG_INFO("Received OPEN message");
+
+		if (msg.get_type() == 0){
+			//In teory, the sending ok keepalive message should be done indipendtly for each router, indipendtly from a received message of its peer
+			//So, ech router sends keepalive messages to its peer at regular intervals to maintain the connection, but it does not expect any response from the peer
+			//To simplify the implementation, the server we will send the keepalive message only when it receives the keepalive form the client peer
+
+			//NS_LOG_INFO("Received KEEPALIVE message");
+			std::cout << " KEEPALIVE message " << std::endl;
+
 			Router *r = this->GetRouter();
+			Address to;
+
+			// Get receiving address
+			socket->GetSockName(to);
+			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			Interface intf = r->get_router_int()[int_num];
+
+			//Server send KEEPALIVE message
+			std::stringstream msgStream;
+    		MessageHeader msg = MessageHeader(0);
+    		msgStream << msg << '\0';
+
+			Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+			this->Send(socket, packet);
+
+			// Reset holdtime time
+			intf.set_current_hold_time(intf.get_max_hold_time());
+
+		}
+		else if(msg.get_type() == 1){
+			//NS_LOG_INFO("Received OPEN message");
+			MessageOpen msgRcv;
+			std::stringstream(packet) >> msgRcv;
+			Address to;
+			Router *r = this->GetRouter();
+
+			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
+
+			// Get receiving address
+			socket->GetSockName(to);
+			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			Interface intf = r->get_router_int()[int_num];
+			
+			intf.set_max_hold_time(max((int)msgRcv.get_hold_time(), 90));
 			//NS_LOG_INFO("Router AS: " << r->get_router_AS());
 			std::stringstream msgStream;
-			MessageOpen msg = MessageOpen(r->get_router_AS(), 0, r->get_router_ID());
-			msgStream << msg << '\0';
+			//HOLD TIME = 90s, KEEPALIVE = 30s (1/3 the hold time)
+			MessageOpen msgToSend = MessageOpen(r->get_router_AS(), intf.get_max_hold_time(), r->get_router_ID());
+			msgStream << msgToSend << '\0';
 			Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 			this->Send(socket,packet);
+
+			intf.increment_hold_time();
+			//Simulator::Schedule (Seconds(1.0), &Interface::increment_hold_time, &intf);
+
 		} 
 		else {
 			NS_LOG_INFO("Received another type of message");

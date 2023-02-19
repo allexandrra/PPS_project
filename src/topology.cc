@@ -19,37 +19,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
 
-void start_simulation() {
-//    std::stringstream msg1;
-//    // MessageOpen msg = MessageOpen(3556, 0, 16908288, 0);
-//    // msg.set_lenght(1050);
-//    // msg.set_type('1');
-//    MessageNotification msg = MessageNotification(1, 1, "test");
-//    msg1 << msg << '\0';
-//
-//    /*MessageNotification msgRic;
-//    msg1 >> msgRic;
-//    std::cout << "Lunghezza: " << msgRic.get_lenght() << std::endl;
-//    std::cout << "Type: " << msgRic.get_type() << std::endl;
-//    std::vector<uint8_t> vec = msgRic.get_marker();
-//    std::cout << "Marker: ";
-//    for(int i = 0; i < 128; i++)
-//        std::cout << vec[i];
-//    std::cout << std::endl;
-//    std::cout << "Error code: " << msgRic.get_error_code() << std::endl;
-//    std::cout << "Error subcode: " << msgRic.get_error_subcode() << std::endl;
-//    std::cout << "Data: " << msgRic.get_data() << std::endl; */
-//    // std::cout << "Version: " << msgRic.get_version() << std::endl;
-//    // std::cout << "AS: " << msgRic.get_AS() << std::endl;
-//    // std::cout << "Hold Time: " << msgRic.get_hold_time() << std::endl;
-//    // std::cout << "BGP ID: " << msgRic.get_BGP_id() << std::endl;
-//    // std::cout << "Opt Parm Len: " << msgRic.get_opt_param_len() << std::endl;
-//
-//    clientApp->AddPacketsToQueue(msg1, Seconds(2.0));
-//
-//    std::stringstream msg2;
-}
-
 std::stringstream createOpenMsg(Router r) {
     std::stringstream msgStream;
     MessageOpen msg = MessageOpen(r.get_router_AS(), 0, r.get_router_ID());
@@ -65,13 +34,13 @@ void sendOpenMsg(std::vector<Router> routers) {
 
         std::vector<Interface> interfaces = routers[i].get_router_int();
 
-        NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
+        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
         
         for (int j=0; j<(int)interfaces.size(); j++) {
             if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
                 //send msg
                 std::stringstream msgStream = createOpenMsg(routers[i]);
-                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(2.0));
+                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
             }
         }
         
@@ -162,12 +131,49 @@ void printTopology (std::vector<Router> routers) {
     }
 }
 
+void startHoldTimer(std::vector<Router> routers) {
+    for(int i=0; i<(int)routers.size(); i++) {
+        std::vector<Interface> interfaces = routers[i].get_router_int();
+        for(int j = 0; j < (int) interfaces.size(); j++) {
+            Simulator::Schedule (Seconds(5.0), &Interface::increment_hold_time, &interfaces[j]);
+        }
+    }
+}
+
+void startKeepAlive(std::vector<Router> routers) {
+    //Every client sends an keepalive message to the server
+    //The server will reply with a keepalive message
+
+    for(int i=0; i<(int)routers.size(); i++) {
+
+        std::vector<Interface> interfaces = routers[i].get_router_int();
+
+        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
+        
+        for (int j=0; j<(int)interfaces.size(); j++) {
+            if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
+                //send msg
+                //std::stringstream msgStream = createOpenMsg(routers[i]);
+                //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(20.0));
+                //std::stringstream msgStream;
+                //MessageHeader msg = MessageHeader(0);
+                //msgStream << msg << '\0';
+
+                //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(2.0));
+                interfaces[j].client.value()->AddPacketsToQueuePeriodically();
+            }
+        }
+        
+
+    }
+}
+
 std::vector<Router> createBGPConnections(std::vector<Router> routers) {
     int serverPort = 179;
     Time startClient = Seconds(1.);
-    Time stopClient = Seconds(3000.0);
+    Time stopClient = Seconds(300000000000.0);
     Time startServer = Seconds(0.);
-    Time stopServer = Seconds(3000.0);
+    Time stopServer = Seconds(300000000000.0);
 
     for(int i=0; i< (int)routers.size(); i++) {
         std::vector<int> neighbours = routers[i].get_router_neigh();
@@ -234,12 +240,13 @@ int enable_router_link() {
     return 0;
 }
 
+
 int main() {
 
     Time::SetResolution(Time::NS);
     Packet::EnablePrinting();
     
-    char c;
+    //char c;
 
     LogComponentEnable("Router", LOG_LEVEL_INFO);
     LogComponentEnable("BGPServer", LOG_LEVEL_INFO);
@@ -268,6 +275,18 @@ int main() {
 
     NS_LOG_INFO("\nSending open messages");
     sendOpenMsg(network);
+
+
+    NS_LOG_INFO("\nBGP state: OPEN SENT");
+    NS_LOG_INFO("BGP state: OPEN CONFIRM\n");
+
+    //NS_LOG_INFO("\nStarting incrementing the hold timer");
+    //startHoldTimer(network);
+
+    NS_LOG_INFO("\nStarting sending KEEPALIVE every 30 seconds");
+    startKeepAlive(network);
+
+    //NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
 //    while (1)
 //    {
@@ -311,7 +330,7 @@ int main() {
 //        }
 //    }
 
-    Simulator::Stop(Seconds(15.0));
+    Simulator::Stop(Seconds(500.0));
     Simulator::Run();
     Simulator::Destroy();
 

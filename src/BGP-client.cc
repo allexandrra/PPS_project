@@ -18,6 +18,8 @@
 
 #include "../include/BGP-client.h"
 #include "../include/Router.h"
+#include "../include/MessageHeader.h"
+#include "../include/MessageOpen.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -48,6 +50,34 @@ namespace ns3 {
 		NS_LOG_FUNCTION(this << socket);
 
 		std::string packet = TCPCommon::HandleRead(socket);
+
+		MessageHeader msg;
+		std::stringstream(packet) >> msg;
+
+		if (msg.get_type() == 0){
+			//NS_LOG_INFO("Received KEEPALIVE message");
+			std::cout << " KEEPALIVE message " << std::endl;
+		}
+		else if(msg.get_type() == 1){
+			//NS_LOG_INFO("Received OPEN message");
+			MessageOpen msgRcv;
+			std::stringstream(packet) >> msgRcv;
+			Address to;
+			Router *r = this->GetRouter();
+
+			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
+
+			// Get receiving address
+			socket->GetSockName(to);
+			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			Interface intf = r->get_router_int()[int_num];
+			intf.set_max_hold_time(max((int)msgRcv.get_hold_time(), (int)intf.get_max_hold_time()));
+
+			//NS_LOG_INFO("BGP state: OPEN CONFIRM");
+			
+			//Simulator::Schedule (Seconds(0), &Interface::increment_hold_time, &intf);
+		}
   	}
 
 
@@ -122,6 +152,7 @@ namespace ns3 {
 
 			Time atTime = m_pktDelayList.front();
 			m_pktDelayList.pop_front();
+			//NS_LOG_INFO("Sending packet at time " << atTime << " with queue size " << m_pktList.size());
 
 			Ptr<Packet> packet = m_pktList.front();
 			m_pktList.pop_front();
@@ -141,6 +172,22 @@ namespace ns3 {
 		m_pktList.push_back(packet);
 	}
 
+	void BGPClient::AddPacketsToQueuePeriodically() {
+		std::stringstream msgStream;
+    	MessageHeader msg = MessageHeader(0);
+    	msgStream << msg << '\0';
+
+		Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+
+		if(m_running) {
+			Time atTime = Simulator::Now()+Seconds(1.5);
+			//NS_LOG_INFO("Sending packet at time " << atTime.GetSeconds());
+			m_sendEvent = Simulator::Schedule (atTime, &BGPClient::Send, this, m_socket, packet);
+		}
+
+		//NS_LOG_INFO("entro al tempo " << Simulator::Now().GetSeconds() << " e la coda è lunga: " << m_pktList.size() << " e la lista è lunga: " << m_pktDelayList.size());
+		Simulator::Schedule(Seconds(15.0), &BGPClient::AddPacketsToQueuePeriodically, this);	
+	}
 
 
 } // namespace ns3

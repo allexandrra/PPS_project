@@ -19,6 +19,7 @@ namespace ns3 {
 			void DoDispose();
 			void SetRouter(Router *router);
 			Router *GetRouter();
+			std::string binaryToDottedNotation(std::string ipBinary);
 
 		protected:
 			Router *m_router;

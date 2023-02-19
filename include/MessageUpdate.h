@@ -1,4 +1,3 @@
-
 #ifndef NS3_MESSAGE_UPDATE_H
 #define NS3_MESSAGE_UPDATE_H
 

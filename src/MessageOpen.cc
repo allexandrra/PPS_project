@@ -94,7 +94,7 @@ std::istream & operator>>(std::istream & stream, MessageOpen& msg) {
     std::bitset<32> bit_BGP_id;
     std::bitset<8> bit_opt_param_len;
     // Max value storable
-    std::cout << "Max value storable: " << bit_opt_param_len.size() << std::endl;
+    //std::cout << "Max value storable: " << bit_opt_param_len.size() << std::endl;
     std::bitset<256*8> bit_opt_param;
 
     stream >> bit_marker >> bit_lenght >> bit_type >> bit_version >> bit_my_AS >> bit_hold_time >> bit_BGP_id >> bit_opt_param_len >> bit_opt_param;

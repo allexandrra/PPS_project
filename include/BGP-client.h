@@ -14,6 +14,7 @@ namespace ns3 {
             virtual ~BGPClient();
             void Setup (Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
             void AddPacketsToQueue(std::stringstream& msg, Time atTime);
+            void AddPacketsToQueuePeriodically();
 
         private:
             virtual void StartApplication(void);

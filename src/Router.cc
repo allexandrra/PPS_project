@@ -105,5 +105,15 @@ namespace ns3 {
     this->interfaces[int_num].isServer = false;
   }
 
+  int Router::get_router_int_num_from_ip(Ipv4Address ip) {
+    for(int i = 0; i < (int) interfaces.size(); i++) {
+      if(interfaces[i].ip_address == ip) {
+        //std::cout <<  "Entro con " << ip << " e " << interfaces[i].ip_address << std::endl;
+        return i;
+      }
+    }
+    return 0; 
+  }
+
 }  // namespace ns3
 

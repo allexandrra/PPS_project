@@ -37,7 +37,7 @@ MessageHeader::MessageHeader(uint16_t lenght, uint16_t type) {
 
 MessageHeader::MessageHeader(uint16_t type) {
     this->marker.resize(128, '1');
-    this->lenght = 0;
+    this->lenght = 19;
     this->type = type;
 }
 
@@ -59,7 +59,7 @@ void MessageHeader::set_lenght(uint16_t lenght) { this->lenght = lenght; }
 void MessageHeader::set_type(uint16_t type) { this->type = type; }
 
 std::ostream& operator<<(std::ostream& stream, const MessageHeader& msg) {
-    std::cout << "entro serialize" << std::endl;
+    //std::cout << "entro serialize" << std::endl;
 
     /*for (int i = 0; i < (int)msg.marker.size(); i++)
         std::cout << ' ' << msg.marker[i];
@@ -70,12 +70,12 @@ std::ostream& operator<<(std::ostream& stream, const MessageHeader& msg) {
 
     stream << std::bitset<128>(strStream.str()).to_string() << std::bitset<16>(msg.lenght).to_string() << std::bitset<8>(msg.type).to_string();
 
-    std::cout << "esco serialize" << std::endl;
+    //std::cout << "esco serialize" << std::endl;
     return stream;
 }
 
 std::istream & operator>>(std::istream & stream, MessageHeader& msg) {
-    std::cout << "entro deserialized" << std::endl;
+    //std::cout << "entro deserialized" << std::endl;
     std::bitset<128> bit_marker;
     std::bitset<16> bit_lenght;
     std::bitset<8> bit_type;
