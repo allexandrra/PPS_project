@@ -14,7 +14,7 @@ namespace ns3 {
             virtual ~BGPClient();
             void Setup (Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
             void AddPacketsToQueue(std::stringstream& msg, Time atTime);
-            void AddPacketsToQueuePeriodically();
+            void AddPacketsToQueuePeriodically(std::vector<EventId> events);
 
         private:
             virtual void StartApplication(void);
@@ -23,6 +23,7 @@ namespace ns3 {
             void ConnectionFailed(Ptr<Socket>);
             void SendMyPackets();
             void HandleRead (Ptr<Socket> socket);
+
 
             Ptr<Socket>         m_socket;
             Address             m_peer;

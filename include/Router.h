@@ -72,27 +72,25 @@ namespace ns3 {
             this->max_hold_time = max_hold_time;
         }
 
-        void increment_hold_time() {
-            //std::cout << "this pointer: " << this << std::endl;
-            this->current_hold_time++;
-            //std::cout << " interface " << this->name << " with ip " << this->ip_address << " Max Hold time " << this->max_hold_time << " current hold time " << this->current_hold_time << std::endl;
-
-            if(this->current_hold_time > this->max_hold_time) {
-                //TODO send a notfication msg
-                Time rightNow = Simulator::Now();
-                std::cout << "Hold time of interface with ip " << this->ip_address << " expired at time " <<  rightNow.GetSeconds() << std::endl;
-            } else {
-                std::cout << "Current hold time of interface " << this->name << " with ip " << this->ip_address << " incremented: value = " << this->current_hold_time << std::endl;
-                Simulator::Schedule (Seconds(1.0), &Interface::increment_hold_time, this);
-            } 
-        }
-
         int get_current_hold_time() {
             return this->current_hold_time;
         }
 
         void set_current_hold_time(int current_hold_time) {
             this->current_hold_time = current_hold_time;
+        }
+
+        void increment_current_hold_time() {
+            //std::cout << this->name << std::endl;
+            //this->current_hold_time++;
+            //std::cout << "Incrementing hold time of interface " << name << " with ip " << ip_address << " to " << current_hold_time << std::endl;
+            //Simulator::Schedule(Seconds(50.0), [this]() { this->increment_current_hold_time(); });
+            /*if (this->current_hold_time <= this->max_hold_time) {
+                //Simulator::Schedule(Seconds(100), &Interface::increment_current_hold_time, this);
+                std::cout << "Scheduling hold time incrementation of interface " << name << " with ip " << ip_address << " to " << current_hold_time << std::endl;
+            } else {
+                std::cout << "FUck" << std::endl;
+            }*/
         }
     };
 
@@ -139,7 +137,11 @@ namespace ns3 {
             int get_router_int_num_from_name(int num);
             void setServer(int int_num, Ptr<BGPServer> server);
             void setClient(int int_num, Ptr<BGPClient> client);
+            void resetServer(int int_num);
+            void resetClient(int int_num);
+            void setInterfaceStatus(int int_num, bool status);
             int get_router_int_num_from_ip(Ipv4Address ip);
+            void set_router_neigh(std::vector<int> neighbours);
 
         private:
             std::string router_ID;

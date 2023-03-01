@@ -21,6 +21,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/Router.h"
 #include "../include/MessageOpen.h"
+#include "../include/MessageNotification.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE ("BGPServer");
@@ -131,8 +132,24 @@ namespace ns3 {
     		MessageHeader msg = MessageHeader(0);
     		msgStream << msg << '\0';
 
-			Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-			this->Send(socket, packet);
+			if(intf.status) {
+				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+				this->Send(socket, packet);
+			} else {
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [KEEPALIVE READ SERVER]");
+	
+				std::stringstream msgStreamNotification;
+				MessageNotification msg = MessageNotification(6,0);
+				msgStreamNotification << msg << '\0';
+
+				Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+				Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packetNotification);
+
+				intf.client.reset();
+				intf.server.reset();
+
+				this->StopApplication();
+			}
 
 			// Reset holdtime time
 			intf.set_current_hold_time(intf.get_max_hold_time());
@@ -150,23 +167,60 @@ namespace ns3 {
 			// Get receiving address
 			socket->GetSockName(to);
 			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
-			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
-			Interface intf = r->get_router_int()[int_num];
-			
-			intf.set_max_hold_time(max((int)msgRcv.get_hold_time(), 90));
+			//int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			//Interface intf = r->get_router_int()[int_num];
 			//NS_LOG_INFO("Router AS: " << r->get_router_AS());
+			int max_hold_time = max((int)msgRcv.get_hold_time(), 90);
+			
 			std::stringstream msgStream;
 			//HOLD TIME = 90s, KEEPALIVE = 30s (1/3 the hold time)
-			MessageOpen msgToSend = MessageOpen(r->get_router_AS(), intf.get_max_hold_time(), r->get_router_ID());
-			msgStream << msgToSend << '\0';
-			Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-			this->Send(socket,packet);
 
-			intf.increment_hold_time();
+			//r->set_hold_time(toAddress, max_hold_time);
 			//Simulator::Schedule (Seconds(1.0), &Interface::increment_hold_time, &intf);
+			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			Interface intf = r->get_router_int()[int_num];
 
-		} 
-		else {
+			if(intf.status) {
+				MessageOpen msgToSend = MessageOpen(r->get_router_AS(), max_hold_time, r->get_router_ID());
+				msgStream << msgToSend << '\0';
+				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+				this->Send(socket,packet);
+			} else {
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
+
+				std::stringstream msgStream;
+				MessageNotification msg = MessageNotification(6,0);
+				msgStream << msg << '\0';
+
+				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+				Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+
+				intf.client.reset();
+				intf.server.reset();
+
+				this->StopApplication();
+			}
+
+    		intf.set_max_hold_time(max_hold_time);
+
+		    //std::cout << "Interface " << intf.name << " with ip " << intf.ip_address << " Max Hold time " << intf.max_hold_time << " current hold time " << intf.current_hold_time << std::endl;
+
+    		//Simulator::Schedule(Seconds(50.0), [&intf]() { intf.increment_current_hold_time(); });
+			intf.increment_current_hold_time();
+
+		} else if(msg.get_type() == 3){ 
+			MessageNotification msgRcv;
+			std::stringstream(packet) >> msgRcv;
+
+			std::cout << " NOTIFICATION message with content  ERROR CODE: " << msgRcv.get_error_code() << " \t ERROR SUBCODE: " << msgRcv.get_error_subcode() << " closing the TCP connection" << std::endl;
+
+			// Stop the application in case the error code is 6 (Cease)
+			if(msgRcv.get_error_code() == 6) {
+				this->StopApplication();
+			}
+
+
+		} else {
 			NS_LOG_INFO("Received another type of message");
 		}	
 

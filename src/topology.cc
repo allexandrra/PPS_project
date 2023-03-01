@@ -14,6 +14,7 @@
 #include "../include/MessageUpdate.h"
 #include "../include/MessageOpen.h"
 #include "../include/configuration_parser.h"
+#include "ns3/core-module.h"
 
 using namespace ns3;
 
@@ -38,9 +39,27 @@ void sendOpenMsg(std::vector<Router> routers) {
         
         for (int j=0; j<(int)interfaces.size(); j++) {
             if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
-                //send msg
-                std::stringstream msgStream = createOpenMsg(routers[i]);
-                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+
+                if(interfaces[j].status) {
+                    //send msg
+                    std::stringstream msgStream = createOpenMsg(routers[i]);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                } else {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
+
+                    std::stringstream msgStream;
+                    MessageNotification msg = MessageNotification(6,0);
+                    msgStream << msg << '\0';
+
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+
+                }
+
             }
         }
         
@@ -131,42 +150,32 @@ void printTopology (std::vector<Router> routers) {
     }
 }
 
-void startHoldTimer(std::vector<Router> routers) {
-    for(int i=0; i<(int)routers.size(); i++) {
-        std::vector<Interface> interfaces = routers[i].get_router_int();
-        for(int j = 0; j < (int) interfaces.size(); j++) {
-            Simulator::Schedule (Seconds(5.0), &Interface::increment_hold_time, &interfaces[j]);
-        }
-    }
-}
-
-void startKeepAlive(std::vector<Router> routers) {
+/*void startKeepAlive(std::vector<Router> routers) {
     //Every client sends an keepalive message to the server
     //The server will reply with a keepalive message
 
     for(int i=0; i<(int)routers.size(); i++) {
 
         std::vector<Interface> interfaces = routers[i].get_router_int();
-
-        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
         
         for (int j=0; j<(int)interfaces.size(); j++) {
-            if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
-                //send msg
-                //std::stringstream msgStream = createOpenMsg(routers[i]);
-                //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(20.0));
-                //std::stringstream msgStream;
-                //MessageHeader msg = MessageHeader(0);
-                //msgStream << msg << '\0';
 
-                //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(2.0));
-                interfaces[j].client.value()->AddPacketsToQueuePeriodically();
+            if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
+
+                if(interfaces[j].status) {
+                    interfaces[j].client.value()->AddPacketsToQueuePeriodically();
+                } else {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [startKeepAlive]");
+
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+                }
             }
         }
         
 
     }
-}
+} */
 
 std::vector<Router> createBGPConnections(std::vector<Router> routers) {
     int serverPort = 179;
@@ -232,21 +241,156 @@ int send_ip_message() {
     return 0;
 }
 
-int disable_router_link() {
-    return 0;
+void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
+    //Step:
+    // Modificare il send in modo che controlli che il link sia attivo prima di mandare il messaggio 
+    //    -> ho modificato il codice con il controllo prima di ogni addTOQueue e send nelle risposte
+    // Leggere in input il numeero degli AS che formano il link da disabilitare
+
+    // Disabilitare il link
+    // Se il link è disabilitato mandare un notification msg e chiuedere la connessione
+    // Se il link è disabilitato non mandare il keepalive msg (droppare client e)
+    for(int i=0; i<(int)routers->size(); i++) {
+
+        if ((*routers)[i].get_router_AS() == AS1) {
+            int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS2);
+
+            (*routers)[i].setInterfaceStatus(interfaceIndex, false);
+            (*routers)[i].resetClient(interfaceIndex);
+            (*routers)[i].resetServer(interfaceIndex);
+            
+            std::vector<int> neighbours = (*routers)[i].get_router_neigh();
+
+            /*std::string debug;
+            for(int i=0; i<(int)neighbours.size(); i++) {
+                debug += std::to_string(neighbours[i]) + " ";
+            }   
+            std::cout << "Router "  << (*routers)[i].get_router_AS() << " before removal - Neighbours: " << debug << std::endl;*/
+
+            // remove the router from the neighbor list
+            auto it = std::find(neighbours.begin(), neighbours.end(), AS2);
+            if (it != (*routers)[i].get_router_neigh().end()) {
+                neighbours.erase(it);
+            }
+            (*routers)[i].set_router_neigh(neighbours);
+
+            /*neighbours = (*routers)[i].get_router_neigh();
+
+            debug = "";
+            for(int i=0; i<(int)neighbours.size(); i++) {
+                debug += std::to_string(neighbours[i]) + " ";
+            }   
+            std::cout << "Router "  << (*routers)[i].get_router_AS() << " after removal - Neighbours: " << debug << std::endl; */
+        }
+        
+        if ((*routers)[i].get_router_AS() == AS2) {
+            int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS1);
+
+            (*routers)[i].setInterfaceStatus(interfaceIndex, false);
+            (*routers)[i].resetClient(interfaceIndex);
+            (*routers)[i].resetServer(interfaceIndex);
+
+            std::vector<int> neighbours = (*routers)[i].get_router_neigh();
+
+            // remove the router from the neighbor list
+            auto it = std::find(neighbours.begin(), neighbours.end(), AS1);
+            if (it != (*routers)[i].get_router_neigh().end()) {
+                neighbours.erase(it);
+            }
+            (*routers)[i].set_router_neigh(neighbours);
+        }
+    }
+
+    // TODO: Need to start the Update message phase
+
 }
 
-int enable_router_link() {
-    return 0;
+void disable_router(std::vector<Router>* routers, int AS) {
+    
+    for(int i=0; i<(int)routers->size(); i++) {
+
+        if ((*routers)[i].get_router_AS() == AS) {
+
+            //get the neighbours of the router
+            std::vector<int> neighbours = (*routers)[i].get_router_neigh();
+
+            for(int j=0; j<(int)neighbours.size(); j++) {
+                disable_router_link(routers, AS, neighbours[j]);
+            }  
+        }
+
+    }    
 }
 
+void userInputCallback(std::vector<Router>* routers)
+{
+    char c;
+    
+    std::cout << "\n\nSelect one of the following to be executed at time " << (Simulator::Now().GetSeconds()) <<
+        ": \n\n"
+        "[1] Add a new policy\n"
+        "[2] Disable a link \n"
+        "[3] Disable a router \n"
+        "[4] Continue the simulation \n"
+        "[5] Quit\n\n"
+        "Choose a number: ";
+
+    std::cin >> c;
+    std::cout << std::endl;
+
+    if (isdigit(c)) {
+        switch (c) {
+            case '1':
+                send_ip_message();
+                break;
+
+            case '2':
+                int AS1, AS2;
+
+                std::cout << "Enter the two AS numbes of the routers that forms the link: ";
+                std::cin >> AS1 >> AS2;
+                std::cout << std::endl;
+
+                //std::cout << "You entered: " << AS1 << " and " << AS2 << std::endl;
+                disable_router_link(routers, AS1, AS2);
+                break;
+            case '3':
+                int AS;
+
+                std::cout << "Enter the AS number of the router to disable: ";
+                std::cin >> AS;
+                std::cout << std::endl;
+
+                disable_router(routers, AS);
+                break;
+            case '4':
+                break;
+
+            case '5':
+                exit(EXIT_SUCCESS);
+                break;
+
+            default:
+                std::cout << "Invalid number, choose a number between 1 and 4. " << std::endl;
+                break;
+        }
+    }
+    else {
+        std::cout << "Invalid input, choose a number between 1 and 4. ";
+    }
+
+    // schedule the next user input callback
+    Simulator::Schedule(Seconds(60.0), &userInputCallback, routers);
+}
+
+//int enable_router_link() {
+//    return 0;
+//}
 
 int main() {
 
     Time::SetResolution(Time::NS);
     Packet::EnablePrinting();
-    
-    //char c;
 
     LogComponentEnable("Router", LOG_LEVEL_INFO);
     LogComponentEnable("BGPServer", LOG_LEVEL_INFO);
@@ -284,51 +428,13 @@ int main() {
     //startHoldTimer(network);
 
     NS_LOG_INFO("\nStarting sending KEEPALIVE every 30 seconds");
-    startKeepAlive(network);
+    //startKeepAlive(network);
 
-    //NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
+    NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
-//    while (1)
-//    {
-//        printf("\n\nSelect one of the following: \n\n"
-//               "[1] Add a new policy\n"
-//               "[2] Disable a link \n"
-//               "[3] Enable a link \n"
-//               "[4] Quit\n\n"
-//               "Choose a number: ");
-//
-//        std::cin >> c;
-//
-//        if (isdigit(c))
-//        {
-//            switch (c)
-//            {
-//            case '1':
-//                send_ip_message();
-//                break;
-//
-//            case '2':
-//                disable_router_link();
-//                break;
-//
-//            case '3':
-//                enable_router_link();
-//                break;
-//
-//            case '4':
-//                exit(EXIT_SUCCESS);
-//                break;
-//
-//            default:
-//                printf("Invalid number, choose a number between 1 and 4. ");
-//                break;
-//            }
-//        }
-//        else
-//        {
-//            printf("Invalid input, choose a number between 1 and 4. ");
-//        }
-//    }
+
+    // schedule the first user input callback to run after the simulation starts
+    Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
 
     Simulator::Stop(Seconds(500.0));
     Simulator::Run();

@@ -6,16 +6,31 @@
 
 #include "../include/MessageNotification.h"
 
+// ERROR CODES
+//  4 = hold time expire = let see if we are able to make the hold time working
+// 	1 = wrong lenght in the msg header = N/A due to the fact that we create the messages (we do not perform the check because otherwise the unpacking will not work)
+// 	2/3 = OPEN/UPDATE Message Error Handling = N/A due to the fact that we create the messages (we do not perform the check because otherwise the unpacking will not work)
+// 	5 = Finite State Machine Error Handling = it should not happen that we receive an expected msg (we designed the simulation so we are in control)
+// 	BGP Connection Collision Detection = it should not happen due to the fact that we have fixed roles for client/server
+// 	6 = Cease: we implemented the fact that a router could drop the tcp connection (by disabling the link)
+
 
 MessageNotification::MessageNotification(int16_t error_code, int16_t error_subcode, std::string data) 
-: MessageHeader(3) {
+: MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_NOTIFICATION_LEN+data.length(), 3) {
     this->error_code = error_code;
     this->error_subcode = error_subcode;
     this->data = data;
 }
 
+MessageNotification::MessageNotification(int16_t error_code, int16_t error_subcode) 
+: MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_NOTIFICATION_LEN, 3) {
+    this->error_code = error_code;
+    this->error_subcode = error_subcode;
+    this->data = "";
+}
+
 MessageNotification::MessageNotification() : 
-MessageHeader(3) {
+MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_NOTIFICATION_LEN, 3) {
     this->error_code = 0;
     this->error_subcode = 0;
     this->data = "";
@@ -51,8 +66,7 @@ std::istream & operator>>(std::istream & stream, MessageNotification& msg) {
     std::bitset<8> bit_type;
     std::bitset<8> bit_error_code;
     std::bitset<8> bit_error_subcode;
-    // MAX LEN: 4096 -21 
-    std::bitset<4075> bit_data;
+    std::bitset<(256-21)*8> bit_data;
 
     stream >> bit_marker >> bit_lenght >> bit_type >> bit_error_code >> bit_error_subcode >> bit_data;
 
@@ -64,13 +78,12 @@ std::istream & operator>>(std::istream & stream, MessageNotification& msg) {
     }
 
     msg.lenght = (uint16_t)bit_lenght.to_ulong();
-    // TODO: change it, test only
-    msg.lenght = 32;
     
     //std::cout << bit_data << std::endl;
     msg.data = "";
+    int dataLen = msg.lenght - MIN_MESSAGE_NOTIFICATION_LEN - MESSAGE_HEADER_LEN;
 
-    for (int i=(int)msg.lenght/8; i > 0 ; i--) {
+    for (int i=dataLen; i > 0 ; i--) {
         std::bitset<8> byte;
         for(int j=0; j<8; j++) {
             byte[7-j] = bit_data[i*8-j-1]; 

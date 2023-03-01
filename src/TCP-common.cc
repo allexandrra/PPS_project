@@ -16,6 +16,7 @@
 #include "../include/TCP-common.h"
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
+#include "../include/MessageNotification.h"
 
 
 
@@ -64,7 +65,7 @@ namespace ns3 {
 					<< "[TO: " << toAddress.GetIpv4() 
 					<< ":" << toAddress.GetPort()
 					<< "]" //of size "
-					<< "' at time "
+					<< " at time "
 					<< rightNow.GetSeconds();
 					//<< packet->GetSize());
 
@@ -80,7 +81,12 @@ namespace ns3 {
 			std::stringstream(packetData) >> msgRcv;
 
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
-		}
+		} else if(msg.get_type() == 3){
+			MessageNotification msgRcv;
+			std::stringstream(packetData) >> msgRcv;
+
+			std::cout << " NOTIFICATION message with content  ERROR CODE: " << msgRcv.get_error_code() << " \t ERROR SUBCODE: " << msgRcv.get_error_subcode() << std::endl;
+		} 
 
 		// Send
 		socket->Send(packet);

@@ -3,6 +3,8 @@
 
 #include "MessageHeader.h"
 
+#define MIN_MESSAGE_NOTIFICATION_LEN 2
+
 class MessageNotification : public MessageHeader {
 
     private:
@@ -12,6 +14,7 @@ class MessageNotification : public MessageHeader {
 
     public: 
         MessageNotification(int16_t error_code, int16_t error_subcode, std::string data);
+        MessageNotification(int16_t error_code, int16_t error_subcode);
         MessageNotification();
 
         int16_t get_error_code();

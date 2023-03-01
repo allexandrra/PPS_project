@@ -98,11 +98,27 @@ namespace ns3 {
   void Router::setServer(int int_num, Ptr<BGPServer> server) {
     this->interfaces[int_num].server = server;
     this->interfaces[int_num].isServer = true;
+    this->interfaces[int_num].status = true;
   }
   
   void Router::setClient(int int_num, Ptr<BGPClient> client) {
     this->interfaces[int_num].client = client;
     this->interfaces[int_num].isServer = false;
+    this->interfaces[int_num].status = true;
+  }
+
+  void Router::resetServer(int int_num) {
+    this->interfaces[int_num].server.reset();
+    this->interfaces[int_num].status = false;
+  }
+  
+  void Router::resetClient(int int_num) {
+    this->interfaces[int_num].client.reset();
+    this->interfaces[int_num].status = false;
+  }
+
+  void Router::setInterfaceStatus(int int_num, bool status) {
+    this->interfaces[int_num].status = status;
   }
 
   int Router::get_router_int_num_from_ip(Ipv4Address ip) {
@@ -113,6 +129,10 @@ namespace ns3 {
       }
     }
     return 0; 
+  }
+
+  void Router::set_router_neigh(std::vector<int> neighbours) {
+    this->neighbours = neighbours;
   }
 
 }  // namespace ns3
