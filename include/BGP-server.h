@@ -14,6 +14,7 @@ namespace ns3 {
             virtual ~BGPServer();
             static TypeId GetTypeId (void);
             void Setup(uint16_t serverPort, Time startTime);
+            Ptr<Socket> GetSocket(void) const;
 
         private:
             virtual void StartApplication();

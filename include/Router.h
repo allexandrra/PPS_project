@@ -52,7 +52,7 @@ namespace ns3 {
         std::optional<Ptr<BGPServer>> server;
         bool isServer;
         int max_hold_time;
-        int current_hold_time;
+        double start_time;
 
         Interface(std::string name, Ipv4Address ip_address, Ipv4Address remote_ip, Ipv4Address mask) : status(true), isServer(false) {
             this->name = name;
@@ -60,7 +60,7 @@ namespace ns3 {
             this->remote_ip = remote_ip;
             this->mask = mask;
             this->max_hold_time = 0;
-            this->current_hold_time = 0;
+            this->start_time = 0;
         }
 
         int get_max_hold_time() {
@@ -72,25 +72,12 @@ namespace ns3 {
             this->max_hold_time = max_hold_time;
         }
 
-        int get_current_hold_time() {
-            return this->current_hold_time;
+        double get_start_time() {
+            return this->start_time;
         }
 
-        void set_current_hold_time(int current_hold_time) {
-            this->current_hold_time = current_hold_time;
-        }
-
-        void increment_current_hold_time() {
-            //std::cout << this->name << std::endl;
-            //this->current_hold_time++;
-            //std::cout << "Incrementing hold time of interface " << name << " with ip " << ip_address << " to " << current_hold_time << std::endl;
-            //Simulator::Schedule(Seconds(50.0), [this]() { this->increment_current_hold_time(); });
-            /*if (this->current_hold_time <= this->max_hold_time) {
-                //Simulator::Schedule(Seconds(100), &Interface::increment_current_hold_time, this);
-                std::cout << "Scheduling hold time incrementation of interface " << name << " with ip " << ip_address << " to " << current_hold_time << std::endl;
-            } else {
-                std::cout << "FUck" << std::endl;
-            }*/
+        void set_start_time(double start_time) {
+            this->start_time = start_time;
         }
     };
 
@@ -140,6 +127,7 @@ namespace ns3 {
             void resetServer(int int_num);
             void resetClient(int int_num);
             void setInterfaceStatus(int int_num, bool status);
+            void setInterface(Interface interface, int num);
             int get_router_int_num_from_ip(Ipv4Address ip);
             void set_router_neigh(std::vector<int> neighbours);
 

@@ -150,32 +150,7 @@ void printTopology (std::vector<Router> routers) {
     }
 }
 
-/*void startKeepAlive(std::vector<Router> routers) {
-    //Every client sends an keepalive message to the server
-    //The server will reply with a keepalive message
-
-    for(int i=0; i<(int)routers.size(); i++) {
-
-        std::vector<Interface> interfaces = routers[i].get_router_int();
-        
-        for (int j=0; j<(int)interfaces.size(); j++) {
-
-            if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
-
-                if(interfaces[j].status) {
-                    interfaces[j].client.value()->AddPacketsToQueuePeriodically();
-                } else {
-                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [startKeepAlive]");
-
-                    interfaces[j].client.reset();
-                    interfaces[j].server.reset();
-                }
-            }
-        }
-        
-
-    }
-} */
+//
 
 std::vector<Router> createBGPConnections(std::vector<Router> routers) {
     int serverPort = 179;
@@ -254,6 +229,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
         if ((*routers)[i].get_router_AS() == AS1) {
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS2);
+            NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
 
             (*routers)[i].setInterfaceStatus(interfaceIndex, false);
             (*routers)[i].resetClient(interfaceIndex);
@@ -285,6 +261,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
         
         if ((*routers)[i].get_router_AS() == AS2) {
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS1);
+
+            NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
 
             (*routers)[i].setInterfaceStatus(interfaceIndex, false);
             (*routers)[i].resetClient(interfaceIndex);
@@ -320,6 +298,58 @@ void disable_router(std::vector<Router>* routers, int AS) {
         }
 
     }    
+}
+
+void checkHoldTime(std::vector<Router>* routers) {
+    for(int i=0; i<(int)routers->size(); i++) {
+        std::vector<Interface> interfaces = (*routers)[i].get_router_int();
+
+        for(int j=0; j<(int)interfaces.size(); j++) {
+            /*NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " has status " << interfaces[j].status << " and has client " << interfaces[j].client.has_value() << " and has server " << interfaces[j].server.has_value() <<  " at time " << Simulator::Now().GetSeconds() << " [PERIODIC HOLD TIME CHECK]");
+            if(interfaces[j].client) {
+                Address to;
+                to = interfaces[j].client.value()->m_peer;
+                InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+
+                NS_LOG_INFO("Socket " << toAddress.GetIpv4() << " m_running " << interfaces[j].client.value()->m_running);
+            } else if (interfaces[j].server){
+                Address to;
+                //interfaces[j].server.value()->m_socket->GetPeerName(to);
+                //InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+
+                NS_LOG_INFO("Socket server" << interfaces[j].server.value()->m_socket << " list len " << interfaces[j].server.value()->m_socketList.size()); //<< " add " << toAddress.GetIpv4()) ;
+            }*/
+
+            if(Simulator::Now().GetSeconds() - interfaces[j].get_start_time() > interfaces[j].get_max_hold_time()) {
+                if (interfaces[j].status) {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " has expired hold time  at time " << Simulator::Now().GetSeconds() << " [PERIODIC HOLD TIME CHECK]");
+            
+                    std::stringstream msgStreamNotification;
+                    MessageNotification msg = MessageNotification(4,0);
+                    msgStreamNotification << msg << '\0';
+
+                    Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+
+                    //TODO: think if we really want to send the notification message here
+                    if(interfaces[j].client) {
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->GetSocket(), packetNotification);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->GetSocket(), packetNotification);
+                    }
+
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+
+                    (*routers)[i].setInterfaceStatus(j, false);
+                    (*routers)[i].setInterface(interfaces[j], j);
+                    //this->StopApplication();
+                }
+            }
+        }
+    } 
+
+    Simulator::Schedule(Seconds(60.0), &checkHoldTime, routers); 
+
 }
 
 void userInputCallback(std::vector<Router>* routers)
@@ -436,7 +466,9 @@ int main() {
     // schedule the first user input callback to run after the simulation starts
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
 
-    Simulator::Stop(Seconds(500.0));
+    Simulator::Schedule(Seconds(100.0), &checkHoldTime, &network);
+
+    Simulator::Stop(Seconds(800.0));
     Simulator::Run();
     Simulator::Destroy();
 

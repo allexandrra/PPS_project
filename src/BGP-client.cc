@@ -55,42 +55,75 @@ namespace ns3 {
 		MessageHeader msg;
 		std::stringstream(packet) >> msg;
 
+		Router *r = this->GetRouter();
+		Address to;
+		socket->GetSockName(to);
+		InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+		int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+		Interface intf = r->get_router_int()[int_num];
+
+		//NS_LOG_INFO("entro");
+
 		if (msg.get_type() == 0){
-			//NS_LOG_INFO("Received KEEPALIVE message");
-			std::cout << " KEEPALIVE message ";
-			std::cout << this->GetRouter()->get_router_AS() << std::endl;
-		}
-		else if(msg.get_type() == 1){
+			//NS_L5OG_INFO("Received KEEPALIVE message");
+
+			if(Simulator::Now().GetSeconds() - intf.get_start_time() <= intf.get_max_hold_time()) {
+				std::cout << " KEEPALIVE message " << std::endl;
+				//std::cout << this->GetRouter()->get_router_AS() << std::endl;
+				intf.set_start_time(Simulator::Now().GetSeconds());
+				r->setInterface(intf, int_num);
+				//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has now start time equal to " << intf.get_start_time() << " [KEEPALIVE READ CLIENT]");
+				//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " and has client " << intf.client.has_value() << " and has server " << intf.server.has_value() <<  " at time " << Simulator::Now().GetSeconds() << " [CLIENT KEEPALIVE READ]");
+			} else {
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has expired hold time  at time " << Simulator::Now().GetSeconds() << " [KEEPALIVE READ CLIENT]");
+
+				//send notification msg
+				std::stringstream msgStreamNotification;
+				MessageNotification msg = MessageNotification(6,0);
+				msgStreamNotification << msg << '\0';
+
+				Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+				this->Send(socket, packetNotification);
+
+				intf.client.reset();
+				intf.server.reset();
+
+				r->setInterfaceStatus(int_num, false);
+				r->setInterface(intf, int_num);
+				this->StopApplication();
+			}
+			
+		} else if(msg.get_type() == 1){
 			//NS_LOG_INFO("Received OPEN message");
 			MessageOpen msgRcv;
 			std::stringstream(packet) >> msgRcv;
-			Address to;
-			Router *r = this->GetRouter();
 
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
 
-			// Get receiving address
-			socket->GetSockName(to);
-			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
-			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
-			Interface intf = r->get_router_int()[int_num];
+			
 			intf.set_max_hold_time(max((int)msgRcv.get_hold_time(), (int)intf.get_max_hold_time()));
+			intf.set_start_time(Simulator::Now().GetSeconds());
+			r->setInterface(intf, int_num);
 
 			//NS_LOG_INFO("BGP state: OPEN CONFIRM");
 			//Simulator::Schedule (Seconds(0), &Interface::increment_hold_time, &intf);
 
 			std::vector<EventId> events;
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
+
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
 			std::cout << " NOTIFICATION message with content  ERROR CODE: " << msgRcv.get_error_code() << " \t ERROR SUBCODE: " << msgRcv.get_error_subcode() << " closing the TCP connection" << std::endl;
 
-			// Stop the application in case2 the error code is 6 (Cease)
-			if(msgRcv.get_error_code() == 6) {
+			// Stop the application in case the error code is 6 (Cease) or 4 (Hold time expired)
+			if(msgRcv.get_error_code() == 6 || msgRcv.get_error_code() == 4) {
 				this->StopApplication();
 			}
+			
+		} else {
+			NS_LOG_INFO("Received another type of message");
 		}
   	}
 
@@ -180,6 +213,10 @@ namespace ns3 {
 		//NS_LOG_INFO("Sent");
 	}
 
+	Ptr<Socket> BGPClient::GetSocket(void) const {
+		return m_socket;
+	}
+
 	void BGPClient::AddPacketsToQueue(std::stringstream& msg, Time atTime) {
 		Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length()+1);
 		m_pktDelayList.push_back(atTime);
@@ -199,37 +236,69 @@ namespace ns3 {
 		if(m_running) {
 
 			//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " [KEEPALIVE]");
+			if(Simulator::Now().GetSeconds() - intf.get_start_time() <= intf.get_max_hold_time()) {
+				if(intf.status) {
+					std::stringstream msgStream;
+					MessageHeader msg = MessageHeader(0);
+					msgStream << msg << '\0';
 
-			if(intf.status) {
-				std::stringstream msgStream;
-				MessageHeader msg = MessageHeader(0);
-				msgStream << msg << '\0';
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 
-				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+					Time atTime = Simulator::Now()+Seconds(1.5);
+					//NS_LOG_INFO("Sending packet at time " << atTime.GetSeconds() << " from intf " << intf.name);
+					m_sendEvent = Simulator::Schedule (atTime, &BGPClient::Send, this, m_socket, packet);	
+					events.push_back(m_sendEvent);
+					//NS_LOG_INFO("Events length: " << events.size());
+					//std::cout << "Event id" << m_sendEvent.GetUid() << std::endl;
+					//NS_LOG_INFO("entro al tempo " << Simulator::Now().GetSeconds() << " e la coda è lunga: " << m_pktList.size() << " e la lista è lunga: " << m_pktDelayList.size());
+					//TODO: mettere 1/6 il tempo di hold time 
+					Simulator::Schedule(Seconds(intf.get_max_hold_time()/6), &BGPClient::AddPacketsToQueuePeriodically, this, events);
+					//NS_LOG_INFO("[CLIENT] Now: " << Simulator::Now().GetSeconds() << " " << " start time " << intf.get_start_time() << " max hold time " << intf.get_max_hold_time());
+					//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " and has client " << intf.client.has_value() << " and has server " << intf.server.has_value() <<  " at time " << Simulator::Now().GetSeconds() << " [CLIENT KEEPALIVE SCHEDULE]");
 
-				Time atTime = Simulator::Now()+Seconds(1.5);
-				//NS_LOG_INFO("Sending packet at time " << atTime.GetSeconds() << " from intf " << intf.name);
-				m_sendEvent = Simulator::Schedule (atTime, &BGPClient::Send, this, m_socket, packet);	
-				events.push_back(m_sendEvent);
-				//NS_LOG_INFO("Events length: " << events.size());
-				//std::cout << "Event id" << m_sendEvent.GetUid() << std::endl;
-				//NS_LOG_INFO("entro al tempo " << Simulator::Now().GetSeconds() << " e la coda è lunga: " << m_pktList.size() << " e la lista è lunga: " << m_pktDelayList.size());
-				Simulator::Schedule(Seconds(15.0), &BGPClient::AddPacketsToQueuePeriodically, this, events);
+				} else {
 
+					NS_LOG_INFO("[KEEPALIVE] Interface " << intf.name << " of router " << r->get_router_AS() << " is down, sending a notification message");
+
+					std::stringstream msgStream;
+					MessageNotification msg = MessageNotification(6,0);
+					msgStream << msg << '\0';
+
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+					//this->AddPacketsToQueue(msgStream, Simulator::Now());
+					//m_sendEvent = Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+					this->Send(m_socket, packet);
+
+					//m_running = false;
+					//m_socket = 0;
+
+					for (int i = 0; i < (int) events.size(); i++)
+					{
+						if (!Simulator::IsExpired(events[i])) {
+							Simulator::Cancel(events[i]);
+						}
+					}
+
+					//m_pktDelayList.clear();
+					//m_pktList.clear();
+
+					intf.client.reset();
+					intf.server.reset();
+
+					//this->StopApplication();
+
+					r->setInterfaceStatus(int_num, false);
+					r->setInterface(intf, int_num);
+				}			
 			} else {
+				NS_LOG_INFO("Hold time expired on interface " << intf.name << " of router " << r->get_router_AS() << " at time " << Simulator::Now().GetSeconds() << " [SCHEDULE PERIODIC KEEPALIVE]");
+		
+				std::stringstream msgStreamNotification;
+				MessageNotification msg = MessageNotification(4,0);
+				msgStreamNotification << msg << '\0';
 
-				NS_LOG_INFO("[KEEPALIVE] Interface " << intf.name << " of router " << r->get_router_AS() << " is down, sending a notification message");
-
-				std::stringstream msgStream;
-				MessageNotification msg = MessageNotification(6,0);
-				msgStream << msg << '\0';
-
-				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-				//this->AddPacketsToQueue(msgStream, Simulator::Now());
-				m_sendEvent = Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-
-				//m_running = false;
-				//m_socket = 0;
+				Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+				this->Send(m_socket, packetNotification);
 
 				for (int i = 0; i < (int) events.size(); i++)
 				{
@@ -238,14 +307,13 @@ namespace ns3 {
 					}
 				}
 
-				//m_pktDelayList.clear();
-				//m_pktList.clear();
-
 				intf.client.reset();
 				intf.server.reset();
 
-				//this->StopApplication();
-			}			
+				r->setInterfaceStatus(int_num, false);
+				r->setInterface(intf, int_num);
+				this->StopApplication();
+			}
 		}
 
 	}

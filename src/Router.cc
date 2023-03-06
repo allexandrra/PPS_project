@@ -135,5 +135,9 @@ namespace ns3 {
     this->neighbours = neighbours;
   }
 
+  void Router::setInterface(Interface interface, int num) {
+    this->interfaces[num] = interface;
+  }
+
 }  // namespace ns3
 

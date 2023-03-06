@@ -89,7 +89,13 @@ namespace ns3 {
 		} 
 
 		// Send
-		socket->Send(packet);
+		int bytesSent = socket->Send(packet);
+
+		// Check for errors
+		if (bytesSent == -1) {
+			// An error occurred, handle it here
+			NS_LOG_INFO("Error sending packet: " << socket->GetErrno());
+		}
     }
 
 	std::string TCPCommon::HandleRead (Ptr<Socket> socket){
