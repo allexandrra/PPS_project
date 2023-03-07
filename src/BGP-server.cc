@@ -126,9 +126,9 @@ namespace ns3 {
 			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
 			Interface intf = r->get_router_int()[int_num];
 
-			//NS_LOG_INFO("Before new start time - Now: " << Simulator::Now().GetSeconds() << " " << " start time " << intf.get_start_time() << " max hold time " << intf.get_max_hold_time());
+			//NS_LOG_INFO("Before new start time - Now: " << Simulator::Now().GetSeconds() << " " << " start time " << intf.get_last_update_time() << " max hold time " << intf.get_max_hold_time());
 
-			if(Simulator::Now().GetSeconds() - intf.get_start_time() <= intf.get_max_hold_time()) {
+			if(Simulator::Now().GetSeconds() - intf.get_last_update_time() <= intf.get_max_hold_time()) {
 				//Server send KEEPALIVE message
 				std::stringstream msgStream;
 				MessageHeader msg = MessageHeader(0);
@@ -139,9 +139,9 @@ namespace ns3 {
 					this->Send(socket, packet);
 
 					// Reset holdtime time
-					intf.set_start_time(Simulator::Now().GetSeconds());
-					r->setInterface(intf, int_num);
-					//NS_LOG_INFO("After new start time - Now: " << Simulator::Now().GetSeconds() << " " << " start time " << intf.get_start_time() << " max hold time " << intf.get_max_hold_time());
+					intf.set_last_update_time(Simulator::Now().GetSeconds());
+					r->set_interface(intf, int_num);
+					//NS_LOG_INFO("After new start time - Now: " << Simulator::Now().GetSeconds() << " " << " start time " << intf.get_last_update_time() << " max hold time " << intf.get_max_hold_time());
 					//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " and has client " << intf.client.has_value() << " and has server " << intf.server.has_value() <<  " at time " << Simulator::Now().GetSeconds() << " [SERVER KEEPALIVE READ]");
 				} else {
 					NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [KEEPALIVE READ SERVER] ");
@@ -156,8 +156,8 @@ namespace ns3 {
 					intf.client.reset();
 					intf.server.reset();
 
-					r->setInterfaceStatus(int_num, false);
-					r->setInterface(intf, int_num);
+					r->set_interface_status(int_num, false);
+					r->set_interface(intf, int_num);
 					this->StopApplication();
 				}
 
@@ -174,8 +174,8 @@ namespace ns3 {
 				intf.client.reset();
 				intf.server.reset();
 
-				r->setInterfaceStatus(int_num, false);
-				r->setInterface(intf, int_num);
+				r->set_interface_status(int_num, false);
+				r->set_interface(intf, int_num);
 				this->StopApplication();
 			}
 
@@ -223,13 +223,13 @@ namespace ns3 {
 				intf.client.reset();
 				intf.server.reset();
 
-				r->setInterfaceStatus(int_num, false);
+				r->set_interface_status(int_num, false);
 				this->StopApplication();
 			}
 
     		intf.set_max_hold_time(max_hold_time);
-			intf.set_start_time(Simulator::Now().GetSeconds());
-			r->setInterface(intf, int_num);
+			intf.set_last_update_time(Simulator::Now().GetSeconds());
+			r->set_interface(intf, int_num);
 
 		} else if(msg.get_type() == 3){ 
 			MessageNotification msgRcv;

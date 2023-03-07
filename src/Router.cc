@@ -95,29 +95,29 @@ namespace ns3 {
     //NS_LOG_INFO("Router " << this->router_ID << " now has " << this->neighbours.size() << " neighbours");
   }
 
-  void Router::setServer(int int_num, Ptr<BGPServer> server) {
+  void Router::set_server(int int_num, Ptr<BGPServer> server) {
     this->interfaces[int_num].server = server;
     this->interfaces[int_num].isServer = true;
     this->interfaces[int_num].status = true;
   }
   
-  void Router::setClient(int int_num, Ptr<BGPClient> client) {
+  void Router::set_client(int int_num, Ptr<BGPClient> client) {
     this->interfaces[int_num].client = client;
     this->interfaces[int_num].isServer = false;
     this->interfaces[int_num].status = true;
   }
 
-  void Router::resetServer(int int_num) {
+  void Router::reset_server(int int_num) {
     this->interfaces[int_num].server.reset();
     this->interfaces[int_num].status = false;
   }
   
-  void Router::resetClient(int int_num) {
+  void Router::reset_client(int int_num) {
     this->interfaces[int_num].client.reset();
     this->interfaces[int_num].status = false;
   }
 
-  void Router::setInterfaceStatus(int int_num, bool status) {
+  void Router::set_interface_status(int int_num, bool status) {
     this->interfaces[int_num].status = status;
   }
 
@@ -135,7 +135,7 @@ namespace ns3 {
     this->neighbours = neighbours;
   }
 
-  void Router::setInterface(Interface interface, int num) {
+  void Router::set_interface(Interface interface, int num) {
     this->interfaces[num] = interface;
   }
 

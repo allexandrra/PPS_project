@@ -6,7 +6,6 @@
 // To run the simulation: ./ns3 run scratch/PPS_project/src/topology.cc
 // To view the logs: export NS_LOG=Topology=info
 
-#include "../include/AS.h"
 #include "../include/BGP-client.h"
 #include "../include/BGP-server.h"
 #include "../include/MessageHeader.h"
@@ -104,8 +103,8 @@ std::vector<Router> createLinks(std::vector<Router> routers) {
 
             Ipv4InterfaceContainer iic = ipv4.Assign(ndc);
 
-            Interface if1 = Interface("eth"+std::to_string(neighbours[j]), iic.GetAddress(0), iic.GetAddress(1), Ipv4Address("255.255.255.252"));
-            Interface if2 = Interface("eth"+std::to_string(routers[i].get_router_AS()), iic.GetAddress(1), iic.GetAddress(0), Ipv4Address("255.255.255.252"));
+            Interface if1 = Interface("eth"+std::to_string(neighbours[j]), iic.GetAddress(0), /*iic.GetAddress(1),*/ Ipv4Address("255.255.255.252"));
+            Interface if2 = Interface("eth"+std::to_string(routers[i].get_router_AS()), iic.GetAddress(1), /*iic.GetAddress(0),*/ Ipv4Address("255.255.255.252"));
 
             //function to check if the interface is already there
             struct find_interface : std::unary_function<Interface, bool> {
@@ -190,7 +189,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
                 serverApp->SetStartTime(startServer);
                 serverApp->SetStopTime(stopServer);
 
-                routers[i].setServer(neighbourInterfaceIndex, serverApp);
+                routers[i].set_server(neighbourInterfaceIndex, serverApp);
 
                 // Tcp SENDER -> now on the as2
                 Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(routers[neighbourIndex].get_router_node().Get(0), TcpSocketFactory::GetTypeId());
@@ -204,7 +203,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
                 clientApp->SetStopTime(stopClient);
 
                 int routerInterfaceIndex = routers[neighbourIndex].get_router_int_num_from_name(routers[i].get_router_AS());
-                routers[neighbourIndex].setClient(routerInterfaceIndex, clientApp);
+                routers[neighbourIndex].set_client(routerInterfaceIndex, clientApp);
             }
         
         } 
@@ -231,9 +230,9 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS2);
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
 
-            (*routers)[i].setInterfaceStatus(interfaceIndex, false);
-            (*routers)[i].resetClient(interfaceIndex);
-            (*routers)[i].resetServer(interfaceIndex);
+            (*routers)[i].set_interface_status(interfaceIndex, false);
+            (*routers)[i].reset_client(interfaceIndex);
+            (*routers)[i].reset_server(interfaceIndex);
             
             std::vector<int> neighbours = (*routers)[i].get_router_neigh();
 
@@ -264,9 +263,9 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
 
-            (*routers)[i].setInterfaceStatus(interfaceIndex, false);
-            (*routers)[i].resetClient(interfaceIndex);
-            (*routers)[i].resetServer(interfaceIndex);
+            (*routers)[i].set_interface_status(interfaceIndex, false);
+            (*routers)[i].reset_client(interfaceIndex);
+            (*routers)[i].reset_server(interfaceIndex);
 
             std::vector<int> neighbours = (*routers)[i].get_router_neigh();
 
@@ -320,7 +319,7 @@ void checkHoldTime(std::vector<Router>* routers) {
                 NS_LOG_INFO("Socket server" << interfaces[j].server.value()->m_socket << " list len " << interfaces[j].server.value()->m_socketList.size()); //<< " add " << toAddress.GetIpv4()) ;
             }*/
 
-            if(Simulator::Now().GetSeconds() - interfaces[j].get_start_time() > interfaces[j].get_max_hold_time()) {
+            if(Simulator::Now().GetSeconds() - interfaces[j].get_last_update_time() > interfaces[j].get_max_hold_time()) {
                 if (interfaces[j].status) {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " has expired hold time  at time " << Simulator::Now().GetSeconds() << " [PERIODIC HOLD TIME CHECK]");
             
@@ -340,8 +339,8 @@ void checkHoldTime(std::vector<Router>* routers) {
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
 
-                    (*routers)[i].setInterfaceStatus(j, false);
-                    (*routers)[i].setInterface(interfaces[j], j);
+                    (*routers)[i].set_interface_status(j, false);
+                    (*routers)[i].set_interface(interfaces[j], j);
                     //this->StopApplication();
                 }
             }

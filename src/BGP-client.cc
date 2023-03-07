@@ -67,11 +67,11 @@ namespace ns3 {
 		if (msg.get_type() == 0){
 			//NS_L5OG_INFO("Received KEEPALIVE message");
 
-			if(Simulator::Now().GetSeconds() - intf.get_start_time() <= intf.get_max_hold_time()) {
+			if(Simulator::Now().GetSeconds() - intf.get_last_update_time() <= intf.get_max_hold_time()) {
 				std::cout << " KEEPALIVE message " << std::endl;
 				//std::cout << this->GetRouter()->get_router_AS() << std::endl;
-				intf.set_start_time(Simulator::Now().GetSeconds());
-				r->setInterface(intf, int_num);
+				intf.set_last_update_time(Simulator::Now().GetSeconds());
+				r->set_interface(intf, int_num);
 				//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has now start time equal to " << intf.get_start_time() << " [KEEPALIVE READ CLIENT]");
 				//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " and has client " << intf.client.has_value() << " and has server " << intf.server.has_value() <<  " at time " << Simulator::Now().GetSeconds() << " [CLIENT KEEPALIVE READ]");
 			} else {
@@ -88,8 +88,8 @@ namespace ns3 {
 				intf.client.reset();
 				intf.server.reset();
 
-				r->setInterfaceStatus(int_num, false);
-				r->setInterface(intf, int_num);
+				r->set_interface_status(int_num, false);
+				r->set_interface(intf, int_num);
 				this->StopApplication();
 			}
 			
@@ -102,8 +102,8 @@ namespace ns3 {
 
 			
 			intf.set_max_hold_time(max((int)msgRcv.get_hold_time(), (int)intf.get_max_hold_time()));
-			intf.set_start_time(Simulator::Now().GetSeconds());
-			r->setInterface(intf, int_num);
+			intf.set_last_update_time(Simulator::Now().GetSeconds());
+			r->set_interface(intf, int_num);
 
 			//NS_LOG_INFO("BGP state: OPEN CONFIRM");
 			//Simulator::Schedule (Seconds(0), &Interface::increment_hold_time, &intf);
@@ -236,7 +236,7 @@ namespace ns3 {
 		if(m_running) {
 
 			//NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has status " << intf.status << " [KEEPALIVE]");
-			if(Simulator::Now().GetSeconds() - intf.get_start_time() <= intf.get_max_hold_time()) {
+			if(Simulator::Now().GetSeconds() - intf.get_last_update_time() <= intf.get_max_hold_time()) {
 				if(intf.status) {
 					std::stringstream msgStream;
 					MessageHeader msg = MessageHeader(0);
@@ -287,8 +287,8 @@ namespace ns3 {
 
 					//this->StopApplication();
 
-					r->setInterfaceStatus(int_num, false);
-					r->setInterface(intf, int_num);
+					r->set_interface_status(int_num, false);
+					r->set_interface(intf, int_num);
 				}			
 			} else {
 				NS_LOG_INFO("Hold time expired on interface " << intf.name << " of router " << r->get_router_AS() << " at time " << Simulator::Now().GetSeconds() << " [SCHEDULE PERIODIC KEEPALIVE]");
@@ -310,8 +310,8 @@ namespace ns3 {
 				intf.client.reset();
 				intf.server.reset();
 
-				r->setInterfaceStatus(int_num, false);
-				r->setInterface(intf, int_num);
+				r->set_interface_status(int_num, false);
+				r->set_interface(intf, int_num);
 				this->StopApplication();
 			}
 		}

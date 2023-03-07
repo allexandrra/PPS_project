@@ -1,5 +1,4 @@
 #include "../include/configuration_parser.h"
-
 #include "../include/json.hpp"
 
 #include <fstream>
