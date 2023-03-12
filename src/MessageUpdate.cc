@@ -34,7 +34,6 @@ std::vector<Path_atrs> MessageUpdate::get_path_atr() { return path_atr; }
 std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
 
 std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
-    //TODO
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
 
