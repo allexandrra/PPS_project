@@ -66,6 +66,61 @@ void sendOpenMsg(std::vector<Router> routers) {
     }
 }
 
+std::vector<NLRIs> buildWR() {
+    std::vector<NLRIs> withdrawn_routes;
+
+    return withdrawn_routes;
+}
+
+std::vector<NLRIs> buildNLRI(Router r) {
+    std::vector<NLRIs> nlri;
+
+    NLRIs new_nlri;
+
+    for (Peer p : r.get_router_rt()) {
+        size_t pos = 0;
+        std::string token;
+        std::string network = p.network;
+        pos = network.find("/");
+        new_nlri.prefix = network.substr(0, pos);
+        network.erase(0, pos + 1);
+        new_nlri.prefix_lenght = stoi(network);
+        
+        nlri.push_back(new_nlri);
+    }
+
+    return nlri;
+}
+
+std::vector<Path_atrs> buildPA(Router r) {
+    std::vector<Path_atrs> path_atributes;
+
+    Path_atrs atrib;
+
+    for (Peer p : r.get_router_rt()) {
+        atrib.type = 1;
+        atrib.lenght = 0;
+        atrib.value = to_string(p.weight);
+        
+    }
+
+    return path_atributes;
+}
+
+std::stringstream createUpdateMsg(Router r) {
+    std::stringstream msgStream;
+
+
+
+    MessageUpdate msg = MessageUpdate()
+}
+
+void sendUpdateMsg(std:vector<Router> routers) {
+    for (int i = 0; i < (int)routers.size(); i++) {
+        
+    }
+}
+
 
 std::vector<Router> createLinks(std::vector<Router> routers) {
     int base = 0;
@@ -461,6 +516,9 @@ int main() {
 
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
+    NS_LOG_INFO("\nSending update messages");
+    
+    sendUpdateMsg(network);
 
     // schedule the first user input callback to run after the simulation starts
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
