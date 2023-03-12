@@ -116,14 +116,14 @@ std::stringstream createUpdateMsg(Router r) {
 
 
 
-    MessageUpdate msg = MessageUpdate()
+    MessageUpdate msg = MessageUpdate();
 }
 
-void sendUpdateMsg(std:vector<Router> routers) {
+/*void sendUpdateMsg(std:vector<Router> routers) {
     for (int i = 0; i < (int)routers.size(); i++) {
         
     }
-}
+} */
 
 
 std::vector<Router> createLinks(std::vector<Router> routers) {
@@ -522,7 +522,7 @@ int main() {
 
     NS_LOG_INFO("\nSending update messages");
     
-    sendUpdateMsg(network);
+    //sendUpdateMsg(network);
 
     // schedule the first user input callback to run after the simulation starts
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
