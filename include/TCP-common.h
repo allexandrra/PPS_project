@@ -48,20 +48,20 @@ namespace ns3 {
 			 * @brief Method to set the router where the application is installed
 			 * @param router Router reference where the application is installed
 			*/
-			void SetRouter(Router *router);
+			void set_router(Router *router);
 
 			/**
 			 * @brief Method to return the router where the application is installed
 			 * @return Router reference where the application is installed
 			*/
-			Router *GetRouter();
+			Router *get_router();
 
 			/**
 			 * @brief Method to convert a binary bitstream that represents an IP address to dotted notation string
 			 * @param ipBinary IP address in binary bitstream
 			 * @return IP address in dotted notation string
 			*/
-			std::string binaryToDottedNotation(std::string ipBinary);
+			std::string binary_to_dotted_notation(std::string ipBinary);
 
 		protected:
 

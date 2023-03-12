@@ -18,28 +18,34 @@
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
 
-
-
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("TCPCommon");
 	NS_OBJECT_ENSURE_REGISTERED(TCPCommon);
 
-	// Constructor
-	// Constructor
+	/**
+	 * @brief Constructor for the TCPCommon class
+	*/
 	TCPCommon::TCPCommon() {
 		NS_LOG_FUNCTION (this);
 		m_router = NULL;
 	}
 
-	// Destructor
+	/**
+	 * @brief Destructor for the TCPCommon class
+	*/
 	TCPCommon::~TCPCommon(){
 		NS_LOG_FUNCTION (this);
 	}
 
-  	// Send function
+  	/**
+	 * @brief Function used to send a packet through a socket
+	 * @param socket The socket used to send the packet
+	 * @param packet The packet to send
+	*/
 	void TCPCommon::Send(Ptr<Socket> socket, Ptr<Packet> packet) {
 		NS_LOG_FUNCTION_NOARGS();
 
+		// Get current time of the simulation
 		Time rightNow = Simulator::Now();
 
 		// Get sending address
@@ -52,27 +58,27 @@ namespace ns3 {
 		socket->GetPeerName(to);
 		InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
 
-		// TODO: remove
-		// Debug only
+		// Get the packet data (useful to print information about the packet that we will send)
 		uint8_t *buffer = new uint8_t[packet->GetSize ()];
         packet->CopyData(buffer, packet->GetSize ());
         std::string packetData = std::string((char*)buffer);
 
+		// Print information about the packet that we will send
+		// If we want to see the binary data of the packet, we can use uncomment the line below
 		std::cout   << "SEND [FROM: " << fromAddress.GetIpv4() 
 					<< ":" << fromAddress.GetPort()
 					<< "] " //sending packet '"
 					//<< packetData  
 					<< "[TO: " << toAddress.GetIpv4() 
 					<< ":" << toAddress.GetPort()
-					<< "]" //of size "
+					<< "]"
 					<< " at time "
 					<< rightNow.GetSeconds();
-					//<< packet->GetSize());
 
-		
 		MessageHeader msg;
 		std::stringstream(packetData) >> msg;
 
+		// Print different information about the packet that we will send based on the type of the packet
 		if (msg.get_type() == 0){
 			std::cout << " KEEPALIVE message " << std::endl;
 		}
@@ -80,7 +86,7 @@ namespace ns3 {
 			MessageOpen msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
-			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
+			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;
@@ -88,7 +94,7 @@ namespace ns3 {
 			std::cout << " NOTIFICATION message with content  ERROR CODE: " << msgRcv.get_error_code() << " \t ERROR SUBCODE: " << msgRcv.get_error_subcode() << std::endl;
 		} 
 
-		// Send
+		// Send the packet
 		int bytesSent = socket->Send(packet);
 
 		// Check for errors
@@ -98,6 +104,11 @@ namespace ns3 {
 		}
     }
 
+	/**
+	 * @brief Function used to receive a packet from a socket
+	 * @param socket The socket used to receive the packet
+	 * @return The data of the packet received
+	*/
 	std::string TCPCommon::HandleRead (Ptr<Socket> socket){
 		NS_LOG_FUNCTION(this << socket);
 
@@ -109,19 +120,21 @@ namespace ns3 {
 		socket->GetSockName(to);
 		InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
 
+		// Read the data from the socket while there is still data to read
 		while (packet = socket->RecvFrom(from)) {
 
 			if (packet->GetSize () == 0) //EOF
 				break;
+
+			// Get the packet data from the stream read from the socket	
 			uint8_t *buffer = new uint8_t[packet->GetSize ()];
 			packet->CopyData(buffer, packet->GetSize ());
 			packetData = std::string((char*)buffer);
 
 			Time rightNow = Simulator::Now() - m_startTime;
-
 			InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom (from);
 
-			// Log print
+			// Print the information about the packet received
 			std::cout << "RECV [TO: " << toAddress.GetIpv4() 
 						<< ":" << toAddress.GetPort()
 						<< "] "
@@ -130,33 +143,47 @@ namespace ns3 {
 						<< ":" << fromAddress.GetPort () << "] "
 						<< " at time "
 						<< rightNow.GetSeconds();
-						//<< " of size: "
-						//<< packet->GetSize();
     	}
 
 		return packetData;
   	}
 
+
+	/**
+	 * @brief Callback used to handle a dispose request
+	 */ 
 	void TCPCommon::DoDispose (void){
 		NS_LOG_FUNCTION (this);
 		
-		// chain up
+		// chain up to NS3 application base class
 		Application::DoDispose ();
 	}		
 
-
-	void TCPCommon::SetRouter(Router *router) {
+	/**
+	 * @brief Function used to set the router of the TCPCommon object
+	 * @param router The router to set
+	 */
+	void TCPCommon::set_router(Router *router) {
 		NS_LOG_FUNCTION (this << router);
 		this->m_router = router;
 	}
 	
-	Router* TCPCommon::GetRouter() {
+	/**
+	 * @brief Function used to get the router of the TCPCommon object
+	 * @return The router of the TCPCommon object
+	 */
+	Router* TCPCommon::get_router() {
 		NS_LOG_FUNCTION (this);
 		return this->m_router;
 	}
 
 
-	std::string TCPCommon::binaryToDottedNotation(std::string ipBinary) {
+	/**
+	 * @brief Method to convert a binary bitstream that represents an IP address to dotted notation string
+	 * @param ipBinary IP address in binary bitstream
+	 * @return IP address in dotted notation string
+	*/
+	std::string TCPCommon::binary_to_dotted_notation(std::string ipBinary) {
 		std::string dottedNotation;
 
 		// Split the binary string into 4 octets

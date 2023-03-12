@@ -28,7 +28,7 @@ namespace ns3 {
              * @param startTime Time at which the BGPClient should start
              * @param stopTime Time at which the BGPClient should stop
              **/
-            void Setup (Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
+            void Setup(Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
 
             /**
              * @brief Method to add a single packet rapresented by a stringstream to the queue of messages to send
@@ -47,7 +47,7 @@ namespace ns3 {
              * @brief Method to return the socket used by the BGPClient
              * @return Socket used by the BGPClient
              **/
-            Ptr<Socket> GetSocket(void) const;
+            Ptr<Socket> get_socket(void) const;
 
         private:
 

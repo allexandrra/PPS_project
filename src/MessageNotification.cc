@@ -14,7 +14,9 @@
 // 	BGP Connection Collision Detection = it should not happen due to the fact that we have fixed roles for client/server
 // 	6 = Cease: we implemented the fact that a router could drop the tcp connection (by disabling the link)
 
-
+/**
+ * @brief Constructors for Message Notification object with different numbers of parameters
+*/
 MessageNotification::MessageNotification(int16_t error_code, int16_t error_subcode, std::string data) 
 : MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_NOTIFICATION_LEN+data.length(), 3) {
     this->error_code = error_code;
@@ -36,19 +38,31 @@ MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_NOTIFICATION_LEN, 3) {
     this->data = "";
 }
 
+/**
+ * @brief Getters for Message Notification attributes
+*/
 int16_t MessageNotification::get_error_code() { return error_code; }
 int16_t MessageNotification::get_error_subcode() { return error_subcode; }
 std::string MessageNotification::get_data() { return data; }
 
+/**
+ * @brief Overload of the << operator to print the MessageNotification fields into a binary bitstream
+ * @param stream the output stream
+ * @param msg the MessageNotification to print
+ * @return the output stream
+*/
 std::ostream& operator<<(std::ostream& stream, const MessageNotification& msg) {
+    // Convert into a binary bitstream the marker field of the header
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
 
+    // Convert into a binary bitstream the data field of the message
     std::stringstream strStreamData;
     for (int i = 0; i < (int)msg.data.size(); i++) {
         strStreamData << std::bitset<8>(msg.data[i]).to_string();
     }
 
+    // Print the bitstream into the output stream
     stream << std::bitset<128>(strStreamMarker.str()).to_string() << " " 
             << std::bitset<16>(msg.lenght).to_string() << " " 
             << std::bitset<8>(msg.type).to_string() << " "
@@ -60,7 +74,15 @@ std::ostream& operator<<(std::ostream& stream, const MessageNotification& msg) {
     return stream;
 }
 
+
+/**
+ * @brief Overload of the >> operator to read the MessageNotification fields from a binary bitstream
+ * @param stream the input stream
+ * @param msg the MessageNotification to read
+ * @return the input stream
+*/
 std::istream & operator>>(std::istream & stream, MessageNotification& msg) {
+    // declare the bitset variables
     std::bitset<128> bit_marker;
     std::bitset<16> bit_lenght;
     std::bitset<8> bit_type;
@@ -68,30 +90,31 @@ std::istream & operator>>(std::istream & stream, MessageNotification& msg) {
     std::bitset<8> bit_error_subcode;
     std::bitset<(256-21)*8> bit_data;
 
+    // read the bitstream from the input stream
     stream >> bit_marker >> bit_lenght >> bit_type >> bit_error_code >> bit_error_subcode >> bit_data;
 
-    //std::cout << "bit_version : " << bit_version << std::endl;
-
+    // convert the bitset variables into the MessageNotification fields
+    // start with the marker field
     std::vector<uint8_t> marker(128);
     for (int i = 0; i < (int)marker.size(); i++) {
         marker[i] = (bit_marker[i] == 1) ? '1' : '0';
     }
 
+    // convert the lenght field to understand how much data were sent
     msg.lenght = (uint16_t)bit_lenght.to_ulong();
-    
-    //std::cout << bit_data << std::endl;
     msg.data = "";
     int dataLen = msg.lenght - MIN_MESSAGE_NOTIFICATION_LEN - MESSAGE_HEADER_LEN;
 
+    // convert the data field
     for (int i=dataLen; i > 0 ; i--) {
         std::bitset<8> byte;
         for(int j=0; j<8; j++) {
             byte[7-j] = bit_data[i*8-j-1]; 
         }
-        //std::cout << (uint8_t)byte.to_ulong() << std::endl;
         msg.data += (uint8_t)byte.to_ulong();
     }
 
+    // convert the other fields
     msg.marker = marker;
     msg.type = (uint16_t)bit_type.to_ulong();
     msg.error_code = (uint16_t)bit_error_code.to_ulong();

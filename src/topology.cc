@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-//
-// Network topology: Topology 1 image on Drive
+// Network topology: described in the configuration file
 // All links are point-to-point links
 // To run the simulation: ./ns3 run scratch/PPS_project/src/topology.cc
 // To view the logs: export NS_LOG=Topology=info
@@ -19,6 +18,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
 
+/**
+ * @brief Create the stream for the open message starting from the value of router
+ * @param r the router that include the parameters for the open message
+ * @return the stream containing the open message
+*/
 std::stringstream createOpenMsg(Router r) {
     std::stringstream msgStream;
     MessageOpen msg = MessageOpen(r.get_router_AS(), 0, r.get_router_ID());
@@ -26,24 +30,27 @@ std::stringstream createOpenMsg(Router r) {
     return msgStream;
 }
 
+
+/**
+ * @brief Every client send the open message to the server where it is connected
+ * The server will reply with an open message
+ * @param routers the vector containing all the routers of the topology
+*/
 void sendOpenMsg(std::vector<Router> routers) {
-    //Every client sends an open message to the server
-    //The server will reply with an open message
-
+    // iterate over all the routers
     for(int i=0; i<(int)routers.size(); i++) {
-
-        std::vector<Interface> interfaces = routers[i].get_router_int();
-
-        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
-        
+        // get the interfaces of the router and iterate over them
+        std::vector<Interface> interfaces = routers[i].get_router_int();        
         for (int j=0; j<(int)interfaces.size(); j++) {
+            // check if the interface is a client
             if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
-
+                // check if the interface is up
                 if(interfaces[j].status) {
                     //send msg
                     std::stringstream msgStream = createOpenMsg(routers[i]);
                     interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                 } else {
+                    // send notification message becase the interface is down
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
 
                     std::stringstream msgStream;
@@ -51,18 +58,15 @@ void sendOpenMsg(std::vector<Router> routers) {
                     msgStream << msg << '\0';
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
-
+                    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    
+                    // reset the client and the server and set the router interface
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
-
+                    routers[i].set_interface(interfaces[j], j);
                 }
-
             }
         }
-        
-
     }
 }
 
@@ -185,7 +189,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the server 
                 routers[i].get_router_node().Get(0)->AddApplication(serverApp);
-                serverApp->SetRouter(&routers[i]);
+                serverApp->set_router(&routers[i]);
                 serverApp->SetStartTime(startServer);
                 serverApp->SetStopTime(stopServer);
 
@@ -198,7 +202,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the client on as2
                 routers[neighbourIndex].get_router_node().Get(0)->AddApplication(clientApp);
-                clientApp->SetRouter(&routers[neighbourIndex]);
+                clientApp->set_router(&routers[neighbourIndex]);
                 clientApp->SetStartTime(startClient);
                 clientApp->SetStopTime(stopClient);
 
@@ -331,9 +335,9 @@ void checkHoldTime(std::vector<Router>* routers) {
 
                     //TODO: think if we really want to send the notification message here
                     if(interfaces[j].client) {
-                        interfaces[j].client.value()->Send(interfaces[j].client.value()->GetSocket(), packetNotification);
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packetNotification);
                     } else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->GetSocket(), packetNotification);
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packetNotification);
                     }
 
                     interfaces[j].client.reset();

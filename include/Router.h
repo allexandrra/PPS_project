@@ -162,10 +162,10 @@ namespace ns3 {
         public:
 
             /**
-             * @brief Constructor for the Router class
+             * @brief Constructors for the Router class
             */
-            Router(std::string router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
-            Router(int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
+            Router(std::string router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address AS_ip, Ipv4Mask AS_mask);
+            Router(int AS, NodeContainer node, Ipv4Address AS_ip, Ipv4Mask AS_mask);
 
             /**
              * @brief Standard getters for the Router class attributes
@@ -286,12 +286,12 @@ namespace ns3 {
             /**
              * @brief Ip address associated to the AS, which is propageted to the peers
             */
-            Ipv4Address ASip;
+            Ipv4Address AS_ip;
 
             /**
              * @brief Ip mask associated to the AS, which is propageted to the peers
             */
-            Ipv4Mask ASmask;
+            Ipv4Mask AS_mask;
     };
 
 } // namespace ns3
