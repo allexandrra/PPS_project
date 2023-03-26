@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <cstring>
 #include <vector>
+#include <cstdlib>
+#include <ctime> 
 
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
@@ -19,9 +21,10 @@
 #include "ns3/node.h"
 #include "ns3/node-container.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/random-variable-stream.h"
+
 #include "../include/BGP-server.h"
 #include "../include/BGP-client.h"
-
 
 using namespace ns3;
 using namespace std;
@@ -94,6 +97,22 @@ namespace ns3 {
 
 
         /**
+         * @brief Inherited trust value discovered from the trust value of the interface's neighbour
+        */
+        float inherited_trust;
+
+        /**
+         * @brief Direct trust value composed by inherited trust discovered from the trust value of the interface's neighbour
+         * and the observed trust value of the interface
+        */
+        float direct_trust;
+
+        /**
+         * @brief Trust value obtained from the neighbour of the peers
+        */
+        float voted_trust;
+
+        /**
          * @brief Constructor for the Interface struct
         */
         Interface(std::string name, Ipv4Address ip_address, Ipv4Address mask) : status(true), isServer(false) {
@@ -102,6 +121,11 @@ namespace ns3 {
             this->mask = mask;
             this->max_hold_time = 0;
             this->last_update_time = 0;
+            this->direct_trust = 0;
+            this->voted_trust = 0;
+
+            // randomly generate the inherited trust value between 0 and 1
+            this->inherited_trust = (float) rand() / (float) RAND_MAX;
         }
 
         /**

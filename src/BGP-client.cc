@@ -2,7 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
-#include <cstring>
+#include <cstring> 
+
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -21,6 +22,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
+#include "../include/MessageTrustrate.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -82,11 +84,12 @@ namespace ns3 {
 		Interface intf = r->get_router_int()[int_num];
 
 		// differentite the action to be taken based on the type of the message
-		// 0 -> KEEPALIVE
 		// 1 -> OPEN
 		// 2 -> UPDATE
 		// 3 -> NOTIFICATION
-		if (msg.get_type() == 0){
+		// 4 -> KEEPALIVE
+		// 5 -> TRUSTRATE
+		if (msg.get_type() == 4){
 
 			// check if the current time is greater than the last update time + the hold time
 			// if it is, the interface has expired and the client should be stopped
@@ -136,6 +139,9 @@ namespace ns3 {
 			std::vector<EventId> events;
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
 
+			std::vector<EventId> trustEvents;
+			intf.client.value()->exchangeTrust(trustEvents);
+
 		} else if(msg.get_type() == 3){
 			// unpack the packet into a real MessageNotification object as the type in the header is 3 (NOTIFICATION)
 			MessageNotification msgRcv;
@@ -148,6 +154,67 @@ namespace ns3 {
 				this->StopApplication();
 			}
 			
+		} else if(msg.get_type() == 5) {
+			// check if the current time is greater than the last update time + the hold time
+			// if it is, the interface has expired and the client should be stopped
+			if(Simulator::Now().GetSeconds() - intf.get_last_update_time() <= intf.get_max_hold_time()) {
+
+				MessageTrustrate msgRcv;
+				std::stringstream(packet) >> msgRcv;
+
+				std::cout << " TRUSTRATE message with content TRUST: " <<  msgRcv.get_trust() << std::endl;
+
+				// update the last update time because a trust message has been received
+				intf.set_last_update_time(Simulator::Now().GetSeconds());
+				r->set_interface(intf, int_num);
+
+				if(intf.direct_trust == 0) {
+					// Initialize the trust values
+					// The two values of trust are weighted in the same way(50% each)
+					// The value of observed trust is initialized to 0.5 as the communication between the two interfaces is not yet established						
+					float observed_trust = 0.5;
+					
+					// New trust value = (1 - α) * Existing trust value + α * New trust value
+					// α = 0.3
+					intf.inherited_trust = (1 - 0.3) * intf.inherited_trust + 0.3 * msgRcv.get_trust();
+
+					// Weighted average of the two trust values	
+					// The weight of the two values is 50% each
+					intf.direct_trust = intf.inherited_trust * 0.5 + observed_trust * 0.5;
+				} else {
+					// New trust value = (1 - α) * Existing trust value + α * New trust value
+					// α = 0.3
+					intf.direct_trust = (1 - 0.3) * intf.direct_trust + 0.3 * msgRcv.get_trust();
+				}
+
+				// update the interface	
+				r->set_interface(intf, int_num);
+
+				// TODO: update the routing table 
+				
+
+			} else {
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " has expired hold time  at time " << Simulator::Now().GetSeconds() << " [TRUST READ CLIENT]");
+
+				//send notification message as the interface hold time has expired
+				std::stringstream msgStreamNotification;
+				MessageNotification msg = MessageNotification(6,0);
+				msgStreamNotification << msg << '\0';
+
+				Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+				this->Send(socket, packetNotification);
+
+				// reset the client and server application pointers on the interface
+				intf.client.reset();
+				intf.server.reset();
+
+				r->set_interface_status(int_num, false);
+				r->set_interface(intf, int_num);
+
+				// stop the application
+				this->StopApplication();
+			}
+
 		} else {
 			NS_LOG_INFO("Received another type of message");
 		}
@@ -293,7 +360,7 @@ namespace ns3 {
 
 					// create the keepalive message
 					std::stringstream msgStream;
-					MessageHeader msg = MessageHeader(0);
+					MessageHeader msg = MessageHeader(4);
 					msgStream << msg << '\0';
 
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
@@ -337,6 +404,112 @@ namespace ns3 {
 
 				// if the hold time is expired, send a notification message
 				NS_LOG_INFO("Hold time expired on interface " << intf.name << " of router " << r->get_router_AS() << " at time " << Simulator::Now().GetSeconds() << " [SCHEDULE PERIODIC KEEPALIVE]");
+		
+				std::stringstream msgStreamNotification;
+				MessageNotification msg = MessageNotification(4,0);
+				msgStreamNotification << msg << '\0';
+
+				Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
+				this->Send(m_socket, packetNotification);
+
+				for (int i = 0; i < (int) events.size(); i++){
+					if (!Simulator::IsExpired(events[i])) {
+						Simulator::Cancel(events[i]);
+					}
+				}
+
+				// reset the interface and update the interface status
+				intf.client.reset();
+				intf.server.reset();
+				r->set_interface_status(int_num, false);
+				r->set_interface(intf, int_num);
+				this->StopApplication();
+			}
+		}
+
+	}
+
+
+	/**
+	 * @brief Method to add a new trust packet to the queue every 2 minutes
+	 * @param events the list of all the events scheduled for the periodical sending of the trust messages
+	*/
+	void BGPClient::exchangeTrust(std::vector<EventId> events) {
+		
+		// get the information about the interface and the router where the client is running
+		Router *r = this->get_router();
+		Address to;
+		m_socket->GetSockName(to);
+		InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
+		int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+		Interface intf = r->get_router_int()[int_num];
+
+		// check if the socket is still running
+		if(m_running) {
+
+			// check if the hold time is expired
+			if(Simulator::Now().GetSeconds() - intf.get_last_update_time() <= intf.get_max_hold_time()) {
+
+				// check if the interface is up
+				if(intf.status) {
+
+					// create the keepalive message
+					std::stringstream msgStream;
+					MessageTrustrate msg;
+
+					// TODO need to add the trust value to the interface
+					if (intf.direct_trust == 0) {
+						// the first time, when the trust is not yet initialized, the trust value sent to the peer in only the inherited trust
+						//NS_LOG_INFO("Inh trust: " << intf.inherited_trust);
+						msg = MessageTrustrate(intf.inherited_trust);
+					} else {
+						// the other times the trust value is both the inherited trust and the observed trust
+						msg = MessageTrustrate(intf.direct_trust);
+					}
+					
+					msgStream << msg << '\0';
+
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+
+					// add a small dealy in the time used for the scheduling of the packet
+					Time atTime = Simulator::Now()+Seconds(10);
+
+					// schedule the sending of the packet and save the event id
+					m_sendEvent = Simulator::Schedule (atTime, &BGPClient::Send, this, m_socket, packet);	
+					events.push_back(m_sendEvent);
+
+					// schedule the next sending of the message 
+					Simulator::Schedule(Seconds(60.0), &BGPClient::exchangeTrust, this, events);
+					
+				} else {
+
+					// if the interface is down, send a notification message
+					NS_LOG_INFO("[TRUSTRATE] Interface " << intf.name << " of router " << r->get_router_AS() << " is down, sending a notification message");
+
+					std::stringstream msgStream;
+					MessageNotification msg = MessageNotification(6,0);
+					msgStream << msg << '\0';
+
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+					this->Send(m_socket, packet);
+
+					// cancel all the events scheduled for the periodical sending of the keepalive messages
+					for (int i = 0; i < (int) events.size(); i++){
+						if (!Simulator::IsExpired(events[i])) {
+							Simulator::Cancel(events[i]);
+						}
+					}
+
+					// reset the interface and update the interface status
+					intf.client.reset();
+					intf.server.reset();
+					r->set_interface_status(int_num, false);
+					r->set_interface(intf, int_num);
+				}			
+			} else {
+
+				// if the hold time is expired, send a notification message
+				NS_LOG_INFO("Hold time expired on interface " << intf.name << " of router " << r->get_router_AS() << " at time " << Simulator::Now().GetSeconds() << " [SCHEDULE PERIODIC TRUSTRATE]");
 		
 				std::stringstream msgStreamNotification;
 				MessageNotification msg = MessageNotification(4,0);

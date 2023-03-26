@@ -17,6 +17,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
+#include "../include/MessageTrustrate.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("TCPCommon");
@@ -79,7 +80,7 @@ namespace ns3 {
 		std::stringstream(packetData) >> msg;
 
 		// Print different information about the packet that we will send based on the type of the packet
-		if (msg.get_type() == 0){
+		if (msg.get_type() == 4){
 			std::cout << " KEEPALIVE message " << std::endl;
 		}
 		else if(msg.get_type() == 1){
@@ -92,6 +93,10 @@ namespace ns3 {
 			std::stringstream(packetData) >> msgRcv;
 
 			std::cout << " NOTIFICATION message with content  ERROR CODE: " << msgRcv.get_error_code() << " \t ERROR SUBCODE: " << msgRcv.get_error_subcode() << std::endl;
+		} else if (msg.get_type() == 5){
+			MessageTrustrate msgRcv;
+			std::stringstream(packetData) >> msgRcv;
+			std::cout << " TRUSTRATE message with content TRUST: " << msgRcv.get_trust() << std::endl;
 		} 
 
 		// Send the packet

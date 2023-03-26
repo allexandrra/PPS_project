@@ -388,7 +388,6 @@ void checkHoldTime(std::vector<Router>* routers) {
 
                     Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
 
-                    //TODO: think if we really want to send the notification message here
                     if(interfaces[j].client) {
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packetNotification);
                     } else if (interfaces[j].server){

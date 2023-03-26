@@ -43,6 +43,12 @@ namespace ns3 {
              **/
             void AddPacketsToQueuePeriodically(std::vector<EventId> events);
 
+             /**
+             * @brief Method to add a periodically the TrustRate packet to the queue of messages to send
+             * @param events Vector of the schedule events (that rappresent a message added to the queue)
+             **/
+            void exchangeTrust(std::vector<EventId> events);
+
             /**
              * @brief Method to return the socket used by the BGPClient
              * @return Socket used by the BGPClient

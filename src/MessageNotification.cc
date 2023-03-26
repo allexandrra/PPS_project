@@ -68,7 +68,6 @@ std::ostream& operator<<(std::ostream& stream, const MessageNotification& msg) {
             << std::bitset<8>(msg.type).to_string() << " "
             << std::bitset<8>(msg.error_code).to_string() << " "
             << std::bitset<8>(msg.error_subcode).to_string() << " "
-            // TODO change the length of the data field
             << strStreamData.str();
 
     return stream;
@@ -88,6 +87,10 @@ std::istream & operator>>(std::istream & stream, MessageNotification& msg) {
     std::bitset<8> bit_type;
     std::bitset<8> bit_error_code;
     std::bitset<8> bit_error_subcode;
+    // The max lenght of the data field is 256-21 = 235 bytes = 235 * 8 = 1880 bits
+    // In theory we should be 65535 instead of 256 as the max lenght of the message 
+    // because the lenght field is 16 bits long, but we will reduce it to 256 to avoid 
+    // memory problems
     std::bitset<(256-21)*8> bit_data;
 
     // read the bitstream from the input stream
