@@ -168,23 +168,34 @@ namespace ns3 {
 				intf.set_last_update_time(Simulator::Now().GetSeconds());
 				r->set_interface(intf, int_num);
 
-				if(intf.direct_trust == 0) {
-					// Initialize the trust values
-					// The two values of trust are weighted in the same way(50% each)
-					// The value of observed trust is initialized to 0.5 as the communication between the two interfaces is not yet established						
-					float observed_trust = 0.5;
-					
-					// New trust value = (1 - α) * Existing trust value + α * New trust value
-					// α = 0.3
-					intf.inherited_trust = (1 - 0.3) * intf.inherited_trust + 0.3 * msgRcv.get_trust();
+				if(intf.voted_trust == 0) {
+					if(intf.direct_trust == 0) {
+						// Initialize the trust values
+						// The two values of trust are weighted in the same way(50% each)
+						// The value of observed trust is initialized to 0.5 as the communication between the two interfaces is not yet established						
+						float observed_trust = 0.5;
+						
+						// New trust value = (1 - α) * Existing trust value + α * New trust value
+						// α = 0.3
+						intf.inherited_trust = (1 - 0.3) * intf.inherited_trust + 0.3 * msgRcv.get_trust();
 
-					// Weighted average of the two trust values	
-					// The weight of the two values is 50% each
-					intf.direct_trust = intf.inherited_trust * 0.5 + observed_trust * 0.5;
+						// Weighted average of the two trust values	
+						// The weight of the two values is 50% each
+						intf.direct_trust = intf.inherited_trust * 0.5 + observed_trust * 0.5;
+					} else {
+						// New trust value = (1 - α) * Existing trust value + α * New trust value
+						// α = 0.3
+						intf.direct_trust = (1 - 0.3) * intf.direct_trust + 0.3 * msgRcv.get_trust();
+					} 
+
+					intf.total_trust = intf.direct_trust;
 				} else {
-					// New trust value = (1 - α) * Existing trust value + α * New trust value
-					// α = 0.3
+
 					intf.direct_trust = (1 - 0.3) * intf.direct_trust + 0.3 * msgRcv.get_trust();
+
+					// αTd +(1−α)V where where Td = ω1 ∗ It +ω2 ∗ Ot
+					// α = 0.4
+					intf.total_trust = 0.4 * intf.direct_trust + (1 - 0.4) * intf.voted_trust;
 				}
 
 				// update the interface	
@@ -457,14 +468,19 @@ namespace ns3 {
 					std::stringstream msgStream;
 					MessageTrustrate msg;
 
-					// TODO need to add the trust value to the interface
-					if (intf.direct_trust == 0) {
-						// the first time, when the trust is not yet initialized, the trust value sent to the peer in only the inherited trust
-						//NS_LOG_INFO("Inh trust: " << intf.inherited_trust);
-						msg = MessageTrustrate(intf.inherited_trust);
+					// TODO
+					if(intf.voted_trust == 0) {
+						if (intf.direct_trust == 0) {
+							// the first time, when the trust is not yet initialized, the trust value sent to the peer in only the inherited trust
+							//NS_LOG_INFO("Inh trust: " << intf.inherited_trust);
+							msg = MessageTrustrate(intf.inherited_trust);
+						} else {
+							// the other times the trust value is both the inherited trust and the observed trust
+							msg = MessageTrustrate(intf.direct_trust);
+						}
 					} else {
 						// the other times the trust value is both the inherited trust and the observed trust
-						msg = MessageTrustrate(intf.direct_trust);
+						msg = MessageTrustrate(intf.total_trust);
 					}
 					
 					msgStream << msg << '\0';

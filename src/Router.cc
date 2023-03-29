@@ -64,7 +64,7 @@ namespace ns3 {
 
   /**
    * @brief Method for getting the interface index inside the vector of Interfaces of the router from the interface name
-   * @param num mumber of the interface (the name is composed by the number passed as parameter and the prefix string "eth")
+   * @param num number of the interface (the name is composed by the number passed as parameter and the prefix string "eth")
    * @return Interface index inside the vector of Interfaces of the router
    */    
   int Router::get_router_int_num_from_name(int num) {
@@ -202,6 +202,33 @@ namespace ns3 {
   */
   void Router::set_interface(Interface interface, int num) {
     this->interfaces[num] = interface;
+  }
+
+
+  /**
+   * @brief Method for getting the interface trust value from the interface name
+   * @param num name of the interface (the name is composed by the number passed as parameter and the prefix string "eth")
+   * @return Interface trust value
+  */
+  float Router::get_trust_from_interface_name(int num) {
+    // Iterate over the interfaces vector and return the index of the interface with the name passed as parameter
+    for(int i = 0; i < (int) interfaces.size(); i++) {
+      // name is composed by eth plus the number passed as parameter
+      std::string if_name = "eth"+std::to_string(num);
+      if(interfaces[i].name == if_name) {
+        std::cout << "entro ";
+        if(interfaces[i].total_trust == 0) {
+          std::cout << " direct trust: " << interfaces[i].direct_trust << std::endl;
+          return interfaces[i].direct_trust;
+        }
+        else {
+          std::cout << " total trust: " << interfaces[i].total_trust << std::endl;
+          return interfaces[i].total_trust;
+        }
+      }
+    }
+    // if not found return 0
+    return 0; 
   }
 
 }  // namespace ns3

@@ -113,6 +113,11 @@ namespace ns3 {
         float voted_trust;
 
         /**
+         * @brief Total trust value of the interface, composed by the direct trust value and the voted trust value
+        */
+       float total_trust;
+
+        /**
          * @brief Constructor for the Interface struct
         */
         Interface(std::string name, Ipv4Address ip_address, Ipv4Address mask) : status(true), isServer(false) {
@@ -123,6 +128,7 @@ namespace ns3 {
             this->last_update_time = 0;
             this->direct_trust = 0;
             this->voted_trust = 0;
+            this->total_trust = 0;
 
             // randomly generate the inherited trust value between 0 and 1
             this->inherited_trust = (float) rand() / (float) RAND_MAX;
@@ -242,6 +248,13 @@ namespace ns3 {
              * @return Interface index inside the vector of Interfaces of the router
             */
             int get_router_int_num_from_ip(Ipv4Address ip);
+
+            /**
+             * @brief Method for getting the interface trust value from the interface name
+             * @param num name of the interface (the name is composed by the number passed as parameter and the prefix string "eth")
+             * @return Interface trust value
+            */
+            float get_trust_from_interface_name(int num);
 
             /**
              * @brief Methods for setting the server and client applications of a single router interface

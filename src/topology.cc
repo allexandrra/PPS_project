@@ -409,6 +409,72 @@ void checkHoldTime(std::vector<Router>* routers) {
 
 }
 
+int get_router_index_from_AS(std::vector<Router>* routers, int AS) {
+    for(int i=0; i<(int)routers->size(); i++) {
+        if ((*routers)[i].get_router_AS() == AS) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
+//Option 1: inserire una ref del neigh nell'interface e poi scorrere a catena
+//Option 2: fare una cosa periodica come il controllo dell'holt time in topology e aggiornare la voted trust nelle interfaces
+void exchangeVotedTrust(std::vector<Router>* routers) {
+    std::cout << "\n\n--------------- START VOTING TRUST SHARING ------------\n" << std::endl;
+
+    for(int i=0; i<(int)routers->size(); i++) {
+        std::vector<Interface> interfaces = (*routers)[i].get_router_int();
+        std::cout << "--------------- ROUTER: " << (*routers)[i].get_router_AS() << "----------------" << std::endl;
+
+        for(int j=0; j<(int)interfaces.size(); j++) {
+            // split the string eth0 and the number
+            int neighborASNum = std::stoi(interfaces[j].name.substr(3,1));
+            std::cout << "First grade neighbor " << neighborASNum << std::endl;
+            
+            // find the router index in the routers vector from an AS number
+            int firstGradeNeighborIndex = get_router_index_from_AS(routers, neighborASNum);
+
+            if(firstGradeNeighborIndex != -1) {
+                // get the neighbor list of the peer router
+                std::vector<int> peerNeighbours = (*routers)[firstGradeNeighborIndex].get_router_neigh();
+
+                // iterate over the neighbors of the peer
+                float mediumVotedTrust = 0;
+                float ti = 0.25;
+                float sumTi = 0.25 * peerNeighbours.size();
+                for(int k=0; k<(int)peerNeighbours.size(); k++) {
+                    // if they are equal the second grade neighbor is the router itself
+                    if(peerNeighbours[k] != (*routers)[i].get_router_AS()) {
+                        // get the index of the neights of the peer
+                        int secondGradeNeighborIndex = get_router_index_from_AS(routers, peerNeighbours[k]);
+                        float vi = (*routers)[secondGradeNeighborIndex].get_trust_from_interface_name(neighborASNum);
+                        std::cout << "Second grade neighbor " <<  peerNeighbours[k] << " with trust: " << vi << " [eth"  << neighborASNum <<"]" <<  std::endl;
+
+                        // compute the medium voted trust using the following formula:
+                        // Vt = sum from 1 to n of (Vi *(Ti/ sum from 1 to n of Ti))
+                        // where Vi is the individual vote of neighbor i and Ti is the weight factor of neighbor i
+                        // Choices: Ti = 0.25 for every value of i (as they are all second grade neighbors)
+                        mediumVotedTrust += vi * (ti/sumTi);
+                    }
+                }
+
+                // update the voted trust of the interface
+                interfaces[j].voted_trust = mediumVotedTrust;
+                (*routers)[i].set_interface(interfaces[j], j);
+               
+            }
+        }
+    } 
+
+     std::cout << "\n\n--------------- END VOTED TRUST SHARING ------------\n" << std::endl;
+
+    Simulator::Schedule(Seconds(200.0), &exchangeVotedTrust, routers); 
+
+}
+
 void userInputCallback(std::vector<Router>* routers)
 {
     char c;
@@ -527,6 +593,8 @@ int main() {
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
 
     Simulator::Schedule(Seconds(100.0), &checkHoldTime, &network);
+
+    Simulator::Schedule(Seconds(150.0), &exchangeVotedTrust, &network);
 
     Simulator::Stop(Seconds(800.0));
     Simulator::Run();
