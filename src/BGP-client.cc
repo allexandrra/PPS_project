@@ -177,31 +177,54 @@ namespace ns3 {
 						
 						// New trust value = (1 - α) * Existing trust value + α * New trust value
 						// α = 0.3
+						/*std::cout << "No voted and direct trust yet. Received value: " << msgRcv.get_trust() 
+								  << " - old inherited trust value: "  << intf.inherited_trust 
+								  << " - observed trust value: " << observed_trust;*/
+
 						intf.inherited_trust = (1 - 0.3) * intf.inherited_trust + 0.3 * msgRcv.get_trust();
 
+						//std::cout << " - new inherited trust value: " << intf.inherited_trust;
 						// Weighted average of the two trust values	
 						// The weight of the two values is 50% each
+
 						intf.direct_trust = intf.inherited_trust * 0.5 + observed_trust * 0.5;
+						
+						//std::cout << " - new direct trust value: " << intf.direct_trust << std::endl
+						//		  << std::endl;
 					} else {
 						// New trust value = (1 - α) * Existing trust value + α * New trust value
 						// α = 0.3
+						//std::cout << "No voted trust yet. Received value: " << msgRcv.get_trust() 
+						//		  << " - old direct trust value: "  << intf.direct_trust;
+
 						intf.direct_trust = (1 - 0.3) * intf.direct_trust + 0.3 * msgRcv.get_trust();
+						
+						//std::cout << " - new direct trust value: "  << intf.direct_trust 
+						//		  << std::endl;
 					} 
 
 					intf.total_trust = intf.direct_trust;
 				} else {
+					/*std::cout << "Value received: " << msgRcv.get_trust() 
+							  << " - old direct trust value: "  << intf.direct_trust 
+							  << " - old voted trust value: " << intf.voted_trust 
+							  << " - old total trust value: " << intf.total_trust; */
 
 					intf.direct_trust = (1 - 0.3) * intf.direct_trust + 0.3 * msgRcv.get_trust();
 
 					// αTd +(1−α)V where where Td = ω1 ∗ It +ω2 ∗ Ot
 					// α = 0.4
 					intf.total_trust = 0.4 * intf.direct_trust + (1 - 0.4) * intf.voted_trust;
+					
+					/*std::cout << " - new direct trust value: "  << intf.direct_trust 
+							  << " - new total trust value: " << intf.total_trust
+						      << std::endl; */
 				}
 
 				// update the interface	
 				r->set_interface(intf, int_num);
 
-				// TODO: update the routing table 
+				// TODO: update the routing table using the value of total trust
 				
 
 			} else {
@@ -468,7 +491,6 @@ namespace ns3 {
 					std::stringstream msgStream;
 					MessageTrustrate msg;
 
-					// TODO
 					if(intf.voted_trust == 0) {
 						if (intf.direct_trust == 0) {
 							// the first time, when the trust is not yet initialized, the trust value sent to the peer in only the inherited trust

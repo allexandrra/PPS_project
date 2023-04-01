@@ -30,8 +30,8 @@ std::ostream& operator<<(std::ostream& stream, const MessageTrustrate& msg) {
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
 
-    // Convert the trust float value into an int between 0 and 10
-    int trust = (int) (msg.trust * 10);
+    // Convert the trust float value into an int between 0 and 100
+    int trust = (int) (msg.trust * 100);
 
     // Print the bitstream into the output stream
     stream << std::bitset<128>(strStreamMarker.str()).to_string() << " " 
@@ -70,7 +70,7 @@ std::istream & operator>>(std::istream & stream, MessageTrustrate& msg) {
     msg.marker = marker;
     msg.type = (uint16_t)bit_type.to_ulong();
     msg.lenght = (uint16_t)bit_lenght.to_ulong();
-    msg.trust = ((uint16_t)bit_trust.to_ulong())/10.0;
+    msg.trust = ((uint16_t)bit_trust.to_ulong())/100.0;
 
     return stream;
 }   
