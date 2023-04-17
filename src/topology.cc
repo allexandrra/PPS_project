@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-//
-// Network topology: Topology 1 image on Drive
+// Network topology: described in the configuration file
 // All links are point-to-point links
 // To run the simulation: ./ns3 run scratch/PPS_project/src/topology.cc
 // To view the logs: export NS_LOG=Topology=info
@@ -19,6 +18,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Topology");
 
+/**
+ * @brief Create the stream for the open message starting from the value of router
+ * @param r the router that include the parameters for the open message
+ * @return the stream containing the open message
+*/
 std::stringstream createOpenMsg(Router r) {
     std::stringstream msgStream;
     MessageOpen msg = MessageOpen(r.get_router_AS(), 0, r.get_router_ID());
@@ -26,24 +30,27 @@ std::stringstream createOpenMsg(Router r) {
     return msgStream;
 }
 
+
+/**
+ * @brief Every client send the open message to the server where it is connected
+ * The server will reply with an open message
+ * @param routers the vector containing all the routers of the topology
+*/
 void sendOpenMsg(std::vector<Router> routers) {
-    //Every client sends an open message to the server
-    //The server will reply with an open message
-
+    // iterate over all the routers
     for(int i=0; i<(int)routers.size(); i++) {
-
-        std::vector<Interface> interfaces = routers[i].get_router_int();
-
-        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
-        
+        // get the interfaces of the router and iterate over them
+        std::vector<Interface> interfaces = routers[i].get_router_int();        
         for (int j=0; j<(int)interfaces.size(); j++) {
+            // check if the interface is a client
             if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
-
+                // check if the interface is up
                 if(interfaces[j].status) {
                     //send msg
                     std::stringstream msgStream = createOpenMsg(routers[i]);
                     interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                 } else {
+                    // send notification message becase the interface is down
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
 
                     std::stringstream msgStream;
@@ -51,12 +58,12 @@ void sendOpenMsg(std::vector<Router> routers) {
                     msgStream << msg << '\0';
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
-
+                    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    
+                    // reset the client and the server and set the router interface
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
-
+                    routers[i].set_interface(interfaces[j], j);
                 }
             }
         }
@@ -179,12 +186,21 @@ std::stringstream createUpdateMsg(Router r) {
     std::vector<Path_atrs> path_atr = buildPA(r);
     std::vector<NLRIs> nlri = buildNLRI(r);
 
+<<<<<<< HEAD
     MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
     msgStream << msg << "/0";
     return msgStream;
 }
 
 void sendUpdateMsg(std::vector<Router> routers) {
+=======
+
+
+    MessageUpdate msg = MessageUpdate();
+}
+
+/*void sendUpdateMsg(std:vector<Router> routers) {
+>>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
     for (int i = 0; i < (int)routers.size(); i++) {
         std::vector<Interface> interfaces = routers[i].get_router_int();
 
@@ -213,7 +229,7 @@ void sendUpdateMsg(std::vector<Router> routers) {
 
         }
     }
-}
+} */
 
 
 std::vector<Router> createLinks(std::vector<Router> routers) {
@@ -335,7 +351,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the server 
                 routers[i].get_router_node().Get(0)->AddApplication(serverApp);
-                serverApp->SetRouter(&routers[i]);
+                serverApp->set_router(&routers[i]);
                 serverApp->SetStartTime(startServer);
                 serverApp->SetStopTime(stopServer);
 
@@ -348,7 +364,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Install and load the client on as2
                 routers[neighbourIndex].get_router_node().Get(0)->AddApplication(clientApp);
-                clientApp->SetRouter(&routers[neighbourIndex]);
+                clientApp->set_router(&routers[neighbourIndex]);
                 clientApp->SetStartTime(startClient);
                 clientApp->SetStopTime(stopClient);
 
@@ -481,11 +497,10 @@ void checkHoldTime(std::vector<Router>* routers) {
 
                     Ptr<Packet> packetNotification = Create<Packet>((uint8_t*) msgStreamNotification.str().c_str(), msgStreamNotification.str().length()+1);
 
-                    //TODO: think if we really want to send the notification message here
                     if(interfaces[j].client) {
-                        interfaces[j].client.value()->Send(interfaces[j].client.value()->GetSocket(), packetNotification);
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packetNotification);
                     } else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->GetSocket(), packetNotification);
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packetNotification);
                     }
 
                     interfaces[j].client.reset();
@@ -500,6 +515,72 @@ void checkHoldTime(std::vector<Router>* routers) {
     } 
 
     Simulator::Schedule(Seconds(60.0), &checkHoldTime, routers); 
+
+}
+
+int get_router_index_from_AS(std::vector<Router>* routers, int AS) {
+    for(int i=0; i<(int)routers->size(); i++) {
+        if ((*routers)[i].get_router_AS() == AS) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
+//Option 1: inserire una ref del neigh nell'interface e poi scorrere a catena
+//Option 2: fare una cosa periodica come il controllo dell'holt time in topology e aggiornare la voted trust nelle interfaces
+void exchangeVotedTrust(std::vector<Router>* routers) {
+    std::cout << "\n\n--------------- START VOTING TRUST SHARING ------------\n" << std::endl;
+
+    for(int i=0; i<(int)routers->size(); i++) {
+        std::vector<Interface> interfaces = (*routers)[i].get_router_int();
+        std::cout << "--------------- ROUTER: " << (*routers)[i].get_router_AS() << "----------------" << std::endl;
+
+        for(int j=0; j<(int)interfaces.size(); j++) {
+            // split the string eth0 and the number
+            int neighborASNum = std::stoi(interfaces[j].name.substr(3,1));
+            std::cout << "First grade neighbor " << neighborASNum << std::endl;
+            
+            // find the router index in the routers vector from an AS number
+            int firstGradeNeighborIndex = get_router_index_from_AS(routers, neighborASNum);
+
+            if(firstGradeNeighborIndex != -1) {
+                // get the neighbor list of the peer router
+                std::vector<int> peerNeighbours = (*routers)[firstGradeNeighborIndex].get_router_neigh();
+
+                // iterate over the neighbors of the peer
+                float mediumVotedTrust = 0;
+                float ti = 0.25;
+                float sumTi = 0.25 * peerNeighbours.size();
+                for(int k=0; k<(int)peerNeighbours.size(); k++) {
+                    // if they are equal the second grade neighbor is the router itself
+                    if(peerNeighbours[k] != (*routers)[i].get_router_AS()) {
+                        // get the index of the neights of the peer
+                        int secondGradeNeighborIndex = get_router_index_from_AS(routers, peerNeighbours[k]);
+                        float vi = (*routers)[secondGradeNeighborIndex].get_trust_from_interface_name(neighborASNum);
+                        std::cout << "Second grade neighbor " <<  peerNeighbours[k] << " with trust: " << vi << " [eth"  << neighborASNum <<"]" <<  std::endl;
+
+                        // compute the medium voted trust using the following formula:
+                        // Vt = sum from 1 to n of (Vi *(Ti/ sum from 1 to n of Ti))
+                        // where Vi is the individual vote of neighbor i and Ti is the weight factor of neighbor i
+                        // Choices: Ti = 0.25 for every value of i (as they are all second grade neighbors)
+                        mediumVotedTrust += vi * (ti/sumTi);
+                    }
+                }
+
+                // update the voted trust of the interface
+                interfaces[j].voted_trust = mediumVotedTrust;
+                (*routers)[i].set_interface(interfaces[j], j);
+               
+            }
+        }
+    } 
+
+     std::cout << "\n\n--------------- END VOTED TRUST SHARING ------------\n" << std::endl;
+
+    Simulator::Schedule(Seconds(200.0), &exchangeVotedTrust, routers); 
 
 }
 
@@ -615,8 +696,13 @@ int main() {
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
     NS_LOG_INFO("\nSending update messages");
+<<<<<<< HEAD
 
     sendUpdateMsg(network);
+=======
+    
+    //sendUpdateMsg(network);
+>>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 
     //for (Router r : network) {
         // std::vector<NLRIs> nlri = buildNLRI(r);
@@ -662,6 +748,8 @@ int main() {
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
 
     Simulator::Schedule(Seconds(100.0), &checkHoldTime, &network);
+
+    Simulator::Schedule(Seconds(150.0), &exchangeVotedTrust, &network);
 
     Simulator::Stop(Seconds(800.0));
     Simulator::Run();

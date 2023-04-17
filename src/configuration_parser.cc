@@ -26,17 +26,22 @@ using json = nlohmann::json;
 using namespace std;
 using namespace ns3;
 
-
+/**
+ * @brief Load the configuration file and create the routers of the topology described in the file
+*/
 std::vector<Router> load_configuration() {
-    //std::vector<AS> routers;
+    // vector containing the final routers
     std::vector<Router> routers;
+
+    // Open the configuration file and create a stream with that
     std::ifstream f(string(filesystem::current_path()) +
                     "/scratch/PPS_project/configuration_file.json");
+
+    // define the NS3 internet stack
     InternetStackHelper internet;
 
-    try
-    {
-        //std::cout << "Loading configuration file" << std::endl;
+    try {
+        // instance the json parser
         json config_raw = json::parse(f);
 
         // Iterate over AS
@@ -61,7 +66,7 @@ std::vector<Router> load_configuration() {
 
             Ipv4Address ip = Ipv4Address(string(element["ip"]).c_str());
 
-            // parsing of router names
+            // parsing of router netmask
             if (!element.contains("netmask"))
             {
                 std::cerr << "configuration_parse : error while retrieving netmask "
@@ -70,13 +75,14 @@ std::vector<Router> load_configuration() {
             }
             Ipv4Mask netmask = Ipv4Mask(string(element["netmask"]).c_str());
 
-            //AS router = AS(name, ip, netmask);
 
+            // create the NS3 node and install the internet stack
             NodeContainer node;
             node.Create(1);
             internet.Install(node);
+            // convert the string ASx to int x
             int ASnum = std::stoi(name.substr(2, name.size()-2));
-            // TODO: discuss about router_id
+            // router id = IP address
             Router router = Router(ASnum, node, ip, netmask);
 
             // Now we add the links
@@ -84,7 +90,8 @@ std::vector<Router> load_configuration() {
             {
                 for (auto& e_link : element["links"])
                 {
-                    //router.add_link(e_link);
+                    // convert the string ASx to int x 
+                    // x is the AS number of the neighbour
                     int neighNum = std::stoi(((std::string)e_link).substr(2, e_link.size()-2));
                     router.add_neighbour(neighNum);  
                 }
@@ -93,9 +100,12 @@ std::vector<Router> load_configuration() {
             // initialiaze routing table
 
             routers.push_back(router);
+
+            // print the router info
             std::cout << "Router " << ASnum << " created, with IP: " << ip
                 << ", and netmask: " << netmask << std::endl;
                 
+<<<<<<< HEAD
         }
 
         for (int j = 0; j < routers.size(); j++) {
@@ -131,6 +141,9 @@ std::vector<Router> load_configuration() {
                 }
             }
         }
+=======
+        }  
+>>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
     }
     catch (const std::exception& e)
     {

@@ -38,7 +38,7 @@ namespace ns3 {
              * @brief Method to return the socket used by the BGPServer
              * @return Socket used by the BGPServer
              **/
-            Ptr<Socket> GetSocket(void) const;
+            Ptr<Socket> get_socket(void) const;
 
         private:
 

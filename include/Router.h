@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <cstring>
 #include <vector>
+#include <cstdlib>
+#include <ctime> 
 
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
@@ -19,9 +21,10 @@
 #include "ns3/node.h"
 #include "ns3/node-container.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/random-variable-stream.h"
+
 #include "../include/BGP-server.h"
 #include "../include/BGP-client.h"
-
 
 using namespace ns3;
 using namespace std;
@@ -95,6 +98,27 @@ namespace ns3 {
 
 
         /**
+         * @brief Inherited trust value discovered from the trust value of the interface's neighbour
+        */
+        float inherited_trust;
+
+        /**
+         * @brief Direct trust value composed by inherited trust discovered from the trust value of the interface's neighbour
+         * and the observed trust value of the interface
+        */
+        float direct_trust;
+
+        /**
+         * @brief Trust value obtained from the neighbour of the peers
+        */
+        float voted_trust;
+
+        /**
+         * @brief Total trust value of the interface, composed by the direct trust value and the voted trust value
+        */
+       float total_trust;
+
+        /**
          * @brief Constructor for the Interface struct
         */
         Interface(std::string name, Ipv4Address ip_address, Ipv4Address mask) : status(true), isServer(false) {
@@ -103,6 +127,12 @@ namespace ns3 {
             this->mask = mask;
             this->max_hold_time = 0;
             this->last_update_time = 0;
+            this->direct_trust = 0;
+            this->voted_trust = 0;
+            this->total_trust = 0;
+
+            // randomly generate the inherited trust value between 0 and 1
+            this->inherited_trust = (float) rand() / (float) RAND_MAX;
         }
 
         /**
@@ -163,10 +193,10 @@ namespace ns3 {
         public:
 
             /**
-             * @brief Constructor for the Router class
+             * @brief Constructors for the Router class
             */
-            Router(std::string router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
-            Router(int AS, NodeContainer node, Ipv4Address ASip, Ipv4Mask ASmask);
+            Router(std::string router_ID, int AS, std::vector<Interface> interfaces, std::vector<int> neighbours, std::vector<Peer> routing_table, NodeContainer node, Ipv4Address AS_ip, Ipv4Mask AS_mask);
+            Router(int AS, NodeContainer node, Ipv4Address AS_ip, Ipv4Mask AS_mask);
 
             /**
              * @brief Standard getters for the Router class attributes
@@ -219,6 +249,13 @@ namespace ns3 {
              * @return Interface index inside the vector of Interfaces of the router
             */
             int get_router_int_num_from_ip(Ipv4Address ip);
+
+            /**
+             * @brief Method for getting the interface trust value from the interface name
+             * @param num name of the interface (the name is composed by the number passed as parameter and the prefix string "eth")
+             * @return Interface trust value
+            */
+            float get_trust_from_interface_name(int num);
 
             /**
              * @brief Methods for setting the server and client applications of a single router interface
@@ -287,12 +324,12 @@ namespace ns3 {
             /**
              * @brief Ip address associated to the AS, which is propageted to the peers
             */
-            Ipv4Address ASip;
+            Ipv4Address AS_ip;
 
             /**
              * @brief Ip mask associated to the AS, which is propageted to the peers
             */
-            Ipv4Mask ASmask;
+            Ipv4Mask AS_mask;
     };
 
 } // namespace ns3

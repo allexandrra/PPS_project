@@ -28,7 +28,7 @@ namespace ns3 {
              * @param startTime Time at which the BGPClient should start
              * @param stopTime Time at which the BGPClient should stop
              **/
-            void Setup (Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
+            void Setup(Ptr<Socket> socket, Address address, Time startTime, Time stopTime);
 
             /**
              * @brief Method to add a single packet rapresented by a stringstream to the queue of messages to send
@@ -43,11 +43,17 @@ namespace ns3 {
              **/
             void AddPacketsToQueuePeriodically(std::vector<EventId> events);
 
+             /**
+             * @brief Method to add a periodically the TrustRate packet to the queue of messages to send
+             * @param events Vector of the schedule events (that rappresent a message added to the queue)
+             **/
+            void exchangeTrust(std::vector<EventId> events);
+
             /**
              * @brief Method to return the socket used by the BGPClient
              * @return Socket used by the BGPClient
              **/
-            Ptr<Socket> GetSocket(void) const;
+            Ptr<Socket> get_socket(void) const;
 
         private:
 
