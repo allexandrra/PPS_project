@@ -18,6 +18,15 @@ MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> w
     this->NLRI.assign(NLRI.begin(), NLRI.end());
 }
 
+MessageUpdate::MessageUpdate(uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
+: MessageHeader(2) {
+    this->unfeasable_route_len = 0;
+    this->withdrawn_routes.resize(0);
+    this->total_path_atr_len = total_path_atr_len;
+    this->path_atr.assign(path_atr.begin(), path_atr.end());
+    this->NLRI.assign(NLRI.begin(), NLRI.end());
+}
+
 MessageUpdate::MessageUpdate() : MessageHeader(2) {
     //TODO
     this->unfeasable_route_len = 0;
@@ -37,8 +46,12 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
 
-    std::stringstream strStreamData;
+    //std::stringstream strStreamData;
     
+    stream << std::bitset<128>(strStreamMarker.str()).to_string() << " " 
+            << std::bitset<16>(msg.lenght).to_string() << " " 
+            << std::bitset<8>(msg.type).to_string() << " ";
+
     stream << std::bitset<16>(msg.unfeasable_route_len).to_string() << " ";
 
     if(msg.unfeasable_route_len > 0) {
@@ -52,6 +65,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
                 stream << token;
                 prefix.erase(0, pos + 1);
             }
+            stream << prefix;
             stream << " ";
         }
     }
@@ -60,38 +74,48 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
     if(msg.total_path_atr_len > 0) {
         for(Path_atrs p : msg.path_atr) {
-            std::bitset<8> bit_flags;
+            std::string aux = "";
             if(p.optional == 1) {
-                bit_flags[0] = '1';
+                aux.append("1");
+                //bit_flags[0] = '1';
             } else {
-                bit_flags[0] = '0';
+                aux.append("0");
+                //bit_flags[0] = '0';
             }
             if(p.transitive == 1) {
-                bit_flags[1] = '1';
+                aux.append("1");
+                //bit_flags[1] = '1';
             } else {
-                bit_flags[1] = '0';
+                aux.append("0");
+                //bit_flags[1] = '0';
             }
             if(p.partial == 1) {
-                bit_flags[2] = '1';
+                aux.append("1");
+                //bit_flags[2] = '1';
             } else {
-                bit_flags[2] = '0';
+                aux.append("0");
+                //bit_flags[2] = '0';
             }
             if(p.extended_lenght == 1) {
-                bit_flags[3] = '1';
+                aux.append("1");
+                //bit_flags[3] = '1';
             } else {
-                bit_flags[3] = '0';
+                aux.append("0");
+                //bit_flags[3] = '0';
             }
-            bit_flags[4] = '0';
-            bit_flags[5] = '0';
-            bit_flags[6] = '0';
-            bit_flags[7] = '0';
+            aux.append("0000");
+            //bit_flags[4] = '0';
+            //bit_flags[5] = '0';
+            //bit_flags[6] = '0';
+            //bit_flags[7] = '0';
 
-            stream << bit_flags << " " << std::bitset<8> (p.type).to_string() << " "
-                << std::bitset<8> (p.lenght).to_string() << " " << p.value << " ";
+            std::bitset<8> bit_flags(aux);
+            stream << bit_flags << " " << std::bitset<8>(p.type).to_string() << " "
+                << std::bitset<8>(p.lenght).to_string() << " " << p.value << " ";
         }
 
         for(NLRIs n : msg.NLRI) {
-            stream << std::bitset<8> (n.prefix_lenght).to_string() << " ";
+            stream << std::bitset<8>(n.prefix_lenght).to_string() << " ";
             size_t pos = 0;
             std::string token;
             std::string prefix = n.prefix;
@@ -100,6 +124,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
                 stream << token;
                 prefix.erase(0, pos + 1);
             }
+            stream << prefix;
             stream << " ";
         }
     }    
@@ -108,7 +133,6 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 }
 
 std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
-    //TODO
     // message header
     std::bitset<128> bit_marker;
     std::bitset<16> bit_length;
@@ -161,44 +185,57 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
             std::bitset<8> bit_atr_type_code;
             std::bitset<8> bit_atr_len;
 
-            stream >> bit_atr_flags >> bit_atr_type_code >> bit_length;
+            std::string bit_atr_value;
 
-            new_path_atr.optional = (uint8_t)bit_atr_flags[0];
-            new_path_atr.transitive = (uint8_t)bit_atr_flags[1];
-            new_path_atr.partial = (uint8_t)bit_atr_flags[2];
-            new_path_atr.extended_lenght = (uint8_t)bit_atr_flags[3];
+            stream >> bit_atr_flags >> bit_atr_type_code >> bit_length >> bit_atr_value;
+
+            std::string flags = bit_atr_flags.to_string();
+
+            new_path_atr.optional = atoi(flags.substr(0,1).c_str());
+            new_path_atr.transitive = atoi(flags.substr(1,1).c_str());;
+            new_path_atr.partial = atoi(flags.substr(2,1).c_str());;
+            new_path_atr.extended_lenght = atoi(flags.substr(3,1).c_str());;
+
             new_path_atr.lenght = (uint8_t)bit_atr_len.to_ulong();
+            new_path_atr.type = (uint8_t)bit_atr_type_code.to_ulong();
+            new_path_atr.value = bit_atr_value;
 
-            if(new_path_atr.extended_lenght == 0) {
-                std::bitset<8> bit_atr_value;
-                stream >> bit_atr_value;
-                new_path_atr.value = bit_atr_value.to_string();
-            } else {
-                std::bitset<16> bit_atr_value;
-                stream >> bit_atr_value;
-                new_path_atr.value = bit_atr_value.to_string();
-            }
+            // if(new_path_atr.extended_lenght == 0) {
+            //     std::bitset<8> bit_atr_value;
+            //     stream >> bit_atr_value;
+            //     new_path_atr.value = bit_atr_value.to_string();
+            // } else {
+            //     std::bitset<16> bit_atr_value;
+            //     stream >> bit_atr_value;
+            //     new_path_atr.value = bit_atr_value.to_string();
+            // }
+
+            //std::cout << "din func " << new_path_atr.lenght << " " << 
+                //new_path_atr.type << " " << new_path_atr.value << "\n\n";
 
             msg.path_atr.push_back(new_path_atr);
         }
 
-        while (!stream.eofbit) {
+        //while (!stream.eofbit)
+        for (int i = 0; i < msg.total_path_atr_len/5; i++) {
             NLRIs new_nlri;
 
             std::bitset<8> length;
-            std::bitset<8> prefix;
+            std::string prefix;
 
             stream >> length >> prefix;
 
             new_nlri.prefix_lenght = (uint8_t)length.to_ulong();
 
             for (int j = 0; j < 3; j++) {
-                stream >> prefix;
-                new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+                //stream >> prefix;
+                //new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+                new_nlri.prefix.append(prefix.substr(j,1));
                 new_nlri.prefix.append(".");
             }
-            stream >> prefix;
-            new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+            //stream >> prefix;
+            //new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+            new_nlri.prefix.append(prefix.substr(3,1));
 
             msg.NLRI.push_back(new_nlri);
         }
@@ -293,13 +330,15 @@ void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
 
 std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri) {
     std::vector<Route> rib_in;
+    int i = 0;
 
     for (NLRIs n : nlri) {
         Route new_route;
         new_route.nlri = n;
-        for(Path_atrs p : path_atr) {
-            new_route.path_atr.push_back(p);
+        for(int j = i; j < i+5; j++) {
+            new_route.path_atr.push_back(path_atr[j]);
         }
+        i+=5;
         //std::copy(path_atr.begin(), path_atr.end(), new_route.path_atr);    
         rib_in.push_back(new_route);
     }

@@ -33,6 +33,7 @@ namespace ns3 {
     */
     struct Peer {
         std::string network;
+        std::string mask;
         std::string next_hop;
         std::string path;
         int weight;

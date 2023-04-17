@@ -21,6 +21,7 @@ class MessageUpdate : public MessageHeader{
 
     public:
         MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI);
+        MessageUpdate(uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI);
         MessageUpdate();
 
         uint16_t get_unfeasable_route_len();

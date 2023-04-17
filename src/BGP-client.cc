@@ -21,6 +21,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
+#include "../include/MessageUpdate.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -111,6 +112,15 @@ namespace ns3 {
 			std::vector<EventId> events;
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
 
+		} else if(msg.get_type() == 2){
+			MessageUpdate msgRcv;
+			std::stringstream(packet) >> msgRcv;
+
+			std::cout << " UPDATE message " << std::endl;
+
+			std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
+			std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
+			msgRcv.add_to_RT(*r, locRib);
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packet) >> msgRcv;

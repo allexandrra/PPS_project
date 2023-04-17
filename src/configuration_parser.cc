@@ -90,18 +90,52 @@ std::vector<Router> load_configuration() {
                 }
             }
 
+            // initialiaze routing table
+
             routers.push_back(router);
             std::cout << "Router " << ASnum << " created, with IP: " << ip
                 << ", and netmask: " << netmask << std::endl;
                 
         }
-        
+
+        for (int j = 0; j < routers.size(); j++) {
+            std::vector<int> neighs = routers[j].get_router_neigh();
+
+            for (int i = 0; i < neighs.size(); i++) {
+                for (Router nr: routers) {
+                    if (neighs[i] == nr.get_router_AS()) {
+                        //std::cout << "se adauga vecin\n";
+                        struct Peer new_route;
+
+                        std::stringstream tmp1;
+                        std::stringstream tmp2;
+
+                        ns3::Ipv4Address ip_address = nr.get_router_ASip();
+                        ip_address.Print(tmp1);
+                        new_route.network = tmp1.str();
+                        
+                        ns3::Ipv4Mask ip_mask = nr.get_router_ASmask();
+                        ip_mask.Print(tmp2);
+                        new_route.mask = tmp2.str();
+
+                        new_route.next_hop = "0.0.0.0";
+                        new_route.path = std::to_string(nr.get_router_AS());
+                        new_route.weight = 20;
+                        new_route.loc_pref = 10;
+                        new_route.AS_path_len = 1;
+                        new_route.MED = 100;
+                        new_route.trust = 1.0;
+
+                        routers[j].push_new_route(new_route);
+                    }
+                }
+            }
+        }
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-
     return routers;
 }
 

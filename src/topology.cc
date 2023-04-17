@@ -58,12 +58,22 @@ void sendOpenMsg(std::vector<Router> routers) {
                     interfaces[j].server.reset();
 
                 }
-
             }
         }
-        
-
     }
+}
+
+inline bool isSetBit(int n, int index){
+	return n & (1 << index);
+}
+
+int popcount1(int n){
+	int count = 0;
+	int digits = static_cast<int>(std::floor(std::log2(n))) + 1;
+	for(int i = 0 ; i < digits ; ++i){
+		if(isSetBit(n,i)) ++count;
+	}
+	return count;
 }
 
 std::vector<NLRIs> buildWR() {
@@ -78,14 +88,26 @@ std::vector<NLRIs> buildNLRI(Router r) {
     NLRIs new_nlri;
 
     for (Peer p : r.get_router_rt()) {
+        int len = 0;
         size_t pos = 0;
         std::string token;
         std::string network = p.network;
-        pos = network.find("/");
-        new_nlri.prefix = network.substr(0, pos);
-        network.erase(0, pos + 1);
-        new_nlri.prefix_lenght = stoi(network);
+        std::string mask = p.mask;
+        pos = mask.find(".");
+        while ((pos = mask.find(".")) != std::string::npos) {
+            token = mask.substr(0,pos);
+            if (stoi(token) == 255) 
+                len += 8;
+            else {
+                len += popcount1(stoi(token));
+            }
+
+            mask.erase(0, pos+1);
+        }
         
+        new_nlri.prefix = network;
+        new_nlri.prefix_lenght = len;
+
         nlri.push_back(new_nlri);
     }
 
@@ -95,13 +117,58 @@ std::vector<NLRIs> buildNLRI(Router r) {
 std::vector<Path_atrs> buildPA(Router r) {
     std::vector<Path_atrs> path_atributes;
 
-    Path_atrs atrib;
-
     for (Peer p : r.get_router_rt()) {
-        atrib.type = 1;
-        atrib.lenght = 0;
-        atrib.value = to_string(p.weight);
-        
+        // weight 1, loc pref 2, next hop 3, AS 4, MED 5
+        Path_atrs atrib_w;
+        atrib_w.type = 1;
+        atrib_w.lenght = 0;
+        atrib_w.value = to_string(p.weight);
+        atrib_w.optional = 0;
+        atrib_w.transitive = 0;
+        atrib_w.partial = 0;
+        atrib_w.extended_lenght = 0;
+
+        Path_atrs atrib_lf;
+        atrib_lf.type = 2;
+        atrib_lf.lenght = 0;
+        atrib_lf.value = to_string(p.loc_pref);
+        atrib_lf.optional = 0;
+        atrib_lf.transitive = 0;
+        atrib_lf.partial = 0;
+        atrib_lf.extended_lenght = 0;
+
+        Path_atrs atrib_nh;
+        atrib_nh.type = 3;
+        atrib_nh.lenght = 0;
+        atrib_nh.value = p.next_hop;
+        atrib_nh.optional = 0;
+        atrib_nh.transitive = 0;
+        atrib_nh.partial = 0;
+        atrib_nh.extended_lenght = 0;
+
+        Path_atrs atrib_as;
+        atrib_as.type = 4;
+        atrib_as.lenght = p.AS_path_len;
+        atrib_as.value = p.path;
+        atrib_as.optional = 0;
+        atrib_as.transitive = 0;
+        atrib_as.partial = 0;
+        atrib_as.extended_lenght = 0;
+
+        Path_atrs atrib_med;
+        atrib_med.type = 5;
+        atrib_med.lenght = 0;
+        atrib_med.value = to_string(p.MED);
+        atrib_med.optional = 0;
+        atrib_med.transitive = 0;
+        atrib_med.partial = 0;
+        atrib_med.extended_lenght = 0;
+
+        path_atributes.push_back(atrib_w);
+        path_atributes.push_back(atrib_lf);
+        path_atributes.push_back(atrib_nh);
+        path_atributes.push_back(atrib_as);
+        path_atributes.push_back(atrib_med);
     }
 
     return path_atributes;
@@ -109,15 +176,42 @@ std::vector<Path_atrs> buildPA(Router r) {
 
 std::stringstream createUpdateMsg(Router r) {
     std::stringstream msgStream;
+    std::vector<Path_atrs> path_atr = buildPA(r);
+    std::vector<NLRIs> nlri = buildNLRI(r);
 
-
-
-    MessageUpdate msg = MessageUpdate()
+    MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
+    msgStream << msg << "/0";
+    return msgStream;
 }
 
-void sendUpdateMsg(std:vector<Router> routers) {
+void sendUpdateMsg(std::vector<Router> routers) {
     for (int i = 0; i < (int)routers.size(); i++) {
+        std::vector<Interface> interfaces = routers[i].get_router_int();
+
+        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
         
+        for (int j=0; j<(int)interfaces.size(); j++) {
+            if(interfaces[j].status) {
+                //send msg
+                std::stringstream msgStream = createUpdateMsg(routers[i]);
+                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+            } else {
+                NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
+
+                std::stringstream msgStream;
+                MessageNotification msg = MessageNotification(6,0);
+                msgStream << msg << '\0';
+
+                Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+
+                interfaces[j].client.reset();
+                interfaces[j].server.reset();
+
+            }
+
+        }
     }
 }
 
@@ -181,6 +275,7 @@ std::vector<Router> createLinks(std::vector<Router> routers) {
                 //NS_LOG_INFO("Adding remote interface " << if2.name << " to router " << routers[neighbourIndex].get_router_AS());
                 routers[neighbourIndex].add_interface(if2);
             }
+
         }
 
         //std::cout << "----------------------------------------------------------" << std::endl;
@@ -335,6 +430,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
     // TODO: Need to start the Update message phase
 
+
+
 }
 
 void disable_router(std::vector<Router>* routers, int AS) {
@@ -485,6 +582,7 @@ int main() {
 
     NS_LOG_INFO("Loading topology");
     std::vector<Router> network = load_configuration();
+
     NS_LOG_INFO("\nCreating links");
     network = createLinks(network);
 
@@ -517,8 +615,48 @@ int main() {
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
     NS_LOG_INFO("\nSending update messages");
-    
+
     sendUpdateMsg(network);
+
+    //for (Router r : network) {
+        // std::vector<NLRIs> nlri = buildNLRI(r);
+        // std::vector<Path_atrs> path = buildPA(r);
+
+        // std::cout << r.get_router_AS() << "\n\n";
+
+        // int k = 0;
+
+        // for (int j = 0; j < nlri.size(); j++) {
+        //     std::cout << nlri[j].prefix << " " << unsigned(nlri[j].prefix_lenght) << "\n\n";
+        //     for (int i = k; i < k+5; i++) {
+        //         std::cout << path[i].type << " " << path[i].lenght << " " << path[i].value << " " << 
+        //         unsigned(path[i].optional) << " " << unsigned(path[i].transitive) << " " << 
+        //         unsigned(path[i].partial) << " " << unsigned(path[i].extended_lenght) << "\n";
+        //     }
+        //     k+=5;
+        // }
+        // std::stringstream update = createUpdateMsg(r);
+        // std::cout << update.str() << "\n\n";
+
+        // MessageUpdate msg = MessageUpdate();
+        // update >> msg;
+
+        // std::cout << msg.get_type() << " " << msg.get_unfeasable_route_len() << " " 
+        //     << msg.get_total_path_atr_len() << "\n";
+        
+        // vector<Path_atrs> path = msg.get_path_atr();
+        // for(int i = 0; i < msg.get_total_path_atr_len(); i++) {
+        //     std::cout << path[i].type << " " << path[i].lenght << " " <<
+        //         path[i].value << " " << path[i].optional << path[i].transitive <<
+        //         path[i].partial << path[i].extended_lenght << "\n";
+        // }
+        // vector<NLRIs> nlri = msg.get_NLRI();
+        // for(int i = 0; i < nlri.size(); i++) {
+        //     std::cout << unsigned(nlri[i].prefix_lenght) << " " << nlri[i].prefix << "\n";
+        // }
+        
+        // std::cout << "\n\n";
+    //}
 
     // schedule the first user input callback to run after the simulation starts
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);

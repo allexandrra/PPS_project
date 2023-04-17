@@ -62,6 +62,9 @@ namespace ns3 {
 
   void Router::push_new_route(Peer new_route) {
     this->routing_table.push_back(new_route);
+    //NS_LOG_INFO("Added route " << new_route.network << " to router " << this->router_ID);
+    //NS_LOG_INFO("Router " << this->router_ID << " now has " << this->neighbours.size() << " neighbours");
+    //NS_LOG_INFO(this->routing_table.size());
   }
 
   void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
