@@ -203,7 +203,6 @@ void sendUpdateMsg(std::vector<Router> routers) {
 >>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
     for (int i = 0; i < (int)routers.size(); i++) {
         std::vector<Interface> interfaces = routers[i].get_router_int();
-
         //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
         
         for (int j=0; j<(int)interfaces.size(); j++) {
@@ -213,20 +212,15 @@ void sendUpdateMsg(std::vector<Router> routers) {
                 interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
             } else {
                 NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
-
                 std::stringstream msgStream;
                 MessageNotification msg = MessageNotification(6,0);
                 msgStream << msg << '\0';
-
                 Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
                 //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
                 interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
-
                 interfaces[j].client.reset();
                 interfaces[j].server.reset();
-
             }
-
         }
     }
 } */
@@ -416,7 +410,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             (*routers)[i].set_router_neigh(neighbours);
 
             /*neighbours = (*routers)[i].get_router_neigh();
-
             debug = "";
             for(int i=0; i<(int)neighbours.size(); i++) {
                 debug += std::to_string(neighbours[i]) + " ";
@@ -477,13 +470,11 @@ void checkHoldTime(std::vector<Router>* routers) {
                 Address to;
                 to = interfaces[j].client.value()->m_peer;
                 InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
-
                 NS_LOG_INFO("Socket " << toAddress.GetIpv4() << " m_running " << interfaces[j].client.value()->m_running);
             } else if (interfaces[j].server){
                 Address to;
                 //interfaces[j].server.value()->m_socket->GetPeerName(to);
                 //InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
-
                 NS_LOG_INFO("Socket server" << interfaces[j].server.value()->m_socket << " list len " << interfaces[j].server.value()->m_socketList.size()); //<< " add " << toAddress.GetIpv4()) ;
             }*/
 
