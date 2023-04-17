@@ -22,11 +22,7 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
-<<<<<<< HEAD
 #include "../include/MessageUpdate.h"
-=======
-#include "../include/MessageTrustrate.h"
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -143,7 +139,6 @@ namespace ns3 {
 			std::vector<EventId> events;
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
 
-<<<<<<< HEAD
 		} else if(msg.get_type() == 2){
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
@@ -153,11 +148,6 @@ namespace ns3 {
 			std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
 			std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
 			msgRcv.add_to_RT(*r, locRib);
-=======
-			std::vector<EventId> trustEvents;
-			intf.client.value()->exchangeTrust(trustEvents);
-
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 		} else if(msg.get_type() == 3){
 			// unpack the packet into a real MessageNotification object as the type in the header is 3 (NOTIFICATION)
 			MessageNotification msgRcv;

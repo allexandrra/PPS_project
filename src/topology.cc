@@ -186,21 +186,12 @@ std::stringstream createUpdateMsg(Router r) {
     std::vector<Path_atrs> path_atr = buildPA(r);
     std::vector<NLRIs> nlri = buildNLRI(r);
 
-<<<<<<< HEAD
     MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
     msgStream << msg << "/0";
     return msgStream;
 }
 
 void sendUpdateMsg(std::vector<Router> routers) {
-=======
-
-
-    MessageUpdate msg = MessageUpdate();
-}
-
-/*void sendUpdateMsg(std:vector<Router> routers) {
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
     for (int i = 0; i < (int)routers.size(); i++) {
         std::vector<Interface> interfaces = routers[i].get_router_int();
         //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
@@ -687,13 +678,8 @@ int main() {
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
     NS_LOG_INFO("\nSending update messages");
-<<<<<<< HEAD
 
     sendUpdateMsg(network);
-=======
-    
-    //sendUpdateMsg(network);
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 
     //for (Router r : network) {
         // std::vector<NLRIs> nlri = buildNLRI(r);

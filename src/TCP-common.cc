@@ -17,13 +17,9 @@
 #include "../include/MessageHeader.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
-<<<<<<< HEAD
 #include "../include/MessageUpdate.h"
 
 
-=======
-#include "../include/MessageTrustrate.h"
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("TCPCommon");
@@ -93,16 +89,12 @@ namespace ns3 {
 			MessageOpen msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
-<<<<<<< HEAD
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
 		}else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
 			std::cout << " UPDATE message "<< std::endl;
-=======
-			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;

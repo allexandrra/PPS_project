@@ -22,11 +22,7 @@
 #include "../include/Router.h"
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
-<<<<<<< HEAD
 #include "../include/MessageUpdate.h"
-=======
-#include "../include/MessageTrustrate.h"
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE ("BGPServer");
@@ -124,7 +120,6 @@ namespace ns3 {
 	}
 
 
-<<<<<<< HEAD
 	//--------------------------
 	inline bool isSetBit(int n, int index){
 		return n & (1 << index);
@@ -238,12 +233,6 @@ namespace ns3 {
 	}
 	//-------------------------
 
-=======
-	/**
-	 * @brief Callback used to read from the socket
-	 * @param socket The socket of the server
-	*/
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
 	void BGPServer::HandleRead (Ptr<Socket> socket){
 		NS_LOG_FUNCTION(this << socket);
 
