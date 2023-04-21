@@ -116,10 +116,8 @@ std::istream & operator>>(std::istream & stream, MessageHeader& msg) {
     
     msg.lenght = (uint16_t)bit_lenght.to_ulong();
 
-    std::cout << "\n         " << msg.lenght << std::endl;
-
     if (msg.lenght < 19 || msg.lenght > 4096) {
-        std::cerr << "The lenght of the message is not valid" << std::endl;
+        std::cerr << "The lenght of the message is not valid (" << msg.lenght << ")" << std::endl;
     }
     
     msg.type = (uint16_t)bit_type.to_ulong();

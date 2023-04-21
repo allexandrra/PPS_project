@@ -71,7 +71,7 @@ void sendOpenMsg(std::vector<Router> routers) {
     }
 }
 
-inline bool isSetBit(int n, int index){
+/*inline bool isSetBit(int n, int index){
 	return n & (1 << index);
 }
 
@@ -211,7 +211,7 @@ void sendUpdateMsg(std::vector<Router> routers) {
             }
         }
     }
-}
+} */
 
 
 std::vector<Router> createLinks(std::vector<Router> routers) {
@@ -399,7 +399,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             }
             (*routers)[i].set_router_neigh(neighbours);
 
-            for(int j = 0; j < (int)routers->size(); j++) {
+            // TODO: fix 
+            /*for(int j = 0; j < (int)routers->size(); j++) {
                 if ((*routers)[j].get_router_AS() == AS2) {
                     std::stringstream tmp1;
                     std::stringstream tmp2;
@@ -430,7 +431,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     wr.push_back(new_route);
                 }
-            }
+            } */
 
             /*neighbours = (*routers)[i].get_router_neigh();
             debug = "";
@@ -458,7 +459,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             }
             (*routers)[i].set_router_neigh(neighbours);
 
-            for(int j = 0; j < (int)routers->size(); j++) {
+            //TODO: fix
+            /*for(int j = 0; j < (int)routers->size(); j++) {
                 if ((*routers)[j].get_router_AS() == AS2) {
                     std::stringstream tmp1;
                     std::stringstream tmp2;
@@ -489,7 +491,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     wr.push_back(new_route);
                 }
-            }
+            } */
         }
     }
 
@@ -705,7 +707,8 @@ void userInputCallback(std::vector<Router>* routers) {
                     std::vector<Path_atrs> path_atr;
                     Path_atrs pa;
 
-                    for(int i = 0; i < (int)routers->size(); i++) {
+                    //TODO: fix 
+                    /*for(int i = 0; i < (int)routers->size(); i++) {
                         std::stringstream tmp1;
                         std::stringstream tmp2;
 
@@ -757,7 +760,7 @@ void userInputCallback(std::vector<Router>* routers) {
                             (*routers)[i].apply_policy((*routers)[i], updated_route);
                             break;
                         }
-                    }
+                    } */
 
                     break;
                 }
@@ -856,7 +859,7 @@ int main() {
 
     NS_LOG_INFO("\nSending update messages");
 
-    sendUpdateMsg(network);
+    //sendUpdateMsg(network);
 
     //for (Router r : network) {
         // std::vector<NLRIs> nlri = buildNLRI(r);

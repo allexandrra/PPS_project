@@ -161,7 +161,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
     msg.marker = marker;
     msg.lenght = (uint16_t)bit_length.to_ulong();
 
-    std::cout << "\n\n length of update " << msg.lenght << std::endl;
+    //std::cout << "\n\n length of update " << msg.lenght << std::endl;
 
     msg.type = (uint16_t)bit_type.to_ulong();
 

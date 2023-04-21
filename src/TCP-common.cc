@@ -94,9 +94,9 @@ namespace ns3 {
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
 		}else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
-			std::stringstream(packetData) >> msgRcv;
+			//std::stringstream(packetData) >> msgRcv;
 
-			std::cout << " TCP UPDATE message "<< std::endl;
+			std::cout << " UPDATE message "<< std::endl;
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;
@@ -110,6 +110,7 @@ namespace ns3 {
 
 		// Send the packet
 		int bytesSent = socket->Send(packet);
+		//std::cout << " and sent " << bytesSent << " bytes" << std::endl;
 
 		// Check for errors
 		if (bytesSent == -1) {

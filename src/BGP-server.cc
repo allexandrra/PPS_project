@@ -122,15 +122,15 @@ namespace ns3 {
 
 
 	//--------------------------
-	inline bool isSetBit(int n, int index){
+	inline bool isSetBitServer(int n, int index){
 		return n & (1 << index);
 	}
 
-	int popcount1(int n){
+	int popcount1Server(int n){
 		int count = 0;
 		int digits = static_cast<int>(std::floor(std::log2(n))) + 1;
 		for(int i = 0 ; i < digits ; ++i){
-			if(isSetBit(n,i)) ++count;
+			if(isSetBitServer(n,i)) ++count;
 		}
 		return count;
 	}
@@ -278,9 +278,11 @@ namespace ns3 {
 		} else if(msg.get_type() == 2) {
 			NS_LOG_INFO("Update message sunt aici 5");
 			MessageUpdate msgRcv;
-			std::stringstream(packet) >> msgRcv;
+			//std::stringstream(packet) >> msgRcv;
 
-			std::cout << " Server UPDATE message "<< std::endl;
+			std::cout << " UPDATE message "<< std::endl;
+
+			//std::cout << packet << std::endl;
 
 			// Get receiving address
 			Address to;
@@ -321,16 +323,21 @@ namespace ns3 {
 			if(intf.status) {
 				MessageUpdate msgToSend;
 				if (new_wr.size() > 0) {
+					NS_LOG_INFO("Entro 1");
 					msgToSend = MessageUpdate(new_wr.size(), new_wr);
 				}
 
 				if (new_pa.size() > 0) {
+					NS_LOG_INFO("Entro 2");
 					msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
 				}
 
-				msgStream << msgToSend << '\0';
+				//msgStream << msgToSend << '\0';
+				msgStream << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
+				//NS_LOG_INFO(msgStream.str());
 				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-				this->Send(socket,packet);	
+				this->Send(socket,packet);
+
 			} else {
 				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
 
