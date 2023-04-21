@@ -210,6 +210,9 @@ namespace ns3 {
             NodeContainer get_router_node();
             Ipv4Address get_router_ASip();
             Ipv4Mask get_router_ASmask();
+            void apply_policy(Router router, Route update_route);
+            
+            std::vector<NLRIs> remove_route(std::vector<NLRIs> withdrawnRoutes);
 
             /**
              * @brief Method for adding a new interface to the router Infaces vector

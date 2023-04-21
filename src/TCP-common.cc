@@ -18,6 +18,7 @@
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
+#include "../include/MessageTrustrate.h"
 
 
 
@@ -89,7 +90,8 @@ namespace ns3 {
 			MessageOpen msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
-			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
+			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << std::endl;
+			//std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
 		}else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
 			std::stringstream(packetData) >> msgRcv;
@@ -156,7 +158,6 @@ namespace ns3 {
 						<< " at time "
 						<< rightNow.GetSeconds();
     	}
-
 		return packetData;
   	}
 

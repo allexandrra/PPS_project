@@ -23,6 +23,7 @@
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
+#include "../include/MessageTrustrate.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE("BGPClient");
@@ -145,9 +146,73 @@ namespace ns3 {
 
 			std::cout << " UPDATE message " << std::endl;
 
-			std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
-			std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
-			msgRcv.add_to_RT(*r, locRib);
+			if (msgRcv.get_unfeasable_route_len() > 0) {
+				std::vector<NLRIs> new_wr;
+				new_wr = r->remove_route(msgRcv.get_withdrawn_routes());
+
+				std::vector<Interface> interfaces = r->get_router_int();
+				for (int j=0; j<(int)interfaces.size(); j++) {
+					if(interfaces[j].status) {
+						//send msg
+						MessageUpdate msg = MessageUpdate(new_wr.size(), new_wr);
+						std::stringstream msgStream;
+						msgStream << msg << "/0";
+						interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+					} else {
+						NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << r->get_router_AS() << " is down [sendUpdateMsg]");						
+						std::stringstream msgStream;
+						MessageNotification msg = MessageNotification(6,0);
+						msgStream << msg << '\0';
+						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+						//Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+						interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+						interfaces[j].client.reset();
+						interfaces[j].server.reset();
+					}
+				}
+			}
+
+			if(msgRcv.get_total_path_atr_len() > 0) {
+				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
+				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
+				
+				std::vector<NLRIs> new_nlri;
+				std::vector<Path_atrs> new_pa;
+				
+				for (int i = 0; i < locRib.size(); i++) {
+					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
+						if (locRib[i].path_atr[j].type == 2) {
+							locRib[i].path_atr[j].value.append(" ");
+							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
+						}
+						new_pa.push_back(locRib[i].path_atr[j]);
+					}
+					new_nlri.push_back(locRib[i].nlri);
+				}
+				
+				msgRcv.add_to_RT(*r, locRib);
+
+				std::vector<Interface> interfaces = r->get_router_int();
+				for (int j=0; j<(int)interfaces.size(); j++) {
+					if(interfaces[j].status) {
+						//send msg
+						MessageUpdate msg = MessageUpdate(new_pa.size(), new_pa, new_nlri);
+						std::stringstream msgStream;
+						msgStream << msg << "/0";
+						interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+					} else {
+						NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << r->get_router_AS() << " is down [sendUpdateMsg]");
+						std::stringstream msgStream;
+						MessageNotification msg = MessageNotification(6,0);
+						msgStream << msg << '\0';
+						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+						//Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+						interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+						interfaces[j].client.reset();
+						interfaces[j].server.reset();
+					}
+				}
+			}
 		} else if(msg.get_type() == 3){
 			// unpack the packet into a real MessageNotification object as the type in the header is 3 (NOTIFICATION)
 			MessageNotification msgRcv;

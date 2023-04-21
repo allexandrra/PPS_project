@@ -27,6 +27,15 @@ MessageUpdate::MessageUpdate(uint16_t total_path_atr_len, std::vector<Path_atrs>
     this->NLRI.assign(NLRI.begin(), NLRI.end());
 }
 
+MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes) 
+: MessageHeader(2) {
+    this->unfeasable_route_len = unfeasable_route_len;
+    this->withdrawn_routes.assign(withdraw_routes.begin(), withdraw_routes.end());
+    this->total_path_atr_len = 0;
+    this->path_atr.resize(0);
+    this->NLRI.resize(0);
+}
+
 MessageUpdate::MessageUpdate() : MessageHeader(2) {
     //TODO
     this->unfeasable_route_len = 0;
@@ -155,19 +164,18 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
             NLRIs new_withdrawn_route;
 
             std::bitset<8> length;
-            std::bitset<8> prefix;
+            std::string prefix;
 
             stream >> length >> prefix;
 
             new_withdrawn_route.prefix_lenght = (uint8_t)length.to_ulong();
 
             for (int j = 0; j < 3; j++) {
-                stream >> prefix;
-                new_withdrawn_route.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+                new_withdrawn_route.prefix.append(prefix.substr(j,1));
                 new_withdrawn_route.prefix.append(".");
             }
             stream >> prefix;
-            new_withdrawn_route.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
+            new_withdrawn_route.prefix.append(prefix.substr(3,1));
 
             msg.withdrawn_routes.push_back(new_withdrawn_route);
         }
@@ -302,10 +310,6 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
     return loc_RIB;
 }
 
-void MessageUpdate::apply_policy(Router router, Route update_route) {
-    router.update_routing_table(update_route.nlri.prefix, update_route.path_atr);
-}
-
 void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
 
     for(Route r : loc_rib) {
@@ -347,7 +351,7 @@ std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, 
 }
 
 void MessageUpdate::add_to_RIBout() {
-
+    
 }
 
 void MessageUpdate::add_to_FIB() { 

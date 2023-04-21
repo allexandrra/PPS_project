@@ -105,7 +105,6 @@ std::vector<Router> load_configuration() {
             std::cout << "Router " << ASnum << " created, with IP: " << ip
                 << ", and netmask: " << netmask << std::endl;
                 
-<<<<<<< HEAD
         }
 
         for (int j = 0; j < routers.size(); j++) {
@@ -141,9 +140,6 @@ std::vector<Router> load_configuration() {
                 }
             }
         }
-=======
-        }  
->>>>>>> d0679b3fa33ad23edb5416bf010420f0a66132aa
     }
     catch (const std::exception& e)
     {

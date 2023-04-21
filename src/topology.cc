@@ -11,6 +11,7 @@
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
 #include "../include/MessageOpen.h"
+#include "../include/MessageTrustrate.h"
 #include "../include/configuration_parser.h"
 #include "ns3/core-module.h"
 
@@ -81,12 +82,6 @@ int popcount1(int n){
 		if(isSetBit(n,i)) ++count;
 	}
 	return count;
-}
-
-std::vector<NLRIs> buildWR() {
-    std::vector<NLRIs> withdrawn_routes;
-
-    return withdrawn_routes;
 }
 
 std::vector<NLRIs> buildNLRI(Router r) {
@@ -194,7 +189,7 @@ std::stringstream createUpdateMsg(Router r) {
 void sendUpdateMsg(std::vector<Router> routers) {
     for (int i = 0; i < (int)routers.size(); i++) {
         std::vector<Interface> interfaces = routers[i].get_router_int();
-        //NS_LOG_INFO("Router " << routers[i].get_router_AS() << " has " << routers[i].get_router_ID() << " as router ID");
+        NS_LOG_INFO("Router " << routers[i].get_router_AS() << " Update message ");
         
         for (int j=0; j<(int)interfaces.size(); j++) {
             if(interfaces[j].status) {
@@ -214,7 +209,7 @@ void sendUpdateMsg(std::vector<Router> routers) {
             }
         }
     }
-} */
+}
 
 
 std::vector<Router> createLinks(std::vector<Router> routers) {
@@ -375,6 +370,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
     // Disabilitare il link
     // Se il link è disabilitato mandare un notification msg e chiuedere la connessione
     // Se il link è disabilitato non mandare il keepalive msg (droppare client e)
+    std::vector<NLRIs> wr;
+
     for(int i=0; i<(int)routers->size(); i++) {
 
         if ((*routers)[i].get_router_AS() == AS1) {
@@ -399,6 +396,39 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                 neighbours.erase(it);
             }
             (*routers)[i].set_router_neigh(neighbours);
+
+            for(int j = 0; j < (int)routers->size(); j++) {
+                if ((*routers)[j].get_router_AS() == AS2) {
+                    std::stringstream tmp1;
+                    std::stringstream tmp2;
+                    NLRIs new_route;
+
+                    ns3::Ipv4Address ip_address = (*routers)[j].get_router_ASip();
+                    ip_address.Print(tmp1);
+                    new_route.prefix = tmp1.str();
+                        
+                    ns3::Ipv4Mask ip_mask = (*routers)[j].get_router_ASmask();
+                    ip_mask.Print(tmp2);
+
+                    std::string mask = tmp2.str();
+                    std::string token;
+                    int len = 0;
+                    int pos = mask.find(".");
+                    while ((pos = mask.find(".")) != std::string::npos) {
+                        token = mask.substr(0,pos);
+                        if (stoi(token) == 255) 
+                            len += 8;
+                        else {
+                            len += popcount1(stoi(token));
+                        }
+
+                        mask.erase(0, pos+1);
+                    }
+                    new_route.prefix_lenght = len;
+
+                    wr.push_back(new_route);
+                }
+            }
 
             /*neighbours = (*routers)[i].get_router_neigh();
             debug = "";
@@ -425,12 +455,90 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                 neighbours.erase(it);
             }
             (*routers)[i].set_router_neigh(neighbours);
+
+            for(int j = 0; j < (int)routers->size(); j++) {
+                if ((*routers)[j].get_router_AS() == AS2) {
+                    std::stringstream tmp1;
+                    std::stringstream tmp2;
+                    NLRIs new_route;
+
+                    ns3::Ipv4Address ip_address = (*routers)[j].get_router_ASip();
+                    ip_address.Print(tmp1);
+                    new_route.prefix = tmp1.str();
+                        
+                    ns3::Ipv4Mask ip_mask = (*routers)[j].get_router_ASmask();
+                    ip_mask.Print(tmp2);
+
+                    std::string mask = tmp2.str();
+                    std::string token;
+                    int len = 0;
+                    int pos = mask.find(".");
+                    while ((pos = mask.find(".")) != std::string::npos) {
+                        token = mask.substr(0,pos);
+                        if (stoi(token) == 255) 
+                            len += 8;
+                        else {
+                            len += popcount1(stoi(token));
+                        }
+
+                        mask.erase(0, pos+1);
+                    }
+                    new_route.prefix_lenght = len;
+
+                    wr.push_back(new_route);
+                }
+            }
         }
     }
 
     // TODO: Need to start the Update message phase
-
-
+        
+    for(int i=0; i<(int)routers->size(); i++) {
+        if ((*routers)[i].get_router_AS() == AS1) {    
+            std::vector<Interface> interfaces = (*routers)[i].get_router_int();
+            for (int j=0; j<(int)interfaces.size(); j++) {
+                if(interfaces[j].status) {
+                    //send msg
+                    MessageUpdate msg = MessageUpdate(wr.size(), wr);
+                    std::stringstream msgStream;
+                    msgStream << msg << "/0";
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                } else {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
+                    std::stringstream msgStream;
+                    MessageNotification msg = MessageNotification(6,0);
+                    msgStream << msg << '\0';
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+                }
+            }
+        }
+        if ((*routers)[i].get_router_AS() == AS2) {
+            std::vector<Interface> interfaces = (*routers)[i].get_router_int();
+            for (int j=0; j<(int)interfaces.size(); j++) {
+                if(interfaces[j].status) {
+                    //send msg
+                    MessageUpdate msg = MessageUpdate(wr.size(), wr);
+                    std::stringstream msgStream;
+                    msgStream << msg << "/0";
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                } else {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
+                    std::stringstream msgStream;
+                    MessageNotification msg = MessageNotification(6,0);
+                    msgStream << msg << '\0';
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+                }
+            }
+        }
+    }
 
 }
 
@@ -566,8 +674,7 @@ void exchangeVotedTrust(std::vector<Router>* routers) {
 
 }
 
-void userInputCallback(std::vector<Router>* routers)
-{
+void userInputCallback(std::vector<Router>* routers) {
     char c;
     
     std::cout << "\n\nSelect one of the following to be executed at time " << (Simulator::Now().GetSeconds()) <<
@@ -585,28 +692,96 @@ void userInputCallback(std::vector<Router>* routers)
     if (isdigit(c)) {
         switch (c) {
             case '1':
-                send_ip_message();
-                break;
+                {
+                    std::string ip1, ip2, type, value, lenght;
+                
+                    std::cout << "The policy contains the value modification of one preference for a given link. The options are w for weight, lf for local preference, med for MED. \n";
+                    std::cout << "Enter the two routers that the policy applies to: ";
+                    std::cin >> ip1 >> ip2 >> type >> value >> lenght;
 
+                    NLRIs updated_nlri;
+                    std::vector<Path_atrs> path_atr;
+                    Path_atrs pa;
+
+                    for(int i = 0; i < (int)routers->size(); i++) {
+                        std::stringstream tmp1;
+                        std::stringstream tmp2;
+
+                        ns3::Ipv4Address ip_address = (*routers)[i].get_router_ASip();
+                        ip_address.Print(tmp1);
+                        if (tmp1.str().compare(ip2)) {
+                            updated_nlri.prefix = tmp1.str();
+                            ns3::Ipv4Mask ip_mask = (*routers)[i].get_router_ASmask();
+                            ip_mask.Print(tmp2);
+                            
+                            int len = 0;
+                            size_t pos = 0;
+                            std::string token;
+                            std::string mask = tmp2.str();
+                            pos = mask.find(".");
+                            while ((pos = mask.find(".")) != std::string::npos) {
+                                token = mask.substr(0,pos);
+                                if (stoi(token) == 255) 
+                                    len += 8;
+                                else {
+                                    len += popcount1(stoi(token));
+                                }
+
+                                mask.erase(0, pos+1);
+                            }
+
+                            updated_nlri.prefix_lenght = len;
+                            break;
+                        }
+                    }
+
+                    pa.type = stoi(type);
+                    pa.value = value;
+                    pa.lenght = stoi(lenght);
+                    pa.optional = 0;
+                    pa.transitive = 0;
+                    pa.partial = 0;
+                    pa.extended_lenght = 0;
+                    path_atr.push_back(pa);
+                    Route updated_route;
+                    updated_route.nlri = updated_nlri;
+                    updated_route.path_atr = path_atr;
+
+                    for(int i = 0; i < (int)routers->size(); i++) {
+                        std::stringstream tmp1;
+                        ns3::Ipv4Address ip_address = (*routers)[i].get_router_ASip();
+                        ip_address.Print(tmp1);
+                        if (tmp1.str().compare(ip1)) {
+                            (*routers)[i].apply_policy((*routers)[i], updated_route);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
             case '2':
-                int AS1, AS2;
+                {
+                    int AS1, AS2;
 
-                std::cout << "Enter the two AS numbes of the routers that forms the link: ";
-                std::cin >> AS1 >> AS2;
-                std::cout << std::endl;
+                    std::cout << "Enter the two AS numbes of the routers that forms the link: ";
+                    std::cin >> AS1 >> AS2;
+                    std::cout << std::endl;
 
-                //std::cout << "You entered: " << AS1 << " and " << AS2 << std::endl;
-                disable_router_link(routers, AS1, AS2);
-                break;
+                    //std::cout << "You entered: " << AS1 << " and " << AS2 << std::endl;
+                    disable_router_link(routers, AS1, AS2);
+                    break;
+                }
             case '3':
-                int AS;
+                {
+                    int AS;
 
-                std::cout << "Enter the AS number of the router to disable: ";
-                std::cin >> AS;
-                std::cout << std::endl;
+                    std::cout << "Enter the AS number of the router to disable: ";
+                    std::cin >> AS;
+                    std::cout << std::endl;
 
-                disable_router(routers, AS);
-                break;
+                    disable_router(routers, AS);
+                    break;
+                }
             case '4':
                 break;
 

@@ -128,6 +128,10 @@ namespace ns3 {
     }
   }
 
+  void Router::apply_policy(Router router, Route update_route) {
+    router.update_routing_table(update_route.nlri.prefix, update_route.path_atr);
+  }
+
   /**
    * @brief Method for adding a new interface to the router Infaces vector
    * @param interface Interface struct instance to be added
@@ -207,6 +211,17 @@ namespace ns3 {
     this->interfaces[num] = interface;
   }
 
+  std::vector<NLRIs> Router::remove_route(std::vector<NLRIs> wr) {
+
+    for(int i = 0; i < wr.size(); i++) {
+      for (int j = 0; j < this->routing_table.size(); j++) {
+        if (wr[i].prefix.compare(this->routing_table[j].network) == 0) {
+          this->routing_table.erase(this->routing_table.begin() + j);
+        }
+      }
+    }
+  }
+
 
   /**
    * @brief Method for getting the interface trust value from the interface name
@@ -233,6 +248,5 @@ namespace ns3 {
     // if not found return 0
     return 0; 
   }
-
 }  // namespace ns3
 

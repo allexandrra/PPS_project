@@ -23,6 +23,7 @@
 #include "../include/MessageOpen.h"
 #include "../include/MessageNotification.h"
 #include "../include/MessageUpdate.h"
+#include "../include/MessageTrustrate.h"
 
 namespace ns3 {
 	NS_LOG_COMPONENT_DEFINE ("BGPServer");
@@ -132,12 +133,6 @@ namespace ns3 {
 			if(isSetBit(n,i)) ++count;
 		}
 		return count;
-	}
-
-	std::vector<NLRIs> buildWR() {
-		std::vector<NLRIs> withdrawn_routes;
-
-		return withdrawn_routes;
 	}
 
 	std::vector<NLRIs> buildNLRI(Router r) {
@@ -376,37 +371,56 @@ namespace ns3 {
 		} else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
-			Address to;
-			Router *r = this->GetRouter();
-
-			//std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binaryToDottedNotation(msgRcv.get_BGP_id()) << std::endl;
 
 			// Get receiving address
+			Address to;
+			Router *r = this->get_router();
 			socket->GetSockName(to);
 			InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
-			//int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
-			//Interface intf = r->get_router_int()[int_num];
-			//NS_LOG_INFO("Router AS: " << r->get_router_AS());
-			//int max_hold_time = max((int)msgRcv.get_hold_time(), 90);
+			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
+			Interface intf = r->get_router_int()[int_num];	
+
+			std::vector<NLRIs> new_nlri;
+			std::vector<Path_atrs> new_pa;
+			std::vector<NLRIs> new_wr;
+
+			if (msgRcv.get_unfeasable_route_len() > 0) {
+				new_wr = r->remove_route(msgRcv.get_withdrawn_routes());
+			}
+
+			if(msgRcv.get_total_path_atr_len() > 0) {
+				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
+				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
+					
+				for (int i = 0; i < locRib.size(); i++) {
+					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
+						if (locRib[i].path_atr[j].type == 2) {
+							locRib[i].path_atr[j].value.append(" ");
+							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
+						}
+						new_pa.push_back(locRib[i].path_atr[j]);
+					}
+					new_nlri.push_back(locRib[i].nlri);
+				}
+					
+				msgRcv.add_to_RT(*r, locRib);	
+			}
 			
 			std::stringstream msgStream;
-			//HOLD TIME = 90s, KEEPALIVE = 30s (1/3 the hold time)
-
-			//r->set_hold_time(toAddress, max_hold_time);
-			//Simulator::Schedule (Seconds(1.0), &Interface::increment_hold_time, &intf);
-			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
-			Interface intf = r->get_router_int()[int_num];
 
 			if(intf.status) {
-				//MessageOpen msgToSend = MessageOpen(r->get_router_AS(), max_hold_time, r->get_router_ID());
-				std::vector<Path_atrs> path_atr = buildPA(*r);
-    			std::vector<NLRIs> nlri = buildNLRI(*r);
+				MessageUpdate msgToSend;
+				if (new_wr.size() > 0) {
+					msgToSend = MessageUpdate(new_wr.size(), new_wr);
+				}
 
-    			MessageUpdate msgToSend = MessageUpdate(path_atr.size(), path_atr, nlri);
+				if (new_pa.size() > 0) {
+					msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
+				}
 
 				msgStream << msgToSend << '\0';
 				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-				this->Send(socket,packet);
+				this->Send(socket,packet);	
 			} else {
 				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
 
