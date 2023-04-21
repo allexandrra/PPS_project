@@ -96,7 +96,7 @@ namespace ns3 {
 			MessageUpdate msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
-			std::cout << " UPDATE message "<< std::endl;
+			std::cout << " TCP UPDATE message "<< std::endl;
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;

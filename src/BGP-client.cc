@@ -138,6 +138,11 @@ namespace ns3 {
 			// schedule the first keepalive message to be sent
 			// events is a list of all the events scheduled for the periodical sending of the keepalive messages
 			std::vector<EventId> events;
+
+
+			// move initial update here
+
+
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
 
 		} else if(msg.get_type() == 2){
@@ -145,7 +150,7 @@ namespace ns3 {
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
-			std::cout << " UPDATE message " << std::endl;
+			std::cout << " Client UPDATE message " << std::endl;
 
 			if (msgRcv.get_unfeasable_route_len() > 0) {
 				std::vector<NLRIs> new_wr;

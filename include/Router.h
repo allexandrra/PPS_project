@@ -213,6 +213,7 @@ namespace ns3 {
             void apply_policy(Router router, Route update_route);
             
             std::vector<NLRIs> remove_route(std::vector<NLRIs> withdrawnRoutes);
+            void print_RT();
 
             /**
              * @brief Method for adding a new interface to the router Infaces vector

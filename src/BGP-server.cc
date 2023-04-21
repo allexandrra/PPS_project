@@ -280,6 +280,8 @@ namespace ns3 {
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
+			std::cout << " Server UPDATE message "<< std::endl;
+
 			// Get receiving address
 			Address to;
 			Router *r = this->get_router();

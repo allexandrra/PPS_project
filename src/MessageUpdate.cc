@@ -10,7 +10,7 @@
 #include <bits/stdc++.h> 
 
 MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
-: MessageHeader(2) {
+: MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_UPDATE_LEN, 2) {
     this->unfeasable_route_len = unfeasable_route_len;
     this->withdrawn_routes.assign(withdraw_routes.begin(), withdraw_routes.end());
     this->total_path_atr_len = total_path_atr_len;
@@ -19,7 +19,7 @@ MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> w
 }
 
 MessageUpdate::MessageUpdate(uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
-: MessageHeader(2) {
+: MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_UPDATE_LEN, 2) {
     this->unfeasable_route_len = 0;
     this->withdrawn_routes.resize(0);
     this->total_path_atr_len = total_path_atr_len;
@@ -28,7 +28,7 @@ MessageUpdate::MessageUpdate(uint16_t total_path_atr_len, std::vector<Path_atrs>
 }
 
 MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes) 
-: MessageHeader(2) {
+: MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_UPDATE_LEN, 2) {
     this->unfeasable_route_len = unfeasable_route_len;
     this->withdrawn_routes.assign(withdraw_routes.begin(), withdraw_routes.end());
     this->total_path_atr_len = 0;
@@ -151,11 +151,19 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
     std::bitset<16> bit_total_path_atr_len;
 
     std::vector<uint8_t> marker(128);
+
+    stream >> bit_marker >> bit_length >> bit_type >> bit_unfeasable_route_len;
+
     for (int i = 0; i < (int)marker.size(); i++) {
         marker[i] = (bit_marker[i] == 1) ? '1' : '0';
     }
 
-    stream >> bit_marker >> bit_length >> bit_type >> bit_unfeasable_route_len;
+    msg.marker = marker;
+    msg.lenght = (uint16_t)bit_length.to_ulong();
+
+    std::cout << "\n\n length of update " << msg.lenght << std::endl;
+
+    msg.type = (uint16_t)bit_type.to_ulong();
 
     msg.unfeasable_route_len = (uint16_t)bit_unfeasable_route_len.to_ulong();
 

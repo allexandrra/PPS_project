@@ -222,6 +222,16 @@ namespace ns3 {
     }
   }
 
+  void Router::print_RT() {
+    for (int i = 0; i < this->routing_table.size(); i++) {
+      std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
+        << this->routing_table[i].weight << " " << this->routing_table[i].loc_pref << " "
+        << this->routing_table[i].next_hop << " " << this->routing_table[i].AS_path_len << " " 
+        << this->routing_table[i].path << " " << this->routing_table[i].MED << " " 
+        << this->routing_table[i].trust << std::endl;
+    }
+  }
+
 
   /**
    * @brief Method for getting the interface trust value from the interface name

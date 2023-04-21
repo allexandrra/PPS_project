@@ -11,6 +11,8 @@
 #include "MessageHeader.h"
 #include "Router.h"
 
+#define MIN_MESSAGE_UPDATE_LEN 16
+
 class MessageUpdate : public MessageHeader{
     private:
         uint16_t unfeasable_route_len;
