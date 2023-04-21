@@ -141,6 +141,7 @@ namespace ns3 {
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
 
 		} else if(msg.get_type() == 2){
+			NS_LOG_INFO("Update message sunt aici 4");
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 

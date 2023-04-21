@@ -192,20 +192,22 @@ void sendUpdateMsg(std::vector<Router> routers) {
         NS_LOG_INFO("Router " << routers[i].get_router_AS() << " Update message ");
         
         for (int j=0; j<(int)interfaces.size(); j++) {
-            if(interfaces[j].status) {
-                //send msg
-                std::stringstream msgStream = createUpdateMsg(routers[i]);
-                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
-            } else {
-                NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
-                std::stringstream msgStream;
-                MessageNotification msg = MessageNotification(6,0);
-                msgStream << msg << '\0';
-                Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-                //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-                interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
-                interfaces[j].client.reset();
-                interfaces[j].server.reset();
+            if(!interfaces[j].isServer && interfaces[j].client.has_value()) {
+                if(interfaces[j].status) {
+                    //send msg
+                    std::stringstream msgStream = createUpdateMsg(routers[i]);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                } else {
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << routers[i].get_router_AS() << " is down [sendOpenMsg]");
+                    std::stringstream msgStream;
+                    MessageNotification msg = MessageNotification(6,0);
+                    msgStream << msg << '\0';
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
+                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    interfaces[j].client.reset();
+                    interfaces[j].server.reset();
+                }
             }
         }
     }

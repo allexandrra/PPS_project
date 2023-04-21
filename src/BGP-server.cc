@@ -135,99 +135,6 @@ namespace ns3 {
 		return count;
 	}
 
-	std::vector<NLRIs> buildNLRI(Router r) {
-		std::vector<NLRIs> nlri;
-
-		NLRIs new_nlri;
-
-		for (Peer p : r.get_router_rt()) {
-			int len = 0;
-			size_t pos = 0;
-			std::string token;
-			std::string network = p.network;
-			std::string mask = p.mask;
-			pos = mask.find(".");
-			while ((pos = mask.find(".")) != std::string::npos) {
-				token = mask.substr(0,pos);
-				if (stoi(token) == 255) 
-					len += 8;
-				else {
-					len += popcount1(stoi(token));
-				}
-
-				mask.erase(0, pos+1);
-			}
-			
-			new_nlri.prefix = network;
-			new_nlri.prefix_lenght = len;
-
-			nlri.push_back(new_nlri);
-		}
-
-		return nlri;
-	}
-
-	std::vector<Path_atrs> buildPA(Router r) {
-		std::vector<Path_atrs> path_atributes;
-
-		for (Peer p : r.get_router_rt()) {
-			// weight 1, loc pref 2, next hop 3, AS 4, MED 5
-			Path_atrs atrib_w;
-			atrib_w.type = 1;
-			atrib_w.lenght = 0;
-			atrib_w.value = to_string(p.weight);
-			atrib_w.optional = 0;
-			atrib_w.transitive = 0;
-			atrib_w.partial = 0;
-			atrib_w.extended_lenght = 0;
-
-			Path_atrs atrib_lf;
-			atrib_lf.type = 2;
-			atrib_lf.lenght = 0;
-			atrib_lf.value = to_string(p.loc_pref);
-			atrib_lf.optional = 0;
-			atrib_lf.transitive = 0;
-			atrib_lf.partial = 0;
-			atrib_lf.extended_lenght = 0;
-
-			Path_atrs atrib_nh;
-			atrib_nh.type = 3;
-			atrib_nh.lenght = 0;
-			atrib_nh.value = p.next_hop;
-			atrib_nh.optional = 0;
-			atrib_nh.transitive = 0;
-			atrib_nh.partial = 0;
-			atrib_nh.extended_lenght = 0;
-
-			Path_atrs atrib_as;
-			atrib_as.type = 4;
-			atrib_as.lenght = p.AS_path_len;
-			atrib_as.value = p.path;
-			atrib_as.optional = 0;
-			atrib_as.transitive = 0;
-			atrib_as.partial = 0;
-			atrib_as.extended_lenght = 0;
-
-			Path_atrs atrib_med;
-			atrib_med.type = 5;
-			atrib_med.lenght = 0;
-			atrib_med.value = to_string(p.MED);
-			atrib_med.optional = 0;
-			atrib_med.transitive = 0;
-			atrib_med.partial = 0;
-			atrib_med.extended_lenght = 0;
-
-			path_atributes.push_back(atrib_w);
-			path_atributes.push_back(atrib_lf);
-			path_atributes.push_back(atrib_nh);
-			path_atributes.push_back(atrib_as);
-			path_atributes.push_back(atrib_med);
-		}
-
-		return path_atributes;
-	}
-	//-------------------------
-
 	void BGPServer::HandleRead (Ptr<Socket> socket){
 		NS_LOG_FUNCTION(this << socket);
 
@@ -369,6 +276,7 @@ namespace ns3 {
 			r->set_interface(intf, int_num);
 
 		} else if(msg.get_type() == 2) {
+			NS_LOG_INFO("Update message sunt aici 5");
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
