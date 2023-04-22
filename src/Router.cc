@@ -108,28 +108,28 @@ namespace ns3 {
   }
 
   void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
-    for(Peer p : this->routing_table) {
-      if(p.network == network) {
+    for(int i = 0; i < this->routing_table.size(); i++) {
+      if(this->routing_table[i].network == network) {
         for(Path_atrs atr : atrib) {
           if(atr.type == 1) {
-            p.weight = std::stoi(atr.value);
-          } else if(atr.type == 2) {
-            p.AS_path_len = atr.lenght;
-            p.path = atr.value;
-          } else if(atr.type == 3) {
-            p.next_hop = atr.value;
+            this->routing_table[i].weight = std::stoi(atr.value);
           } else if(atr.type == 4) {
-            p.MED = std::stoi(atr.value);
+            this->routing_table[i].AS_path_len = atr.lenght;
+            this->routing_table[i].path = atr.value;
+          } else if(atr.type == 3) {
+            this->routing_table[i].next_hop = atr.value;
           } else if(atr.type == 5) {
-            p.loc_pref = std::stoi(atr.value);
+            this->routing_table[i].MED = std::stoi(atr.value);
+          } else if(atr.type == 2) {
+            this->routing_table[i].loc_pref = std::stoi(atr.value);
           }
         }
       }
     }
   }
 
-  void Router::apply_policy(Router router, Route update_route) {
-    router.update_routing_table(update_route.nlri.prefix, update_route.path_atr);
+  void Router::apply_policy(Route update_route) {
+    this->update_routing_table(update_route.nlri.prefix, update_route.path_atr);
   }
 
   /**
@@ -211,27 +211,127 @@ namespace ns3 {
     this->interfaces[num] = interface;
   }
 
-  std::vector<NLRIs> Router::remove_route(std::vector<NLRIs> wr) {
+  void Router::remove_route(std::vector<NLRIs> wr) {
+    std::vector<Peer> updated_rt = this->routing_table;
+    int removed = 0;
 
     for(int i = 0; i < wr.size(); i++) {
       for (int j = 0; j < this->routing_table.size(); j++) {
-        if (wr[i].prefix.compare(this->routing_table[j].network) == 0) {
-          this->routing_table.erase(this->routing_table.begin() + j);
+        if (wr[i].prefix == this->routing_table[j].network) {
+          updated_rt.erase(updated_rt.begin() + j - removed);
+          removed++;
         }
       }
     }
+    this->routing_table = updated_rt;
   }
 
   void Router::print_RT() {
     for (int i = 0; i < this->routing_table.size(); i++) {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
         << this->routing_table[i].weight << " " << this->routing_table[i].loc_pref << " "
-        << this->routing_table[i].next_hop << " " << this->routing_table[i].AS_path_len << " " 
+        << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
+        << this->routing_table[i].AS_path_len << " " 
         << this->routing_table[i].path << " " << this->routing_table[i].MED << " " 
         << this->routing_table[i].trust << std::endl;
     }
   }
 
+  void Router::set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip){
+    for (int i = 0; i < this->routing_table.size(); i++) {
+      if (this->routing_table[i].network == neigh_ip) {
+        if (this->routing_table[i].next_hop == "0.0.0.0") {
+          this->routing_table[i].next_hop = int_ip;
+          this->routing_table[i].int_ip = neigh_int_ip;
+        }
+      }
+    }
+  }
+
+  std::string Router::make_string_from_IP(Ipv4Address ip) {
+    std::stringstream str_ip;
+    ip.Print(str_ip);
+    return str_ip.str();
+  }
+
+  std::string Router::mask_create(int mask) {
+    std::string string_mask, octet1, octet2, octet3, octet4;
+    int count = 0;
+
+    for(int i = 0; i < 32; i++) {
+      if(count < 8) {
+        if (i < mask) {
+          octet1.append("1");
+        } else {
+          octet1.append("0");
+        }
+        count++;
+        continue;
+      }
+
+      if(count < 16) {
+        if (i < mask) {
+          octet2.append("1");
+        } else {
+          octet2.append("0");
+        }
+        count++;
+        continue;
+      }
+
+      if(count < 24) {
+        if (i < mask) {
+          octet3.append("1");
+        } else {
+          octet3.append("0");
+        }
+        count++;
+        continue;
+      }
+
+      if (i < mask) {
+        octet4.append("1");
+      } else {
+        octet4.append("0");
+      }
+
+      // Convert each octet from binary to decimal
+      int decimalOctet1 = std::stoi(octet1, nullptr, 2);
+      int decimalOctet2 = std::stoi(octet2, nullptr, 2);
+      int decimalOctet3 = std::stoi(octet3, nullptr, 2);
+      int decimalOctet4 = std::stoi(octet4, nullptr, 2);
+
+      // Concatenate the decimal values separated by dots
+      string_mask = std::to_string(decimalOctet1) + "." + std::to_string(decimalOctet2) + "." + std::to_string(decimalOctet3) + "." + std::to_string(decimalOctet4); 
+    }
+
+    return string_mask;
+  }
+
+  void Router::add_to_RT(std::vector<Route> loc_rib, std::string neight) {
+
+    for(Route r : loc_rib) {
+        Peer new_peer;
+        new_peer.int_ip = neight;
+        new_peer.network = r.nlri.prefix;
+        new_peer.mask = this->mask_create(r.nlri.prefix_lenght);
+        for(Path_atrs p : r.path_atr) {
+            if (p.type == 1) {
+              new_peer.weight = std::stoi(p.value);
+            } else if (p.type == 2) {
+              new_peer.loc_pref = std::stoi(p.value);
+            } else if (p.type == 3) {
+              new_peer.next_hop = p.value;
+            } else if (p.type == 4) {
+              new_peer.AS_path_len = p.lenght;
+              new_peer.path = p.value;
+            } else if (p.type == 5) {
+              new_peer.MED = std::stoi(p.value);
+            }
+        }  
+        this->routing_table.push_back(new_peer);
+    }
+}
 
   /**
    * @brief Method for getting the interface trust value from the interface name

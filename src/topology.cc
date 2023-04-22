@@ -71,7 +71,7 @@ void sendOpenMsg(std::vector<Router> routers) {
     }
 }
 
-/*inline bool isSetBit(int n, int index){
+inline bool isSetBit(int n, int index){
 	return n & (1 << index);
 }
 
@@ -84,7 +84,7 @@ int popcount1(int n){
 	return count;
 }
 
-std::vector<NLRIs> buildNLRI(Router r) {
+/*std::vector<NLRIs> buildNLRI(Router r) {
     std::vector<NLRIs> nlri;
 
     NLRIs new_nlri;
@@ -264,16 +264,31 @@ std::vector<Router> createLinks(std::vector<Router> routers) {
 
             std::vector<Interface> ifacesI = routers[i].get_router_int();
             if((std::find_if(ifacesI.begin(), ifacesI.end(),find_interface(if1.name)) == ifacesI.end()) && (std::find_if(ifacesI.begin(), ifacesI.end(),find_interface(if2.name)) == ifacesI.end())) {
-                //NS_LOG_INFO("Adding interface " << if1.name << " to router " << routers[i].get_router_AS());
+                //NS_LOG_INFO("Adding interface " << if1.name << " with " << if1.ip_address << " to router " << routers[i].get_router_AS());
                 routers[i].add_interface(if1);
+
+                std::stringstream neigh_IP;
+                std::stringstream int1_IP;
+                ns3::Ipv4Address nip_address = routers[neighbourIndex].get_router_ASip();
+                nip_address.Print(neigh_IP);
+                ns3::Ipv4Address i1IP = if1.ip_address;
+                i1IP.Print(int1_IP);
+                routers[i].set_next_hop(neigh_IP.str(), int1_IP.str(), routers[i].make_string_from_IP(if2.ip_address));
             }
             
             std::vector<Interface> ifacesJ = routers[neighbourIndex].get_router_int();
             if((std::find_if(ifacesJ.begin(), ifacesJ.end(),find_interface(if1.name)) == ifacesJ.end()) && (std::find_if(ifacesJ.begin(), ifacesJ.end(),find_interface(if2.name)) == ifacesJ.end())) {
                 //NS_LOG_INFO("Adding remote interface " << if2.name << " to router " << routers[neighbourIndex].get_router_AS());
                 routers[neighbourIndex].add_interface(if2);
-            }
 
+                std::stringstream int2_IP;
+                std::stringstream router_IP;
+                ns3::Ipv4Address rip_address = routers[i].get_router_ASip();
+                rip_address.Print(router_IP);
+                ns3::Ipv4Address i2IP = if2.ip_address;
+                i2IP.Print(int2_IP);
+                routers[neighbourIndex].set_next_hop(router_IP.str(), int2_IP.str(), routers[neighbourIndex].make_string_from_IP(if1.ip_address));
+            }
         }
 
         //std::cout << "----------------------------------------------------------" << std::endl;
@@ -372,11 +387,11 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
     // Disabilitare il link
     // Se il link è disabilitato mandare un notification msg e chiuedere la connessione
     // Se il link è disabilitato non mandare il keepalive msg (droppare client e)
-    std::vector<NLRIs> wr;
+    std::vector<NLRIs> wr1, wr2;
 
     for(int i=0; i<(int)routers->size(); i++) {
-
         if ((*routers)[i].get_router_AS() == AS1) {
+
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS2);
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
 
@@ -400,15 +415,15 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             (*routers)[i].set_router_neigh(neighbours);
 
             // TODO: fix 
-            /*for(int j = 0; j < (int)routers->size(); j++) {
+            for(int j = 0; j < (int)routers->size(); j++) {
                 if ((*routers)[j].get_router_AS() == AS2) {
                     std::stringstream tmp1;
                     std::stringstream tmp2;
-                    NLRIs new_route;
+                    NLRIs remove_route;
 
                     ns3::Ipv4Address ip_address = (*routers)[j].get_router_ASip();
                     ip_address.Print(tmp1);
-                    new_route.prefix = tmp1.str();
+                    remove_route.prefix = tmp1.str();
                         
                     ns3::Ipv4Mask ip_mask = (*routers)[j].get_router_ASmask();
                     ip_mask.Print(tmp2);
@@ -427,11 +442,17 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                         mask.erase(0, pos+1);
                     }
-                    new_route.prefix_lenght = len;
+                    remove_route.prefix_lenght = len;
 
-                    wr.push_back(new_route);
+                    wr1.push_back(remove_route);
                 }
-            } */
+            }
+
+            (*routers)[i].remove_route(wr1);
+
+            for (int i = 0; i < wr1.size(); i++) {
+                std::cout << "Rute de eliminat " << wr1[i].prefix << " " << wr1[i].prefix_lenght << std::endl;
+            }
 
             /*neighbours = (*routers)[i].get_router_neigh();
             debug = "";
@@ -442,6 +463,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
         }
         
         if ((*routers)[i].get_router_AS() == AS2) {
+            //std::vector<NLRIs> wr;
+
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS1);
 
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
@@ -460,15 +483,15 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             (*routers)[i].set_router_neigh(neighbours);
 
             //TODO: fix
-            /*for(int j = 0; j < (int)routers->size(); j++) {
-                if ((*routers)[j].get_router_AS() == AS2) {
+            for(int j = 0; j < (int)routers->size(); j++) {
+                if ((*routers)[j].get_router_AS() == AS1) {
                     std::stringstream tmp1;
                     std::stringstream tmp2;
-                    NLRIs new_route;
+                    NLRIs remove_route;
 
                     ns3::Ipv4Address ip_address = (*routers)[j].get_router_ASip();
                     ip_address.Print(tmp1);
-                    new_route.prefix = tmp1.str();
+                    remove_route.prefix = tmp1.str();
                         
                     ns3::Ipv4Mask ip_mask = (*routers)[j].get_router_ASmask();
                     ip_mask.Print(tmp2);
@@ -487,11 +510,17 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                         mask.erase(0, pos+1);
                     }
-                    new_route.prefix_lenght = len;
+                    remove_route.prefix_lenght = len;
 
-                    wr.push_back(new_route);
+                    wr2.push_back(remove_route);
                 }
-            } */
+            }
+
+            (*routers)[i].remove_route(wr2);
+            
+            for (int i = 0; i < wr2.size(); i++) {
+                std::cout << "Rute de eliminat " << wr2[i].prefix << " " << wr2[i].prefix_lenght << std::endl;
+            }
         }
     }
 
@@ -503,7 +532,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             for (int j=0; j<(int)interfaces.size(); j++) {
                 if(interfaces[j].status) {
                     //send msg
-                    MessageUpdate msg = MessageUpdate(wr.size(), wr);
+                    MessageUpdate msg = MessageUpdate(wr1.size(), wr1);
                     std::stringstream msgStream;
                     msgStream << msg << "/0";
                     interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
@@ -525,7 +554,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             for (int j=0; j<(int)interfaces.size(); j++) {
                 if(interfaces[j].status) {
                     //send msg
-                    MessageUpdate msg = MessageUpdate(wr.size(), wr);
+                    MessageUpdate msg = MessageUpdate(wr2.size(), wr2);
                     std::stringstream msgStream;
                     msgStream << msg << "/0";
                     interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
@@ -543,7 +572,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             }
         }
     }
-
 }
 
 void disable_router(std::vector<Router>* routers, int AS) {
@@ -687,7 +715,8 @@ void userInputCallback(std::vector<Router>* routers) {
         "[2] Disable a link \n"
         "[3] Disable a router \n"
         "[4] Continue the simulation \n"
-        "[5] Quit\n\n"
+        "[5] Quit\n"
+        "[6] Print Routing tables \n\n"
         "Choose a number: ";
 
     std::cin >> c;
@@ -697,9 +726,10 @@ void userInputCallback(std::vector<Router>* routers) {
         switch (c) {
             case '1':
                 {
-                    std::string ip1, ip2, type, value, lenght;
+                    std::string ip1, ip2;
+                    int type, value, lenght;
                 
-                    std::cout << "The policy contains the value modification of one preference for a given link. The options are w for weight, lf for local preference, med for MED. \n";
+                    std::cout << "The policy contains the value modification of one preference for a given link. The options are 1 for weight, 2 for local preference, 5 for MED. \n";
                     std::cout << "Enter the two routers that the policy applies to: ";
                     std::cin >> ip1 >> ip2 >> type >> value >> lenght;
 
@@ -708,13 +738,13 @@ void userInputCallback(std::vector<Router>* routers) {
                     Path_atrs pa;
 
                     //TODO: fix 
-                    /*for(int i = 0; i < (int)routers->size(); i++) {
+                    for(int i = 0; i < (int)routers->size(); i++) {
                         std::stringstream tmp1;
                         std::stringstream tmp2;
 
                         ns3::Ipv4Address ip_address = (*routers)[i].get_router_ASip();
                         ip_address.Print(tmp1);
-                        if (tmp1.str().compare(ip2)) {
+                        if (tmp1.str() == ip2) {
                             updated_nlri.prefix = tmp1.str();
                             ns3::Ipv4Mask ip_mask = (*routers)[i].get_router_ASmask();
                             ip_mask.Print(tmp2);
@@ -723,9 +753,11 @@ void userInputCallback(std::vector<Router>* routers) {
                             size_t pos = 0;
                             std::string token;
                             std::string mask = tmp2.str();
-                            pos = mask.find(".");
+                            //pos = mask.find(".");
+                            std::cout << mask << "\n";
                             while ((pos = mask.find(".")) != std::string::npos) {
                                 token = mask.substr(0,pos);
+                                std::cout << token << "\n";
                                 if (stoi(token) == 255) 
                                     len += 8;
                                 else {
@@ -735,14 +767,16 @@ void userInputCallback(std::vector<Router>* routers) {
                                 mask.erase(0, pos+1);
                             }
 
+                            std::cout << len << "\n";
+
                             updated_nlri.prefix_lenght = len;
                             break;
                         }
                     }
 
-                    pa.type = stoi(type);
-                    pa.value = value;
-                    pa.lenght = stoi(lenght);
+                    pa.type = type;
+                    pa.value = to_string(value);
+                    pa.lenght = lenght;
                     pa.optional = 0;
                     pa.transitive = 0;
                     pa.partial = 0;
@@ -756,11 +790,11 @@ void userInputCallback(std::vector<Router>* routers) {
                         std::stringstream tmp1;
                         ns3::Ipv4Address ip_address = (*routers)[i].get_router_ASip();
                         ip_address.Print(tmp1);
-                        if (tmp1.str().compare(ip1)) {
-                            (*routers)[i].apply_policy((*routers)[i], updated_route);
+                        if (tmp1.str() == ip1) {
+                            (*routers)[i].apply_policy(updated_route);
                             break;
                         }
-                    } */
+                    }
 
                     break;
                 }
@@ -792,6 +826,13 @@ void userInputCallback(std::vector<Router>* routers) {
 
             case '5':
                 exit(EXIT_SUCCESS);
+                break;
+            
+            case '6':
+                for(Router r : *routers) {
+                    std::cout << "Router: " << r.get_router_AS() << ": \n";
+                    r.print_RT();
+                }
                 break;
 
             default:
@@ -857,10 +898,9 @@ int main() {
 
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
-    NS_LOG_INFO("\nSending update messages");
+    NS_LOG_INFO("\nSending update messages\n");
 
     //sendUpdateMsg(network);
-
     //for (Router r : network) {
         // std::vector<NLRIs> nlri = buildNLRI(r);
         // std::vector<Path_atrs> path = buildPA(r);

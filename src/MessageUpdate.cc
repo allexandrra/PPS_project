@@ -203,7 +203,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
 
             std::string bit_atr_value;
 
-            stream >> bit_atr_flags >> bit_atr_type_code >> bit_length >> bit_atr_value;
+            stream >> bit_atr_flags >> bit_atr_type_code >> bit_atr_len >> bit_atr_value;
 
             std::string flags = bit_atr_flags.to_string();
 
@@ -270,74 +270,68 @@ bool MessageUpdate::check_neighbour(Router router, int req_router) {
 
 vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, std::vector<Peer> routing_table) {
     vector<Route> loc_RIB;
+    int is_new = 0;
     for (Route r : new_routes) {
         for (Peer p : routing_table) {
-            if (r.nlri.prefix.compare(p.network) == 0) {
+            //std::cout << r.nlri.prefix << " " << p.network << "\n\n";
+            if (r.nlri.prefix == p.network) {
                 // compare preferences
+                //std::cout << "aici pula\n\n";
+                is_new = 1;
                 for (Path_atrs atr : r.path_atr) {
+                    //std::cout << atr.type << " " << atr.value << "\n\n";
                     switch (atr.type) {
-                    case 1: //weight
-                        // compara greutatea
-                        // daca mai mare treci mai departe
-                        // daca mai mica inlocuieste ruta actuala cu ruta noua in tabelul de rutare
-                        if (std::stoi(atr.value) < p.weight) {
-                            loc_RIB.push_back(r);
+                        case 1: //weight
+                            // compara greutatea
+                            // daca mai mare treci mai departe
+                            // daca mai mica inlocuieste ruta actuala cu ruta noua in tabelul de rutare
+                            if (std::stoi(atr.value) < p.weight) {
+                                std::cout << "aici 1\n\n";
+                                loc_RIB.push_back(r);
+                            }
                             break;
-                        }
-                    case 2: //loc_pref
-                        if (std::stoi(atr.value) < p.loc_pref) {
-                            loc_RIB.push_back(r);
+                        case 2: //loc_pref
+                            if (std::stoi(atr.value) < p.loc_pref) {
+                                std::cout << "aici 2\n\n";
+                                loc_RIB.push_back(r);
+                            }
                             break;
-                        }
-                    case 3: //originate/next hop
-                        if (atr.value.compare("0.0.0.0") == 0) {
-                            loc_RIB.push_back(r);
+                        case 3: //originate/next hop
+                            if (atr.value == "0.0.0.0") {
+                                std::cout << "aici 3\n\n";
+                                loc_RIB.push_back(r);
+                            }
                             break;
-                        }
-                    case 4: //AS path length
-                        if (std::stoi(atr.value) < p.AS_path_len) {
-                            loc_RIB.push_back(r);
+                        case 4: //AS path length
+                            if (std::stoi(atr.value) < p.AS_path_len) {
+                                std::cout << "aici 4\n\n";
+                                loc_RIB.push_back(r);
+                            }
                             break;
-                        }
-                    case 5: // MED
-                        if (std::stoi(atr.value) < p.MED) {
-                            loc_RIB.push_back(r);
+                        case 5: // MED
+                            if (std::stoi(atr.value) < p.MED) {
+                                std::cout << "aici 5\n\n";
+                                loc_RIB.push_back(r);
+                            }
                             break;
-                        }
-                    default:
-                        break;
+                        default:
+                            std::cout << "No prefereces met.\n\n";
                     }
                 }
-            } else {
-                loc_RIB.push_back(r);
-                break;
-            }
+            } 
+        }
+
+        //std::cout << is_new << " ajung aici?\n"; 
+
+        if(is_new == 0) {
+            //std::cout << "aici 6\n\n";
+            loc_RIB.push_back(r);
+        } else {
+            is_new = 0;
         }
     }
 
     return loc_RIB;
-}
-
-void MessageUpdate::add_to_RT(Router router, std::vector<Route> loc_rib) {
-
-    for(Route r : loc_rib) {
-        Peer new_peer;
-        new_peer.network = r.nlri.prefix;
-        new_peer.weight = 0;
-        for(Path_atrs p : r.path_atr) {
-            if (p.type == 2) {
-                new_peer.AS_path_len = p.lenght;
-                new_peer.path = p.value;
-            } else if (p.type == 3) {
-                new_peer.next_hop = p.value;
-            } else if (p.type == 4) {
-                new_peer.MED = std::stoi(p.value);
-            } else if (p.type == 5) {
-                new_peer.loc_pref = std::stoi(p.value);
-            }
-        }  
-        router.push_new_route(new_peer);
-    }
 }
 
 std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri) {

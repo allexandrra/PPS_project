@@ -278,9 +278,10 @@ namespace ns3 {
 		} else if(msg.get_type() == 2) {
 			NS_LOG_INFO("Update message sunt aici 5");
 			MessageUpdate msgRcv;
-			//std::stringstream(packet) >> msgRcv;
+			std::stringstream(packet) >> msgRcv;
 
-			std::cout << " UPDATE message "<< std::endl;
+			std::cout << " Server UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
+				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
 
 			//std::cout << packet << std::endl;
 
@@ -297,8 +298,20 @@ namespace ns3 {
 			std::vector<NLRIs> new_wr;
 
 			if (msgRcv.get_unfeasable_route_len() > 0) {
-				new_wr = r->remove_route(msgRcv.get_withdrawn_routes());
+				r->remove_route(msgRcv.get_withdrawn_routes());
 			}
+
+			// std::cout << "What i receive\n";
+			// vector<Path_atrs> path = msgRcv.get_path_atr();
+			// for(int i = 0; i < msgRcv.get_total_path_atr_len(); i++) {
+			// 	std::cout << path[i].type << " " << path[i].lenght << " " <<
+			// 		path[i].value << " " << path[i].optional << path[i].transitive <<
+			// 		path[i].partial << path[i].extended_lenght << "\n";
+			// }
+			// vector<NLRIs> nlri = msgRcv.get_NLRI();
+			// for(int i = 0; i < nlri.size(); i++) {
+			// 	std::cout << unsigned(nlri[i].prefix_lenght) << " " << nlri[i].prefix << "\n";
+			// }
 
 			if(msgRcv.get_total_path_atr_len() > 0) {
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
@@ -306,38 +319,65 @@ namespace ns3 {
 					
 				for (int i = 0; i < locRib.size(); i++) {
 					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
-						if (locRib[i].path_atr[j].type == 2) {
-							locRib[i].path_atr[j].value.append(" ");
+						if (locRib[i].path_atr[j].type == 4) {
+							locRib[i].path_atr[j].value.append("");
 							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
+							locRib[i].path_atr[j].lenght += 1;
+						}
+						if (locRib[i].path_atr[j].type == 3) {
+							locRib[i].path_atr[j].value = r->make_string_from_IP(intf.ip_address);
 						}
 						new_pa.push_back(locRib[i].path_atr[j]);
 					}
 					new_nlri.push_back(locRib[i].nlri);
 				}
 					
-				msgRcv.add_to_RT(*r, locRib);	
+				Address from;
+				socket->GetPeerName(from);
+				InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom(from);
+				r->add_to_RT(locRib, r->make_string_from_IP(fromAddress.GetIpv4()));
 			}
+
+			
+			//std::cout << "adresa interfetei " << std::endl;
+
+			// std::cout << "What is to send\n";
+			// for(int i = 0; i < new_pa.size(); i++) {
+			// 	std::cout << new_pa[i].type << " " << new_pa[i].lenght << " " <<
+			// 		new_pa[i].value << " " << new_pa[i].optional << new_pa[i].transitive <<
+			// 		new_pa[i].partial << new_pa[i].extended_lenght << "\n";
+			// }
+			// for(int i = 0; i < new_nlri.size(); i++) {
+			// 	std::cout << unsigned(new_nlri[i].prefix_lenght) << " " << new_nlri[i].prefix << "\n";
+			// }
+
 			
 			std::stringstream msgStream;
 
 			if(intf.status) {
 				MessageUpdate msgToSend;
-				if (new_wr.size() > 0) {
-					NS_LOG_INFO("Entro 1");
-					msgToSend = MessageUpdate(new_wr.size(), new_wr);
+
+				if (new_wr.size() > 0 || new_pa.size() > 0) {
+					if (new_wr.size() > 0 && new_pa.size() > 0) {
+						NS_LOG_INFO("Entro 3");
+						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
+					} else if (new_wr.size() > 0) {
+						NS_LOG_INFO("Entro 1");
+						msgToSend = MessageUpdate(new_wr.size(), new_wr);
+					} else if (new_pa.size() > 0) {
+						NS_LOG_INFO("Entro 2");
+						msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
+					}
+
+					msgStream << msgToSend << '\0';
+					//msgStream << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
+					//NS_LOG_INFO(msgStream.str());
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+					this->Send(socket,packet);
+
+				} else {
+					NS_LOG_INFO("No new updates to send.");
 				}
-
-				if (new_pa.size() > 0) {
-					NS_LOG_INFO("Entro 2");
-					msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
-				}
-
-				//msgStream << msgToSend << '\0';
-				msgStream << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
-				//NS_LOG_INFO(msgStream.str());
-				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-				this->Send(socket,packet);
-
 			} else {
 				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
 

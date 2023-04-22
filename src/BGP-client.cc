@@ -72,93 +72,97 @@ namespace ns3 {
 		return count;
 	}
 
-	std::vector<NLRIs> buildNLRI(Router r) {
+	std::vector<NLRIs> buildNLRI(Router r, std::string not_send_ip) {
 		std::vector<NLRIs> nlri;
 
 		NLRIs new_nlri;
 
 		for (Peer p : r.get_router_rt()) {
-			int len = 0;
-			size_t pos = 0;
-			std::string token;
-			std::string network = p.network;
-			std::string mask = p.mask;
-			pos = mask.find(".");
-			while ((pos = mask.find(".")) != std::string::npos) {
-				token = mask.substr(0,pos);
-				if (stoi(token) == 255) 
-					len += 8;
-				else {
-					len += popcount1(stoi(token));
+			if (p.next_hop != not_send_ip) {
+				int len = 0;
+				size_t pos = 0;
+				std::string token;
+				std::string network = p.network;
+				std::string mask = p.mask;
+				pos = mask.find(".");
+				while ((pos = mask.find(".")) != std::string::npos) {
+					token = mask.substr(0,pos);
+					if (stoi(token) == 255) 
+						len += 8;
+					else {
+						len += popcount1(stoi(token));
+					}
+
+					mask.erase(0, pos+1);
 				}
+				
+				new_nlri.prefix = network;
+				new_nlri.prefix_lenght = len;
 
-				mask.erase(0, pos+1);
+				nlri.push_back(new_nlri);
 			}
-			
-			new_nlri.prefix = network;
-			new_nlri.prefix_lenght = len;
-
-			nlri.push_back(new_nlri);
 		}
 
 		return nlri;
 	}
 
-	std::vector<Path_atrs> buildPA(Router r) {
+	std::vector<Path_atrs> buildPA(Router r, std::string not_send_ip) {
 		std::vector<Path_atrs> path_atributes;
 
 		for (Peer p : r.get_router_rt()) {
 			// weight 1, loc pref 2, next hop 3, AS 4, MED 5
-			Path_atrs atrib_w;
-			atrib_w.type = 1;
-			atrib_w.lenght = 0;
-			atrib_w.value = to_string(p.weight);
-			atrib_w.optional = 0;
-			atrib_w.transitive = 0;
-			atrib_w.partial = 0;
-			atrib_w.extended_lenght = 0;
+			if (p.next_hop != not_send_ip) {
+				Path_atrs atrib_w;
+				atrib_w.type = 1;
+				atrib_w.lenght = 0;
+				atrib_w.value = to_string(p.weight);
+				atrib_w.optional = 0;
+				atrib_w.transitive = 0;
+				atrib_w.partial = 0;
+				atrib_w.extended_lenght = 0;
 
-			Path_atrs atrib_lf;
-			atrib_lf.type = 2;
-			atrib_lf.lenght = 0;
-			atrib_lf.value = to_string(p.loc_pref);
-			atrib_lf.optional = 0;
-			atrib_lf.transitive = 0;
-			atrib_lf.partial = 0;
-			atrib_lf.extended_lenght = 0;
+				Path_atrs atrib_lf;
+				atrib_lf.type = 2;
+				atrib_lf.lenght = 0;
+				atrib_lf.value = to_string(p.loc_pref);
+				atrib_lf.optional = 0;
+				atrib_lf.transitive = 0;
+				atrib_lf.partial = 0;
+				atrib_lf.extended_lenght = 0;
 
-			Path_atrs atrib_nh;
-			atrib_nh.type = 3;
-			atrib_nh.lenght = 0;
-			atrib_nh.value = p.next_hop;
-			atrib_nh.optional = 0;
-			atrib_nh.transitive = 0;
-			atrib_nh.partial = 0;
-			atrib_nh.extended_lenght = 0;
+				Path_atrs atrib_nh;
+				atrib_nh.type = 3;
+				atrib_nh.lenght = 0;
+				atrib_nh.value = p.next_hop;
+				atrib_nh.optional = 0;
+				atrib_nh.transitive = 0;
+				atrib_nh.partial = 0;
+				atrib_nh.extended_lenght = 0;
 
-			Path_atrs atrib_as;
-			atrib_as.type = 4;
-			atrib_as.lenght = p.AS_path_len;
-			atrib_as.value = p.path;
-			atrib_as.optional = 0;
-			atrib_as.transitive = 0;
-			atrib_as.partial = 0;
-			atrib_as.extended_lenght = 0;
+				Path_atrs atrib_as;
+				atrib_as.type = 4;
+				atrib_as.lenght = p.AS_path_len;
+				atrib_as.value = p.path;
+				atrib_as.optional = 0;
+				atrib_as.transitive = 0;
+				atrib_as.partial = 0;
+				atrib_as.extended_lenght = 0;
 
-			Path_atrs atrib_med;
-			atrib_med.type = 5;
-			atrib_med.lenght = 0;
-			atrib_med.value = to_string(p.MED);
-			atrib_med.optional = 0;
-			atrib_med.transitive = 0;
-			atrib_med.partial = 0;
-			atrib_med.extended_lenght = 0;
+				Path_atrs atrib_med;
+				atrib_med.type = 5;
+				atrib_med.lenght = 0;
+				atrib_med.value = to_string(p.MED);
+				atrib_med.optional = 0;
+				atrib_med.transitive = 0;
+				atrib_med.partial = 0;
+				atrib_med.extended_lenght = 0;
 
-			path_atributes.push_back(atrib_w);
-			path_atributes.push_back(atrib_lf);
-			path_atributes.push_back(atrib_nh);
-			path_atributes.push_back(atrib_as);
-			path_atributes.push_back(atrib_med);
+				path_atributes.push_back(atrib_w);
+				path_atributes.push_back(atrib_lf);
+				path_atributes.push_back(atrib_nh);
+				path_atributes.push_back(atrib_as);
+				path_atributes.push_back(atrib_med);
+			}
 		}
 
 		return path_atributes;
@@ -188,6 +192,9 @@ namespace ns3 {
 		InetSocketAddress toAddress = InetSocketAddress::ConvertFrom(to);
 		int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
 		Interface intf = r->get_router_int()[int_num];
+
+		//std::cout << "\n\n Ruterul care e acum: " << r->get_router_AS() << 
+			//" si ruterului care primeste mesajul " << r->make_string_from_IP(toAddress.GetIpv4()) << "\n\n";
 
 		// differentite the action to be taken based on the type of the message
 		// 1 -> OPEN
@@ -247,12 +254,13 @@ namespace ns3 {
 
 			//send initial update message
 			std::stringstream msgStreamUpdate;
-			std::vector<Path_atrs> path_atr = buildPA(*r);
-			std::vector<NLRIs> nlri = buildNLRI(*r);
+			std::vector<Path_atrs> path_atr = buildPA(*r, r->make_string_from_IP(toAddress.GetIpv4()));
+			std::vector<NLRIs> nlri = buildNLRI(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 
+			std::cout << "\n Router " << r->get_router_AS() << " sends first UPDATE message\n\n";
 			MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
-			msgStreamUpdate << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
-			//msgStreamUpdate << msg << "\0";
+			//msgStreamUpdate << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
+			msgStreamUpdate << msg << "\0";
 
 			Ptr<Packet> packetUpdate = Create<Packet>((uint8_t*) msgStreamUpdate.str().c_str(), msgStreamUpdate.str().length()+1);
 			this->Send(socket, packetUpdate);
@@ -263,8 +271,114 @@ namespace ns3 {
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
-			std::cout << " Client UPDATE message " << std::endl;
+			std::cout << " Client UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
+				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
 
+			std::vector<NLRIs> new_nlri;
+			std::vector<Path_atrs> new_pa;
+			std::vector<NLRIs> new_wr;
+
+			if (msgRcv.get_unfeasable_route_len() > 0) {
+				r->remove_route(msgRcv.get_withdrawn_routes());
+			}
+
+			// std::cout << "What i receive\n";
+			// vector<Path_atrs> path = msgRcv.get_path_atr();
+			// for(int i = 0; i < msgRcv.get_total_path_atr_len(); i++) {
+			// 	std::cout << path[i].type << " " << path[i].lenght << " " <<
+			// 		path[i].value << " " << path[i].optional << path[i].transitive <<
+			// 		path[i].partial << path[i].extended_lenght << "\n";
+			// }
+			// vector<NLRIs> nlri = msgRcv.get_NLRI();
+			// for(int i = 0; i < nlri.size(); i++) {
+			// 	std::cout << unsigned(nlri[i].prefix_lenght) << " " << nlri[i].prefix << "\n";
+			// }
+
+			if(msgRcv.get_total_path_atr_len() > 0) {
+				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
+				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
+					
+				for (int i = 0; i < locRib.size(); i++) {
+					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
+						if (locRib[i].path_atr[j].type == 4) {
+							locRib[i].path_atr[j].value.append("");
+							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
+							locRib[i].path_atr[j].lenght += 1;
+						}
+						if (locRib[i].path_atr[j].type == 3) {
+							locRib[i].path_atr[j].value = r->make_string_from_IP(intf.ip_address);
+						}
+						new_pa.push_back(locRib[i].path_atr[j]);
+					}
+					new_nlri.push_back(locRib[i].nlri);
+				}
+					
+				Address from;
+				socket->GetPeerName(from);
+				InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom(from);
+				r->add_to_RT(locRib, r->make_string_from_IP(fromAddress.GetIpv4()));
+			}
+
+			
+			//std::cout << "adresa interfetei " << std::endl;
+
+			// std::cout << "What is to send\n";
+			// for(int i = 0; i < new_pa.size(); i++) {
+			// 	std::cout << new_pa[i].type << " " << new_pa[i].lenght << " " <<
+			// 		new_pa[i].value << " " << new_pa[i].optional << new_pa[i].transitive <<
+			// 		new_pa[i].partial << new_pa[i].extended_lenght << "\n";
+			// }
+			// for(int i = 0; i < new_nlri.size(); i++) {
+			// 	std::cout << unsigned(new_nlri[i].prefix_lenght) << " " << new_nlri[i].prefix << "\n";
+			// }
+
+			
+			std::stringstream msgStream;
+
+			if(intf.status) {
+				MessageUpdate msgToSend;
+
+				if (new_wr.size() > 0 || new_pa.size() > 0) {
+					if (new_wr.size() > 0 && new_pa.size() > 0) {
+						NS_LOG_INFO("Entro 3");
+						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
+					} else if (new_wr.size() > 0) {
+						NS_LOG_INFO("Entro 1");
+						msgToSend = MessageUpdate(new_wr.size(), new_wr);
+					} else if (new_pa.size() > 0) {
+						NS_LOG_INFO("Entro 2");
+						msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
+					}
+
+					msgStream << msgToSend << '\0';
+					//msgStream << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
+					//NS_LOG_INFO(msgStream.str());
+					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+					this->Send(socket,packet);
+
+				} else {
+					NS_LOG_INFO("No new updates to send.");
+				}
+			} else {
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
+
+				std::stringstream msgStream;
+				MessageNotification msg = MessageNotification(6,0);
+				msgStream << msg << '\0';
+
+				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+				this->Send(socket, packet);
+
+				intf.client.reset();
+				intf.server.reset();
+
+				r->set_interface_status(int_num, false);
+				this->StopApplication();
+			}
+
+    		//intf.set_max_hold_time(max_hold_time);
+			intf.set_last_update_time(Simulator::Now().GetSeconds());
+			r->set_interface(intf, int_num);
 			/*if (msgRcv.get_unfeasable_route_len() > 0) {
 				std::vector<NLRIs> new_wr;
 				new_wr = r->remove_route(msgRcv.get_withdrawn_routes());

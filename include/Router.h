@@ -44,6 +44,7 @@ namespace ns3 {
         int AS_path_len;
         int MED;
         float trust;
+        std::string int_ip;
     };
 
 
@@ -210,10 +211,14 @@ namespace ns3 {
             NodeContainer get_router_node();
             Ipv4Address get_router_ASip();
             Ipv4Mask get_router_ASmask();
-            void apply_policy(Router router, Route update_route);
+            void apply_policy(Route update_route);
             
-            std::vector<NLRIs> remove_route(std::vector<NLRIs> withdrawnRoutes);
+            void remove_route(std::vector<NLRIs> withdrawnRoutes);
             void print_RT();
+            void set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip);
+            std::string make_string_from_IP(Ipv4Address ip);
+            void add_to_RT(std::vector<Route> loc_rib, std::string neight);
+            std::string mask_create(int mask);
 
             /**
              * @brief Method for adding a new interface to the router Infaces vector

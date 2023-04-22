@@ -94,9 +94,10 @@ namespace ns3 {
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
 		}else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
-			//std::stringstream(packetData) >> msgRcv;
+			std::stringstream(packetData) >> msgRcv;
 
-			std::cout << " UPDATE message "<< std::endl;
+			std::cout << " UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
+				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;
