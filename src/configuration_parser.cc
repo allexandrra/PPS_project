@@ -133,7 +133,7 @@ std::vector<Router> load_configuration() {
                         new_route.loc_pref = 10;
                         new_route.AS_path_len = 1;
                         new_route.MED = 100;
-                        new_route.trust = 1.0;
+                        new_route.trust = 0.5;
 
                         routers[j].push_new_route(new_route);
                     }

@@ -450,7 +450,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
             (*routers)[i].remove_route(wr1);
 
-            for (int i = 0; i < wr1.size(); i++) {
+            for (int i = 0; i < (int)wr1.size(); i++) {
                 std::cout << "Rute de eliminat " << wr1[i].prefix << " " << wr1[i].prefix_lenght << std::endl;
             }
 
@@ -518,24 +518,40 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
             (*routers)[i].remove_route(wr2);
             
-            for (int i = 0; i < wr2.size(); i++) {
+            for (int i = 0; i < (int)wr2.size(); i++) {
                 std::cout << "Rute de eliminat " << wr2[i].prefix << " " << wr2[i].prefix_lenght << std::endl;
             }
         }
     }
 
-    // TODO: Need to start the Update message phase
+    // TODO: Send update messages to the interfaces that are not down
+
+    /*if(interfaces[j].client) { interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    }*/
         
     for(int i=0; i<(int)routers->size(); i++) {
         if ((*routers)[i].get_router_AS() == AS1) {    
             std::vector<Interface> interfaces = (*routers)[i].get_router_int();
             for (int j=0; j<(int)interfaces.size(); j++) {
+                std::cout << interfaces[j].name << std::endl;
                 if(interfaces[j].status) {
                     //send msg
                     MessageUpdate msg = MessageUpdate(wr1.size(), wr1);
                     std::stringstream msgStream;
-                    msgStream << msg << "/0";
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    msgStream << msg << "\0";
+                    std::cout << msgStream.str() << std::endl;
+
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+
+                    if(interfaces[j].client) { 
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    }
+
+                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
@@ -543,7 +559,14 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     msgStream << msg << '\0';
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
                     //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+
+                    if(interfaces[j].client) { 
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    }
+
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
                 }
@@ -556,16 +579,31 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     //send msg
                     MessageUpdate msg = MessageUpdate(wr2.size(), wr2);
                     std::stringstream msgStream;
-                    msgStream << msg << "/0";
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    msgStream << msg << "\0";
+                    std::cout << msgStream.str() << std::endl;
+
+                    Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+
+                    if(interfaces[j].client) { 
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    }
+
+                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
                     MessageNotification msg = MessageNotification(6,0);
                     msgStream << msg << '\0';
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    if(interfaces[j].client) { 
+                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    } else if (interfaces[j].server){
+                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    }
                     //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-                    interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
                 }

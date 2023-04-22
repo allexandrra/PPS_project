@@ -286,31 +286,31 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
                             // daca mai mare treci mai departe
                             // daca mai mica inlocuieste ruta actuala cu ruta noua in tabelul de rutare
                             if (std::stoi(atr.value) < p.weight) {
-                                std::cout << "aici 1\n\n";
+                                //std::cout << "aici 1\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 2: //loc_pref
                             if (std::stoi(atr.value) < p.loc_pref) {
-                                std::cout << "aici 2\n\n";
+                                //std::cout << "aici 2\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 3: //originate/next hop
                             if (atr.value == "0.0.0.0") {
-                                std::cout << "aici 3\n\n";
+                                //std::cout << "aici 3\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 4: //AS path length
                             if (std::stoi(atr.value) < p.AS_path_len) {
-                                std::cout << "aici 4\n\n";
+                                //std::cout << "aici 4\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 5: // MED
                             if (std::stoi(atr.value) < p.MED) {
-                                std::cout << "aici 5\n\n";
+                                //std::cout << "aici 5\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;

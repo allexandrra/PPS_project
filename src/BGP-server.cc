@@ -298,7 +298,7 @@ namespace ns3 {
 			std::vector<NLRIs> new_wr;
 
 			if (msgRcv.get_unfeasable_route_len() > 0) {
-				r->remove_route(msgRcv.get_withdrawn_routes());
+				new_wr = r->remove_routes_if_necessary(msgRcv.get_withdrawn_routes(), r->make_string_from_IP(intf.ip_address));
 			}
 
 			// std::cout << "What i receive\n";
@@ -317,8 +317,8 @@ namespace ns3 {
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
 				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
 					
-				for (int i = 0; i < locRib.size(); i++) {
-					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
+				for (int i = 0; i < (int)locRib.size(); i++) {
+					for (int j = 0; j < (int)locRib[i].path_atr.size(); j++) {
 						if (locRib[i].path_atr[j].type == 4) {
 							locRib[i].path_atr[j].value.append("");
 							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));

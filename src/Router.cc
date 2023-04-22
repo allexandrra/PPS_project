@@ -226,6 +226,23 @@ namespace ns3 {
     this->routing_table = updated_rt;
   }
 
+  std::vector<NLRIs> Router::remove_routes_if_necessary(std::vector<NLRIs> withdrawnRoutes, std::string intf){
+    std::vector<NLRIs> what_to_withdraw = withdrawnRoutes;
+    int removed = 0;
+
+    for(int i = 0; i < withdrawnRoutes.size(); i++) {
+      for (int j = 0; j < this->routing_table.size(); j++) {
+        if (withdrawnRoutes[i].prefix == this->routing_table[j].network && 
+              this->routing_table[j].int_ip != intf) {
+          what_to_withdraw.erase(what_to_withdraw.begin() + j - removed);
+          removed++;
+        }
+      }
+    }
+    this->remove_route(what_to_withdraw);
+    return what_to_withdraw;
+  }
+
   void Router::print_RT() {
     for (int i = 0; i < this->routing_table.size(); i++) {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 

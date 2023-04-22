@@ -214,6 +214,7 @@ namespace ns3 {
             void apply_policy(Route update_route);
             
             void remove_route(std::vector<NLRIs> withdrawnRoutes);
+            std::vector<NLRIs> remove_routes_if_necessary(std::vector<NLRIs> withdrawnRoutes, std::string intf);
             void print_RT();
             void set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip);
             std::string make_string_from_IP(Ipv4Address ip);

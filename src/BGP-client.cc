@@ -279,7 +279,7 @@ namespace ns3 {
 			std::vector<NLRIs> new_wr;
 
 			if (msgRcv.get_unfeasable_route_len() > 0) {
-				r->remove_route(msgRcv.get_withdrawn_routes());
+				new_wr = r->remove_routes_if_necessary(msgRcv.get_withdrawn_routes(), r->make_string_from_IP(intf.ip_address));
 			}
 
 			// std::cout << "What i receive\n";
@@ -298,8 +298,8 @@ namespace ns3 {
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
 				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
 					
-				for (int i = 0; i < locRib.size(); i++) {
-					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
+				for (int i = 0; i < (int)locRib.size(); i++) {
+					for (int j = 0; j < (int)locRib[i].path_atr.size(); j++) {
 						if (locRib[i].path_atr[j].type == 4) {
 							locRib[i].path_atr[j].value.append("");
 							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
@@ -379,92 +379,6 @@ namespace ns3 {
     		//intf.set_max_hold_time(max_hold_time);
 			intf.set_last_update_time(Simulator::Now().GetSeconds());
 			r->set_interface(intf, int_num);
-			/*if (msgRcv.get_unfeasable_route_len() > 0) {
-				std::vector<NLRIs> new_wr;
-				new_wr = r->remove_route(msgRcv.get_withdrawn_routes());
-
-				std::vector<Interface> interfaces = r->get_router_int();
-				for (int j=0; j<(int)interfaces.size(); j++) {
-					if(interfaces[j].status) {
-						//send msg
-						MessageUpdate msg = MessageUpdate(new_wr.size(), new_wr);
-						std::stringstream msgStream;
-						msgStream << msg << "/0";
-						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-						if(interfaces[j].client) {
-                        interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-						} else if (interfaces[j].server){
-							interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-						}
-					} else {
-						NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << r->get_router_AS() << " is down [sendUpdateMsg]");						
-						std::stringstream msgStream;
-						MessageNotification msg = MessageNotification(6,0);
-						msgStream << msg << '\0';
-						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-						//Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-						if(interfaces[j].client) {
-                        	interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-						} else if (interfaces[j].server){
-							interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-						}
-						//interfaces[j].client.reset();
-						//interfaces[j].server.reset();
-					}
-				}
-			}
-
-			if(msgRcv.get_total_path_atr_len() > 0) {
-				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
-				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
-				
-				std::vector<NLRIs> new_nlri;
-				std::vector<Path_atrs> new_pa;
-				
-				for (int i = 0; i < locRib.size(); i++) {
-					for (int j = 0; j < locRib[i].path_atr.size(); j++) {
-						if (locRib[i].path_atr[j].type == 2) {
-							locRib[i].path_atr[j].value.append(" ");
-							locRib[i].path_atr[j].value.append(std::to_string(r->get_router_AS()));
-						}
-						new_pa.push_back(locRib[i].path_atr[j]);
-					}
-					new_nlri.push_back(locRib[i].nlri);
-				}
-				
-				msgRcv.add_to_RT(*r, locRib);
-
-				std::vector<Interface> interfaces = r->get_router_int();
-				for (int j=0; j<(int)interfaces.size(); j++) {
-					if(interfaces[j].status) {
-						//send msg
-						MessageUpdate msg = MessageUpdate(new_pa.size(), new_pa, new_nlri);
-						std::stringstream msgStream;
-						msgStream << msg << "/0";
-						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-						if(interfaces[j].client) {
-                        	interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-						} else if (interfaces[j].server){
-							interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-						}
-					} else {
-						NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << r->get_router_AS() << " is down [sendUpdateMsg]");
-						std::stringstream msgStream;
-						MessageNotification msg = MessageNotification(6,0);
-						msgStream << msg << '\0';
-						Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-						//Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
-						if(interfaces[j].client) {
-                        	interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-						} else if (interfaces[j].server){
-							interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-						}
-						//interfaces[j].client.reset();
-						//interfaces[j].server.reset();
-					}
-				}
-			} */
-
 		} else if(msg.get_type() == 3){
 			// unpack the packet into a real MessageNotification object as the type in the header is 3 (NOTIFICATION)
 			MessageNotification msgRcv;
@@ -548,6 +462,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// TODO: update the routing table using the value of total trust
+				
 				
 
 			} else {
