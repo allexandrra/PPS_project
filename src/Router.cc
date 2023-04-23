@@ -248,7 +248,8 @@ namespace ns3 {
         << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
         << this->routing_table[i].AS_path_len << " ";
       
-      for(std::string::size_type j = 0; j < routing_table[j].path.size(); j++) {
+      //std::cout << this->routing_table[i].path << " ";
+      for(int j = 0; j < routing_table[i].path.size(); j++) {
         std::cout << this->routing_table[i].path[j] << " ";
       }
        

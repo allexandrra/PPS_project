@@ -341,6 +341,17 @@ namespace ns3 {
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 					this->Send(socket,packet);
 
+					// std::vector<Interface> interfaces = r->get_router_int();
+					// for (int j=0; j<(int)interfaces.size(); j++) {
+					// 	if(interfaces[j].status) {
+					// 		if(interfaces[j].client) { 
+					// 		    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+					// 		} else if (interfaces[j].server){
+					// 		    interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+					// 		}
+					// 	}
+					// }
+
 				} else {
 					NS_LOG_INFO("No new updates to send.");
 				}

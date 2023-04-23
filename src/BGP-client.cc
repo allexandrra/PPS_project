@@ -106,7 +106,7 @@ namespace ns3 {
 		return nlri;
 	}
 
-	std::vector<Path_atrs> buildPA(Router r, std::string not_send_ip) {
+	std::vector<Path_atrs> buildPA(Router r, std::string not_send_ip, int AS) {
 		std::vector<Path_atrs> path_atributes;
 
 		for (Peer p : r.get_router_rt()) {
@@ -141,8 +141,9 @@ namespace ns3 {
 
 				Path_atrs atrib_as;
 				atrib_as.type = 4;
-				atrib_as.lenght = p.AS_path_len;
+				atrib_as.lenght = p.AS_path_len + 1;
 				atrib_as.value = p.path;
+				atrib_as.value.append(to_string(AS));
 				atrib_as.optional = 0;
 				atrib_as.transitive = 0;
 				atrib_as.partial = 0;
@@ -263,7 +264,7 @@ namespace ns3 {
 
 			//send initial update message
 			std::stringstream msgStreamUpdate;
-			std::vector<Path_atrs> path_atr = buildPA(*r, r->make_string_from_IP(toAddress.GetIpv4()));
+			std::vector<Path_atrs> path_atr = buildPA(*r, r->make_string_from_IP(toAddress.GetIpv4()), r->get_router_AS());
 			std::vector<NLRIs> nlri = buildNLRI(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 
 			MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
@@ -329,6 +330,16 @@ namespace ns3 {
 					msgStream << msgToSend << '\0';
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 					this->Send(socket,packet);
+					// std::vector<Interface> interfaces = r->get_router_int();
+					// for (int j=0; j<(int)interfaces.size(); j++) {
+					// 	if(interfaces[j].status) {
+					// 		if(interfaces[j].client) { 
+					// 		    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+					// 		} else if (interfaces[j].server){
+					// 		    interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+					// 		}
+					// 	}
+					// }
 
 				} else {
 					NS_LOG_INFO("No new updates to send.");

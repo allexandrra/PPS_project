@@ -258,9 +258,11 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
     // Se il link è disabilitato mandare un notification msg e chiuedere la connessione
     // Se il link è disabilitato non mandare il keepalive msg (droppare client e)
     std::vector<NLRIs> wr1, wr2;
+    std::vector<NLRIs> remove_router1, remove_router2;
 
     for(int i=0; i<(int)routers->size(); i++) {
         if ((*routers)[i].get_router_AS() == AS1) {
+            //std::cout << "intru aici as1" << AS1 << std::endl;
 
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS2);
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
@@ -309,28 +311,51 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     remove_route.prefix_lenght = len;
 
                     wr1.push_back(remove_route);
+                    remove_router1.push_back(remove_route);
+
+                    std::string intf;
+
+                    for (int o = 0; o < (*routers)[i].get_router_rt().size(); o++) {
+                        if ((*routers)[i].get_router_rt()[o].network == remove_route.prefix) {
+                            intf = (*routers)[i].get_router_rt()[o].int_ip;
+                            break;
+                        }
+                    }
+                    for (int k = 0; k < (*routers)[i].get_router_rt().size(); k++) {
+                        if((*routers)[i].get_router_rt()[k].int_ip == intf && (*routers)[i].get_router_rt()[k].network != remove_route.prefix) {
+                            NLRIs rmv_route;
+
+                            rmv_route.prefix = (*routers)[i].get_router_rt()[k].network;
+                            std::string mask = (*routers)[i].get_router_rt()[k].mask;
+                            std::string token;
+                            int len = 0;
+                            int pos = mask.find(".");
+                            while ((pos = mask.find(".")) != std::string::npos) {
+                                token = mask.substr(0,pos);
+                                if (stoi(token) == 255) 
+                                    len += 8;
+                                else {
+                                    len += popcount1(stoi(token));
+                                }
+
+                                mask.erase(0, pos+1);
+                            }
+                            rmv_route.prefix_lenght = len;
+
+                            wr1.push_back(rmv_route);                        
+                        }
+                    }
                 }
-
-                
-
-                // for (int j = 0; j < (*routers)[i].get_router_rt().size(); j++) {
-                //     if((*routers)[i].get_router_rt()[j].next_hop == 
-                //         (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address)) {
-                //                 std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
-                //         }
-                // }
             }
 
-            (*routers)[i].remove_route(wr1);
+            (*routers)[i].remove_route(remove_router1);
 
-            // for (int i = 0; i < (int)wr1.size(); i++) {
-            //     std::cout << "Rute de eliminat " << wr1[i].prefix << " " << wr1[i].prefix_lenght << std::endl;
-            // }
+            for (int i = 0; i < (int)wr1.size(); i++) {
+                std::cout << "Rute de eliminat " << wr1[i].prefix << " " << unsigned(wr1[i].prefix_lenght) << std::endl;
+            }
         }
         
         if ((*routers)[i].get_router_AS() == AS2) {
-            //std::vector<NLRIs> wr;
-
             int interfaceIndex = (*routers)[i].get_router_int_num_from_name(AS1);
 
             NS_LOG_INFO("Disabling interface " << interfaceIndex << " on router " << (*routers)[i].get_router_AS());
@@ -378,20 +403,47 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     remove_route.prefix_lenght = len;
 
                     wr2.push_back(remove_route);
-                }
+                    remove_router2.push_back(remove_route);
 
-                // for (int j = 0; j < (*routers)[i].get_router_rt().size(); j++) {
-                //     if((*routers)[i].get_router_rt()[j].next_hop == 
-                //         (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address)) {
-                //                 std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
-                //         }
-                // }
+                    std::string intf;
+
+                    for (int o = 0; o < (*routers)[i].get_router_rt().size(); o++) {
+                        if ((*routers)[i].get_router_rt()[o].network == remove_route.prefix) {
+                            intf = (*routers)[i].get_router_rt()[o].int_ip;
+                            break;
+                        }
+                    }
+                    for (int k = 0; k < (*routers)[i].get_router_rt().size(); k++) {
+                        if((*routers)[i].get_router_rt()[k].int_ip == intf && (*routers)[i].get_router_rt()[k].network != remove_route.prefix) {
+                            NLRIs rmv_route;
+
+                            rmv_route.prefix = (*routers)[i].get_router_rt()[k].network;
+                            std::string mask = (*routers)[i].get_router_rt()[k].mask;
+                            std::string token;
+                            int len = 0;
+                            int pos = mask.find(".");
+                            while ((pos = mask.find(".")) != std::string::npos) {
+                                token = mask.substr(0,pos);
+                                if (stoi(token) == 255) 
+                                    len += 8;
+                                else {
+                                    len += popcount1(stoi(token));
+                                }
+
+                                mask.erase(0, pos+1);
+                            }
+                            rmv_route.prefix_lenght = len;
+
+                            wr2.push_back(rmv_route);                        
+                        }
+                    }
+                }
             }
 
-            (*routers)[i].remove_route(wr2);
+            (*routers)[i].remove_route(remove_router2);
             
             for (int i = 0; i < (int)wr2.size(); i++) {
-                std::cout << "Rute de eliminat " << wr2[i].prefix << " " << wr2[i].prefix_lenght << std::endl;
+                std::cout << "Rute de eliminat " << wr2[i].prefix << " " << unsigned(wr2[i].prefix_lenght) << std::endl;
             }
         }
     }
@@ -410,9 +462,17 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 
+                    NS_LOG_INFO(msgStream.str());
+
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
                     }
+
+                    // if(interfaces[j].client) { 
+                    //     interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    // } else if (interfaces[j].server){
+                    //     interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    // }
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
@@ -441,10 +501,17 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     msgStream << msg << "\0";
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+                    NS_LOG_INFO(msgStream.str());
 
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
                     }
+
+                    // if(interfaces[j].client) { 
+                    //     interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
+                    // } else if (interfaces[j].server){
+                    //     interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
+                    // }
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
