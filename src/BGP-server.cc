@@ -359,10 +359,10 @@ namespace ns3 {
 				MessageUpdate msgToSend;
 
 				if (new_wr.size() > 0 || new_pa.size() > 0) {
-					if (new_wr.size() > 0 && new_pa.size() > 0) {
+					if (new_wr.size() > 0 && new_pa.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
 						NS_LOG_INFO("Entro 3");
 						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
-					} else if (new_wr.size() > 0) {
+					} else if (new_wr.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
 						NS_LOG_INFO("Entro 1");
 						msgToSend = MessageUpdate(new_wr.size(), new_wr);
 					} else if (new_pa.size() > 0) {
@@ -481,6 +481,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// TODO: update the routing table using the value of the total trust
+				//std::cout <<"\n\n ajunf aici vreodata? \n\n";
 				r->update_trust(r->make_string_from_IP(intf.ip_address), int_num);
 				
 				//Create a new TRUSTRATE message

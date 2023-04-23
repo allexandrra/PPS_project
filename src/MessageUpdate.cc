@@ -316,7 +316,7 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
                             }
                             break;
                         case 6: // trust
-                            if (std::stoi(atr.value)/100.0 < p.trust) {
+                            if (std::stoi(atr.value)/100.0 > p.trust) {
                                 //std::cout << "aici 5\n\n";
                                 loc_RIB.push_back(r);
                             }

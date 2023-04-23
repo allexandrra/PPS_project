@@ -234,7 +234,7 @@ namespace ns3 {
 
     for(int i = 0; i < (int)withdrawnRoutes.size(); i++) {
       for (int j = 0; j < (int)this->routing_table.size(); j++) {
-        if (withdrawnRoutes[i].prefix == this->routing_table[j].network && this->routing_table[j].int_ip != intf) {
+        if (withdrawnRoutes[i].prefix == this->routing_table[j].network && this->routing_table[j].next_hop != intf) {
           what_to_withdraw.erase(what_to_withdraw.begin() + j - removed);
           removed++;
         }
@@ -249,9 +249,13 @@ namespace ns3 {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
         << this->routing_table[i].weight << " " << this->routing_table[i].loc_pref << " "
         << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
-        << this->routing_table[i].AS_path_len << " " 
-        << this->routing_table[i].path << " " << this->routing_table[i].MED << " " 
-        << this->routing_table[i].trust << std::endl;
+        << this->routing_table[i].AS_path_len << " ";
+      
+      for(std::string::size_type j = 0; j < routing_table[j].path.size(); j++) {
+        std::cout << this->routing_table[i].path[j] << " ";
+      }
+       
+      std::cout << this->routing_table[i].MED << " " << this->routing_table[i].trust << std::endl;
     }
   }
 
@@ -381,6 +385,9 @@ namespace ns3 {
 
   void Router::update_trust(std::string intf, int int_num) {
     for(int i = 0; i < (int)this->routing_table.size(); i++) {
+      std::cout << "\n\n Trust testing \n";
+      std::cout << this->routing_table[i].next_hop << " " << intf << std::endl;
+      std::cout << int_num << std::endl;
       if (this->routing_table[i].next_hop == intf) {
         this->routing_table[i].trust = this->get_trust_from_interface_name(int_num);
       }

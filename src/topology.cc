@@ -318,6 +318,15 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     wr1.push_back(remove_route);
                 }
+
+                
+
+                // for (int j = 0; j < (*routers)[i].get_router_rt().size(); j++) {
+                //     if((*routers)[i].get_router_rt()[j].next_hop == 
+                //         (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address)) {
+                //                 std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
+                //         }
+                // }
             }
 
             (*routers)[i].remove_route(wr1);
@@ -385,7 +394,16 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     remove_route.prefix_lenght = len;
 
                     wr2.push_back(remove_route);
+
+                    //std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
                 }
+
+                // for (int j = 0; j < (*routers)[i].get_router_rt().size(); j++) {
+                //     if((*routers)[i].get_router_rt()[j].next_hop == 
+                //         (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address)) {
+                //                 std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
+                //         }
+                // }
             }
 
             (*routers)[i].remove_route(wr2);
@@ -407,13 +425,13 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
         if ((*routers)[i].get_router_AS() == AS1) {    
             std::vector<Interface> interfaces = (*routers)[i].get_router_int();
             for (int j=0; j<(int)interfaces.size(); j++) {
-                std::cout << interfaces[j].name << std::endl;
+                //std::cout << interfaces[j].name << std::endl;
                 if(interfaces[j].status) {
                     //send msg
                     MessageUpdate msg = MessageUpdate(wr1.size(), wr1);
                     std::stringstream msgStream;
                     msgStream << msg << "\0";
-                    std::cout << msgStream.str() << std::endl;
+                    //std::cout << msgStream.str() << std::endl;
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 
@@ -452,7 +470,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     MessageUpdate msg = MessageUpdate(wr2.size(), wr2);
                     std::stringstream msgStream;
                     msgStream << msg << "\0";
-                    std::cout << msgStream.str() << std::endl;
+                    //std::cout << msgStream.str() << std::endl;
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 
@@ -809,47 +827,6 @@ int main() {
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");
 
     NS_LOG_INFO("\nSending update messages\n");
-
-    //sendUpdateMsg(network);
-    //for (Router r : network) {
-        // std::vector<NLRIs> nlri = buildNLRI(r);
-        // std::vector<Path_atrs> path = buildPA(r);
-
-        // std::cout << r.get_router_AS() << "\n\n";
-
-        // int k = 0;
-
-        // for (int j = 0; j < nlri.size(); j++) {
-        //     std::cout << nlri[j].prefix << " " << unsigned(nlri[j].prefix_lenght) << "\n\n";
-        //     for (int i = k; i < k+5; i++) {
-        //         std::cout << path[i].type << " " << path[i].lenght << " " << path[i].value << " " << 
-        //         unsigned(path[i].optional) << " " << unsigned(path[i].transitive) << " " << 
-        //         unsigned(path[i].partial) << " " << unsigned(path[i].extended_lenght) << "\n";
-        //     }
-        //     k+=5;
-        // }
-        // std::stringstream update = createUpdateMsg(r);
-        // std::cout << update.str() << "\n\n";
-
-        // MessageUpdate msg = MessageUpdate();
-        // update >> msg;
-
-        // std::cout << msg.get_type() << " " << msg.get_unfeasable_route_len() << " " 
-        //     << msg.get_total_path_atr_len() << "\n";
-        
-        // vector<Path_atrs> path = msg.get_path_atr();
-        // for(int i = 0; i < msg.get_total_path_atr_len(); i++) {
-        //     std::cout << path[i].type << " " << path[i].lenght << " " <<
-        //         path[i].value << " " << path[i].optional << path[i].transitive <<
-        //         path[i].partial << path[i].extended_lenght << "\n";
-        // }
-        // vector<NLRIs> nlri = msg.get_NLRI();
-        // for(int i = 0; i < nlri.size(); i++) {
-        //     std::cout << unsigned(nlri[i].prefix_lenght) << " " << nlri[i].prefix << "\n";
-        // }
-        
-        // std::cout << "\n\n";
-    //}
 
     // schedule the first user input callback to run after the simulation starts
     Simulator::Schedule(Seconds(45.0), &userInputCallback, &network);
