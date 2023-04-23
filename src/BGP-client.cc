@@ -239,7 +239,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// stop the application
-				this->StopApplication();
+				//this->StopApplication();
 			}
 			
 		} else if(msg.get_type() == 1){
@@ -331,10 +331,10 @@ namespace ns3 {
 					this->Send(socket,packet);
 
 				} else {
-					NS_LOG_INFO("No new updates to send.");
+					NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS()  << " does not have new updates to send.");
 				}
 			} else {
-				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [UPDATE READ CLIENT]");
 
 				std::stringstream msgStream;
 				MessageNotification msg = MessageNotification(6,0);
@@ -347,7 +347,7 @@ namespace ns3 {
 				intf.server.reset();
 
 				r->set_interface_status(int_num, false);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
     		//intf.set_max_hold_time(max_hold_time);
@@ -362,7 +362,7 @@ namespace ns3 {
 
 			// stop the application in case the error code is 6 (Cease) or 4 (Hold time expired)
 			if(msgRcv.get_error_code() == 6 || msgRcv.get_error_code() == 4) {
-				this->StopApplication();
+				//this->StopApplication();
 			}
 			
 		} else if(msg.get_type() == 5) {
@@ -459,7 +459,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// stop the application
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
 		} else {
@@ -670,7 +670,7 @@ namespace ns3 {
 				intf.server.reset();
 				r->set_interface_status(int_num, false);
 				r->set_interface(intf, int_num);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 		}
 
@@ -780,7 +780,7 @@ namespace ns3 {
 				intf.server.reset();
 				r->set_interface_status(int_num, false);
 				r->set_interface(intf, int_num);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 		}
 

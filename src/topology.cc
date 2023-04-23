@@ -181,7 +181,6 @@ void printTopology (std::vector<Router> routers) {
     }
 }
 
-//
 
 std::vector<Router> createBGPConnections(std::vector<Router> routers) {
     int serverPort = 179;
@@ -278,7 +277,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             }
             (*routers)[i].set_router_neigh(neighbours);
 
-            // TODO: fix 
             for(int j = 0; j < (int)routers->size(); j++) {
                 if ((*routers)[j].get_router_AS() == AS2) {
                     std::stringstream tmp1;
@@ -296,7 +294,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     std::string token;
                     int len = 0;
                     int pos = mask.find(".");
-                    while ((pos = mask.find(".")) != std::string::npos) {
+                    while ((pos = mask.find(".")) != (int) std::string::npos) {
                         token = mask.substr(0,pos);
                         if (stoi(token) == 255) 
                             len += 8;
@@ -365,7 +363,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     std::string token;
                     int len = 0;
                     int pos = mask.find(".");
-                    while ((pos = mask.find(".")) != std::string::npos) {
+                    while ((pos = mask.find(".")) != (int) std::string::npos) {
                         token = mask.substr(0,pos);
                         if (stoi(token) == 255) 
                             len += 8;
@@ -390,9 +388,9 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
             (*routers)[i].remove_route(wr2);
             
-            for (int i = 0; i < (int)wr2.size(); i++) {
-                std::cout << "Rute de eliminat " << wr2[i].prefix << " " << wr2[i].prefix_lenght << std::endl;
-            }
+            //for (int i = 0; i < (int)wr2.size(); i++) {
+            //    std::cout << "Rute de eliminat " << wr2[i].prefix << " " << wr2[i].prefix_lenght << std::endl;
+            //}
         }
     }
 
@@ -465,11 +463,13 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 }
 
 void disable_router(std::vector<Router>* routers, int AS) {
+    bool found = false;
     
     for(int i=0; i<(int)routers->size(); i++) {
 
         if ((*routers)[i].get_router_AS() == AS) {
 
+            found = true;
             //get the neighbours of the router
             std::vector<int> neighbours = (*routers)[i].get_router_neigh();
 
@@ -478,8 +478,27 @@ void disable_router(std::vector<Router>* routers, int AS) {
             }  
         }
 
-    }    
+    }  
+
+    if (!found)
+        NS_LOG_INFO("Router with AS " << AS << " not found. Please insert a router with a valid AS.\n");   
 }
+
+bool checkAS(std::vector<Router>* routers, int AS) {
+    bool found = false;
+    
+    for(int i=0; i<(int)routers->size(); i++) {
+        if ((*routers)[i].get_router_AS() == AS)
+            found = true;
+    }  
+
+    if (!found)
+        NS_LOG_INFO("Router with AS " << AS << " not found. Please insert a router with a valid ASes.\n");   
+
+    return found;
+}
+
+
 
 void checkHoldTime(std::vector<Router>* routers) {
     for(int i=0; i<(int)routers->size(); i++) {
@@ -627,12 +646,12 @@ void userInputCallback(std::vector<Router>* routers) {
                     bool is_r1 = false;
                     bool is_r2 = false;
                     bool is_neigh = false;
-                    int AS2;
+                    int AS2 = 0;
                     std::vector<int> r1;
 
 
                     if(type < 1 || type > 6) {
-                        std::cout << "Wrong path attribute. It has to be a value between 1 and 5.\n";
+                        std::cout << "Wrong path attribute. It has to be a value between 1 and 5.\n\n";
                         break;
                     }
 
@@ -648,12 +667,11 @@ void userInputCallback(std::vector<Router>* routers) {
                     }
 
                     if(is_r1 == false || is_r2 == false) {
-                        std::cout << "One of the IP addresses introduced does not exist in the topology. Please add valid IP addresses.\n";
+                        std::cout << "One of the IP addresses introduced does not exist in the topology. Please add valid IP addresses.\n\n";
                         break;
                     } 
 
                     for (int i = 0; i < (int)r1.size(); i++) {
-                        bool is_neigh = false;
                         if (r1[i] == AS2) {
                             is_neigh = true;
                             break;
@@ -661,7 +679,7 @@ void userInputCallback(std::vector<Router>* routers) {
                     }
 
                     if (is_neigh == false) {
-                        std::cout << "The two routers are not connected by a link. Please add two neighbouring routers.\n";
+                        std::cout << "The two routers are not connected by a link. Please add two neighbouring routers.\n\n";
                         break;
                     }
 
@@ -734,7 +752,8 @@ void userInputCallback(std::vector<Router>* routers) {
                     std::cout << std::endl;
 
                     //std::cout << "You entered: " << AS1 << " and " << AS2 << std::endl;
-                    disable_router_link(routers, AS1, AS2);
+                    if(checkAS(routers, AS1) && checkAS(routers, AS2))
+                        disable_router_link(routers, AS1, AS2);
                     break;
                 }
             case '3':
@@ -760,22 +779,22 @@ void userInputCallback(std::vector<Router>* routers) {
                     std::cout << "\n\n--------------- ROUTING TABLES ------------\n" << std::endl;
                     for(Router r : *routers) {
                         std::cout << "Router " << r.get_router_AS() << ": \n";
-                        std::cout << "NET      MASK   WEI LEN   NEXT HOP   INT IP P.LEN  PATH  MED   TRUST\n";
+                        std::cout << "NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST\n";
                         r.print_RT();
                         std::cout << "\n";
                     }
-                    std::cout << "\n\n-------------------------------------------\n" << std::endl;
+                    std::cout << "\n-------------------------------------------\n" << std::endl;
                     break;
                 }
                 break;
 
             default:
-                std::cout << "Invalid number, choose a number between 1 and 5. " << std::endl;
+                std::cout << "Invalid number, choose a number between 1 and 6.\n " << std::endl;
                 break;
         }
     }
     else {
-        std::cout << "Invalid input, choose a number between 1 and 5. ";
+        std::cout << "Invalid input, choose a number between 1 and 6.\n\n ";
     }
 
     // schedule the next user input callback
@@ -827,7 +846,7 @@ int main() {
     //NS_LOG_INFO("\nStarting incrementing the hold timer");
     //startHoldTimer(network);
 
-    NS_LOG_INFO("\nStarting sending KEEPALIVE every 30 seconds");
+    NS_LOG_INFO("\nStart sending KEEPALIVE messages every 30 seconds");
     //startKeepAlive(network);
 
     NS_LOG_INFO("\nBGP state: ESTABLISHED\n");

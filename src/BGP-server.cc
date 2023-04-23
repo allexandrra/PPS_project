@@ -197,7 +197,7 @@ namespace ns3 {
 					intf.server.reset();
 					r->set_interface_status(int_num, false);
 					r->set_interface(intf, int_num);
-					this->StopApplication();
+					////this->StopApplication();
 				}
 
 			} else {
@@ -217,7 +217,7 @@ namespace ns3 {
 				intf.server.reset();
 				r->set_interface_status(int_num, false);
 				r->set_interface(intf, int_num);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
 		}
@@ -267,7 +267,7 @@ namespace ns3 {
 				intf.client.reset();
 				intf.server.reset();
 				r->set_interface_status(int_num, false);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
 			// Set the hold time of the interface and the current time as the last update time
@@ -342,10 +342,10 @@ namespace ns3 {
 					this->Send(socket,packet);
 
 				} else {
-					NS_LOG_INFO("No new updates to send.");
+					NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS()  << " does not have new updates to send.");
 				}
 			} else {
-				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [OPEN READ SERVER]");
+				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [UPDATE READ SERVER]");
 
 				std::stringstream msgStream;
 				MessageNotification msg = MessageNotification(6,0);
@@ -358,7 +358,7 @@ namespace ns3 {
 				intf.server.reset();
 
 				r->set_interface_status(int_num, false);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
     		//intf.set_max_hold_time(max_hold_time);
@@ -479,7 +479,7 @@ namespace ns3 {
 					intf.server.reset();
 					r->set_interface_status(int_num, false);
 					r->set_interface(intf, int_num);
-					this->StopApplication();
+					//this->StopApplication();
 				}
 
 			} else {
@@ -499,7 +499,7 @@ namespace ns3 {
 				intf.server.reset();
 				r->set_interface_status(int_num, false);
 				r->set_interface(intf, int_num);
-				this->StopApplication();
+				//this->StopApplication();
 			}
 
 
