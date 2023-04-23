@@ -26,6 +26,7 @@ namespace ns3 {
     this->AS = AS;
     //Convert ASip to string to store it as BGP ID
     std::stringstream ip;
+    AS_ip.Print(ip);
     this->router_ID = ip.str();
     this->AS_ip = AS_ip;
     this->AS_mask = AS_mask;
@@ -246,14 +247,14 @@ namespace ns3 {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
         << this->routing_table[i].weight << " " << this->routing_table[i].loc_pref << " "
         << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
-        << this->routing_table[i].AS_path_len << " ";
+        << this->routing_table[i].AS_path_len << "   ";
       
       //std::cout << this->routing_table[i].path << " ";
       for(int j = 0; j < routing_table[i].path.size(); j++) {
         std::cout << this->routing_table[i].path[j] << " ";
       }
        
-      std::cout << this->routing_table[i].MED << " " << this->routing_table[i].trust << std::endl;
+      std::cout << "   " << this->routing_table[i].MED << " " << this->routing_table[i].trust << std::endl;
     }
   }
 
@@ -367,11 +368,11 @@ namespace ns3 {
       std::string if_name = "eth"+std::to_string(num);
       if(interfaces[i].name == if_name) {
         if(interfaces[i].total_trust == 0) {
-          std::cout << " direct trust: " << interfaces[i].direct_trust << std::endl;
+          //std::cout << " direct trust: " << interfaces[i].direct_trust << std::endl;
           return interfaces[i].direct_trust;
         }
         else {
-          std::cout << " total trust: " << interfaces[i].total_trust << std::endl;
+          //std::cout << " total trust: " << interfaces[i].total_trust << std::endl;
           return interfaces[i].total_trust;
         }
       }
