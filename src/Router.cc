@@ -102,9 +102,6 @@ namespace ns3 {
   */
   void Router::push_new_route(Peer new_route) {
     this->routing_table.push_back(new_route);
-    //NS_LOG_INFO("Added route " << new_route.network << " to router " << this->router_ID);
-    //NS_LOG_INFO("Router " << this->router_ID << " now has " << this->neighbours.size() << " neighbours");
-    //NS_LOG_INFO(this->routing_table.size());
   }
 
   void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
@@ -368,7 +365,6 @@ namespace ns3 {
       // name is composed by eth plus the number passed as parameter
       std::string if_name = "eth"+std::to_string(num);
       if(interfaces[i].name == if_name) {
-        std::cout << "entro ";
         if(interfaces[i].total_trust == 0) {
           std::cout << " direct trust: " << interfaces[i].direct_trust << std::endl;
           return interfaces[i].direct_trust;
@@ -385,9 +381,6 @@ namespace ns3 {
 
   void Router::update_trust(std::string intf, int int_num) {
     for(int i = 0; i < (int)this->routing_table.size(); i++) {
-      std::cout << "\n\n Trust testing \n";
-      std::cout << this->routing_table[i].next_hop << " " << intf << std::endl;
-      std::cout << int_num << std::endl;
       if (this->routing_table[i].next_hop == intf) {
         this->routing_table[i].trust = this->get_trust_from_interface_name(int_num);
       }

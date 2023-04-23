@@ -103,8 +103,6 @@ std::vector<Router> createLinks(std::vector<Router> routers) {
                 neighbourIndex++;
             };
 
-            //std::cout << "Router " << routers[i].get_router_AS() << " - Vicino: " << routers[neighbourIndex].get_router_AS() << std::endl;
-
             NodeContainer nc = NodeContainer(routers[i].get_router_node().Get(0), routers[neighbourIndex].get_router_node().Get(0));
 
             PointToPointHelper p2p;
@@ -273,12 +271,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             
             std::vector<int> neighbours = (*routers)[i].get_router_neigh();
 
-            /*std::string debug;
-            for(int i=0; i<(int)neighbours.size(); i++) {
-                debug += std::to_string(neighbours[i]) + " ";
-            }   
-            std::cout << "Router "  << (*routers)[i].get_router_AS() << " before removal - Neighbours: " << debug << std::endl;*/
-
             // remove the router from the neighbor list
             auto it = std::find(neighbours.begin(), neighbours.end(), AS2);
             if (it != (*routers)[i].get_router_neigh().end()) {
@@ -331,16 +323,9 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
             (*routers)[i].remove_route(wr1);
 
-            for (int i = 0; i < (int)wr1.size(); i++) {
-                std::cout << "Rute de eliminat " << wr1[i].prefix << " " << wr1[i].prefix_lenght << std::endl;
-            }
-
-            /*neighbours = (*routers)[i].get_router_neigh();
-            debug = "";
-            for(int i=0; i<(int)neighbours.size(); i++) {
-                debug += std::to_string(neighbours[i]) + " ";
-            }   
-            std::cout << "Router "  << (*routers)[i].get_router_AS() << " after removal - Neighbours: " << debug << std::endl; */
+            // for (int i = 0; i < (int)wr1.size(); i++) {
+            //     std::cout << "Rute de eliminat " << wr1[i].prefix << " " << wr1[i].prefix_lenght << std::endl;
+            // }
         }
         
         if ((*routers)[i].get_router_AS() == AS2) {
@@ -363,7 +348,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
             }
             (*routers)[i].set_router_neigh(neighbours);
 
-            //TODO: fix
             for(int j = 0; j < (int)routers->size(); j++) {
                 if ((*routers)[j].get_router_AS() == AS1) {
                     std::stringstream tmp1;
@@ -394,8 +378,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     remove_route.prefix_lenght = len;
 
                     wr2.push_back(remove_route);
-
-                    //std::cout << (*routers)[i].get_router_rt()[j].next_hop << " " << (*routers)[i].make_string_from_IP((*routers)[i].get_router_int_from_name(AS1).ip_address) << std::endl;
                 }
 
                 // for (int j = 0; j < (*routers)[i].get_router_rt().size(); j++) {
@@ -414,13 +396,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
         }
     }
 
-    // TODO: Send update messages to the interfaces that are not down
-
-    /*if(interfaces[j].client) { interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-                    } else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-                    }*/
-        
     for(int i=0; i<(int)routers->size(); i++) {
         if ((*routers)[i].get_router_AS() == AS1) {    
             std::vector<Interface> interfaces = (*routers)[i].get_router_int();
@@ -437,11 +412,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-                    } /*else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-                    }*/
-
-                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    }
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
@@ -453,9 +424,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-                    } /*else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-                    }*/
+                    }
 
                     interfaces[j].client.reset();
                     interfaces[j].server.reset();
@@ -470,17 +439,12 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     MessageUpdate msg = MessageUpdate(wr2.size(), wr2);
                     std::stringstream msgStream;
                     msgStream << msg << "\0";
-                    //std::cout << msgStream.str() << std::endl;
 
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-                    } /*else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-                    }*/
-
-                    //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
+                    }
                 } else {
                     NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
                     std::stringstream msgStream;
@@ -489,9 +453,7 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-                    } /*else if (interfaces[j].server){
-                        interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-                    }*/
+                    }
                     //Simulator::Schedule (Simulator::Now(), &BGPClient::Send, this, m_socket, packet);
                     //interfaces[j].client.value()->AddPacketsToQueue(msgStream, Seconds(0.0));
                     interfaces[j].client.reset();
@@ -577,8 +539,6 @@ int get_router_index_from_AS(std::vector<Router>* routers, int AS) {
     return -1;
 }
 
-
-
 //Option 1: inserire una ref del neigh nell'interface e poi scorrere a catena
 //Option 2: fare una cosa periodica come il controllo dell'holt time in topology e aggiornare la voted trust nelle interfaces
 void exchangeVotedTrust(std::vector<Router>* routers) {
@@ -643,8 +603,8 @@ void userInputCallback(std::vector<Router>* routers) {
         "[2] Disable a link \n"
         "[3] Disable a router \n"
         "[4] Continue the simulation \n"
-        "[5] Quit\n"
-        "[6] Print Routing tables \n\n"
+        "[5] Print Routing tables \n"
+        "[6] Quit\n\n"
         "Choose a number: ";
 
     std::cin >> c;
@@ -664,8 +624,47 @@ void userInputCallback(std::vector<Router>* routers) {
                     NLRIs updated_nlri;
                     std::vector<Path_atrs> path_atr;
                     Path_atrs pa;
+                    bool is_r1 = false;
+                    bool is_r2 = false;
+                    bool is_neigh = false;
+                    int AS2;
+                    std::vector<int> r1;
 
-                    //TODO: fix 
+
+                    if(type < 1 || type > 6) {
+                        std::cout << "Wrong path attribute. It has to be a value between 1 and 5.\n";
+                        break;
+                    }
+
+                    for(int i = 0; i < (int)routers->size(); i++) {
+                        if((*routers)[i].make_string_from_IP((*routers)[i].get_router_ASip()) == ip1) {
+                            is_r1 = true;
+                            r1 = (*routers)[i].get_router_neigh();
+                        }
+                        if((*routers)[i].make_string_from_IP((*routers)[i].get_router_ASip()) == ip2) {
+                            is_r2 = true;
+                            AS2 = (*routers)[i].get_router_AS();
+                        }
+                    }
+
+                    if(is_r1 == false || is_r2 == false) {
+                        std::cout << "One of the IP addresses introduced does not exist in the topology. Please add valid IP addresses.\n";
+                        break;
+                    } 
+
+                    for (int i = 0; i < (int)r1.size(); i++) {
+                        bool is_neigh = false;
+                        if (r1[i] == AS2) {
+                            is_neigh = true;
+                            break;
+                        }
+                    }
+
+                    if (is_neigh == false) {
+                        std::cout << "The two routers are not connected by a link. Please add two neighbouring routers.\n";
+                        break;
+                    }
+
                     for(int i = 0; i < (int)routers->size(); i++) {
                         std::stringstream tmp1;
                         std::stringstream tmp2;
@@ -752,24 +751,31 @@ void userInputCallback(std::vector<Router>* routers) {
             case '4':
                 break;
 
-            case '5':
+            case '6':
                 exit(EXIT_SUCCESS);
                 break;
             
-            case '6':
+            case '5':
                 for(Router r : *routers) {
-                    std::cout << "Router: " << r.get_router_AS() << ": \n";
-                    r.print_RT();
+                    std::cout << "\n\n--------------- ROUTING TABLES ------------\n" << std::endl;
+                    for(Router r : *routers) {
+                        std::cout << "Router " << r.get_router_AS() << ": \n";
+                        std::cout << "NET      MASK   WEI LEN   NEXT HOP   INT IP P.LEN  PATH  MED   TRUST\n";
+                        r.print_RT();
+                        std::cout << "\n";
+                    }
+                    std::cout << "\n\n-------------------------------------------\n" << std::endl;
+                    break;
                 }
                 break;
 
             default:
-                std::cout << "Invalid number, choose a number between 1 and 4. " << std::endl;
+                std::cout << "Invalid number, choose a number between 1 and 5. " << std::endl;
                 break;
         }
     }
     else {
-        std::cout << "Invalid input, choose a number between 1 and 4. ";
+        std::cout << "Invalid input, choose a number between 1 and 5. ";
     }
 
     // schedule the next user input callback

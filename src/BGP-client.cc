@@ -203,9 +203,6 @@ namespace ns3 {
 		int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
 		Interface intf = r->get_router_int()[int_num];
 
-		//std::cout << "\n\n Ruterul care e acum: " << r->get_router_AS() << 
-			//" si ruterului care primeste mesajul " << r->make_string_from_IP(toAddress.GetIpv4()) << "\n\n";
-
 		// differentite the action to be taken based on the type of the message
 		// 1 -> OPEN
 		// 2 -> UPDATE
@@ -261,24 +258,21 @@ namespace ns3 {
 			// events is a list of all the events scheduled for the periodical sending of the keepalive messages
 			std::vector<EventId> events;
 			intf.client.value()->AddPacketsToQueuePeriodically(events);
+			std::vector<EventId> trustEvents;
+			intf.client.value()->exchangeTrust(trustEvents);
 
 			//send initial update message
 			std::stringstream msgStreamUpdate;
 			std::vector<Path_atrs> path_atr = buildPA(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 			std::vector<NLRIs> nlri = buildNLRI(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 
-			std::cout << "\n Router " << r->get_router_AS() << " sends first UPDATE message.\n\n";
 			MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
-			//msgStreamUpdate << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
 			msgStreamUpdate << msg << "\0";
-
-			//std::cout << msgStreamUpdate.str() << std::endl;
 
 			Ptr<Packet> packetUpdate = Create<Packet>((uint8_t*) msgStreamUpdate.str().c_str(), msgStreamUpdate.str().length()+1);
 			this->Send(socket, packetUpdate);
 
 		} else if(msg.get_type() == 2){
-			NS_LOG_INFO("Update message sunt aici 4");
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
@@ -292,18 +286,6 @@ namespace ns3 {
 			if (msgRcv.get_unfeasable_route_len() > 0) {
 				new_wr = r->remove_routes_if_necessary(msgRcv.get_withdrawn_routes(), r->make_string_from_IP(intf.ip_address));
 			}
-
-			// std::cout << "What i receive\n";
-			// vector<Path_atrs> path = msgRcv.get_path_atr();
-			// for(int i = 0; i < msgRcv.get_total_path_atr_len(); i++) {
-			// 	std::cout << path[i].type << " " << path[i].lenght << " " <<
-			// 		path[i].value << " " << path[i].optional << path[i].transitive <<
-			// 		path[i].partial << path[i].extended_lenght << "\n";
-			// }
-			// vector<NLRIs> nlri = msgRcv.get_NLRI();
-			// for(int i = 0; i < nlri.size(); i++) {
-			// 	std::cout << unsigned(nlri[i].prefix_lenght) << " " << nlri[i].prefix << "\n";
-			// }
 
 			if(msgRcv.get_total_path_atr_len() > 0) {
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
@@ -329,20 +311,6 @@ namespace ns3 {
 				InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom(from);
 				r->add_to_RT(locRib, r->make_string_from_IP(fromAddress.GetIpv4()));
 			}
-
-			
-			//std::cout << "adresa interfetei " << std::endl;
-
-			// std::cout << "What is to send\n";
-			// for(int i = 0; i < new_pa.size(); i++) {
-			// 	std::cout << new_pa[i].type << " " << new_pa[i].lenght << " " <<
-			// 		new_pa[i].value << " " << new_pa[i].optional << new_pa[i].transitive <<
-			// 		new_pa[i].partial << new_pa[i].extended_lenght << "\n";
-			// }
-			// for(int i = 0; i < new_nlri.size(); i++) {
-			// 	std::cout << unsigned(new_nlri[i].prefix_lenght) << " " << new_nlri[i].prefix << "\n";
-			// }
-
 			
 			std::stringstream msgStream;
 
@@ -351,19 +319,14 @@ namespace ns3 {
 
 				if (new_wr.size() > 0 || new_pa.size() > 0) {
 					if (new_wr.size() > 0 && new_pa.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
-						NS_LOG_INFO("Entro 3");
 						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
 					} else if (new_wr.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
-						NS_LOG_INFO("Entro 1");
 						msgToSend = MessageUpdate(new_wr.size(), new_wr);
 					} else if (new_pa.size() > 0) {
-						NS_LOG_INFO("Entro 2");
 						msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
 					}
 
 					msgStream << msgToSend << '\0';
-					//msgStream << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
-					//NS_LOG_INFO(msgStream.str());
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 					this->Send(socket,packet);
 

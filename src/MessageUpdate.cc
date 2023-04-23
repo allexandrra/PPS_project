@@ -54,8 +54,6 @@ std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
 std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
-
-    //std::stringstream strStreamData;
     
     stream << std::bitset<128>(strStreamMarker.str()).to_string() << " " 
             << std::bitset<16>(msg.lenght).to_string() << " " 
@@ -83,41 +81,28 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
     if(msg.total_path_atr_len > 0) {
         for(Path_atrs p : msg.path_atr) {
-            //std::cout << p.type << " " << p.lenght << " " << p.value << std::endl;
             std::string aux = "";
             if(p.optional == 1) {
                 aux.append("1");
-                //bit_flags[0] = '1';
             } else {
                 aux.append("0");
-                //bit_flags[0] = '0';
             }
             if(p.transitive == 1) {
                 aux.append("1");
-                //bit_flags[1] = '1';
             } else {
                 aux.append("0");
-                //bit_flags[1] = '0';
             }
             if(p.partial == 1) {
                 aux.append("1");
-                //bit_flags[2] = '1';
             } else {
                 aux.append("0");
-                //bit_flags[2] = '0';
             }
             if(p.extended_lenght == 1) {
                 aux.append("1");
-                //bit_flags[3] = '1';
             } else {
                 aux.append("0");
-                //bit_flags[3] = '0';
             }
             aux.append("0000");
-            //bit_flags[4] = '0';
-            //bit_flags[5] = '0';
-            //bit_flags[6] = '0';
-            //bit_flags[7] = '0';
 
             std::bitset<8> bit_flags(aux);
             stream << bit_flags << " " << std::bitset<8>(p.type).to_string() << " "
@@ -161,9 +146,6 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
 
     msg.marker = marker;
     msg.lenght = (uint16_t)bit_length.to_ulong();
-
-    //std::cout << "\n\n length of update " << msg.lenght << std::endl;
-
     msg.type = (uint16_t)bit_type.to_ulong();
 
     msg.unfeasable_route_len = (uint16_t)bit_unfeasable_route_len.to_ulong();
@@ -217,23 +199,9 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
             new_path_atr.type = (uint8_t)bit_atr_type_code.to_ulong();
             new_path_atr.value = bit_atr_value;
 
-            // if(new_path_atr.extended_lenght == 0) {
-            //     std::bitset<8> bit_atr_value;
-            //     stream >> bit_atr_value;
-            //     new_path_atr.value = bit_atr_value.to_string();
-            // } else {
-            //     std::bitset<16> bit_atr_value;
-            //     stream >> bit_atr_value;
-            //     new_path_atr.value = bit_atr_value.to_string();
-            // }
-
-            //std::cout << "din func " << new_path_atr.lenght << " " << 
-                //new_path_atr.type << " " << new_path_atr.value << "\n\n";
-
             msg.path_atr.push_back(new_path_atr);
         }
 
-        //while (!stream.eofbit)
         for (int i = 0; i < msg.total_path_atr_len/6; i++) {
             NLRIs new_nlri;
 
@@ -245,13 +213,9 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
             new_nlri.prefix_lenght = (uint8_t)length.to_ulong();
 
             for (int j = 0; j < 3; j++) {
-                //stream >> prefix;
-                //new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
                 new_nlri.prefix.append(prefix.substr(j,1));
                 new_nlri.prefix.append(".");
             }
-            //stream >> prefix;
-            //new_nlri.prefix.append(std::to_string((uint8_t)prefix.to_ulong()));
             new_nlri.prefix.append(prefix.substr(3,1));
 
             msg.NLRI.push_back(new_nlri);
@@ -274,50 +238,38 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
     int is_new = 0;
     for (Route r : new_routes) {
         for (Peer p : routing_table) {
-            //std::cout << r.nlri.prefix << " " << p.network << "\n\n";
             if (r.nlri.prefix == p.network) {
                 // compare preferences
-                //std::cout << "aici pula\n\n";
                 is_new = 1;
                 for (Path_atrs atr : r.path_atr) {
-                    //std::cout << atr.type << " " << atr.value << "\n\n";
                     switch (atr.type) {
                         case 1: //weight
-                            // compara greutatea
-                            // daca mai mare treci mai departe
-                            // daca mai mica inlocuieste ruta actuala cu ruta noua in tabelul de rutare
                             if (std::stoi(atr.value) < p.weight) {
-                                //std::cout << "aici 1\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 2: //loc_pref
                             if (std::stoi(atr.value) < p.loc_pref) {
-                                //std::cout << "aici 2\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 3: //originate/next hop
                             if (atr.value == "0.0.0.0") {
-                                //std::cout << "aici 3\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 4: //AS path length
                             if (std::stoi(atr.value) < p.AS_path_len) {
-                                //std::cout << "aici 4\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 5: // MED
                             if (std::stoi(atr.value) < p.MED) {
-                                //std::cout << "aici 5\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
                         case 6: // trust
                             if (std::stoi(atr.value)/100.0 > p.trust) {
-                                //std::cout << "aici 5\n\n";
                                 loc_RIB.push_back(r);
                             }
                             break;
@@ -328,10 +280,7 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
             } 
         }
 
-        //std::cout << is_new << " ajung aici?\n"; 
-
         if(is_new == 0) {
-            //std::cout << "aici 6\n\n";
             loc_RIB.push_back(r);
         } else {
             is_new = 0;
@@ -351,8 +300,7 @@ std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, 
         for(int j = i; j < i+6; j++) {
             new_route.path_atr.push_back(path_atr[j]);
         }
-        i+=5;
-        //std::copy(path_atr.begin(), path_atr.end(), new_route.path_atr);    
+        i+=6;
         rib_in.push_back(new_route);
     }
 
