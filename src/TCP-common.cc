@@ -67,6 +67,8 @@ namespace ns3 {
         packet->CopyData(buffer, packet->GetSize ());
         std::string packetData = std::string((char*)buffer);
 
+		//std::cout << "/n in tcp send " << unsigned(packet->GetSize()) << std::endl;
+
 		// Print information about the packet that we will send
 		// If we want to see the binary data of the packet, we can use uncomment the line below
 		std::cout   << "SEND [FROM: " << fromAddress.GetIpv4() 
@@ -97,7 +99,7 @@ namespace ns3 {
 			std::stringstream(packetData) >> msgRcv;
 
 			std::cout << " UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
-				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
+				msgRcv.get_total_path_atr_len()/6 << " new routes."<< std::endl;
 		} else if(msg.get_type() == 3){
 			MessageNotification msgRcv;
 			std::stringstream(packetData) >> msgRcv;
@@ -146,6 +148,9 @@ namespace ns3 {
 			uint8_t *buffer = new uint8_t[packet->GetSize ()];
 			packet->CopyData(buffer, packet->GetSize ());
 			packetData = std::string((char*)buffer);
+
+			//std::cout << "/n in tcp " << packetData << std::endl;
+			//std::cout << "/n in tcp recv " << unsigned(packet->GetSize()) << std::endl;
 
 			Time rightNow = Simulator::Now() - m_startTime;
 			InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom (from);

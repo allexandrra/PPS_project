@@ -108,7 +108,7 @@ namespace ns3 {
   }
 
   void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
-    for(int i = 0; i < this->routing_table.size(); i++) {
+    for(int i = 0; i < (int)this->routing_table.size(); i++) {
       if(this->routing_table[i].network == network) {
         for(Path_atrs atr : atrib) {
           if(atr.type == 1) {
@@ -122,6 +122,8 @@ namespace ns3 {
             this->routing_table[i].MED = std::stoi(atr.value);
           } else if(atr.type == 2) {
             this->routing_table[i].loc_pref = std::stoi(atr.value);
+          } else if(atr.type == 6) {
+            this->routing_table[i].trust = std::stof(atr.value);
           }
         }
       }
@@ -215,8 +217,8 @@ namespace ns3 {
     std::vector<Peer> updated_rt = this->routing_table;
     int removed = 0;
 
-    for(int i = 0; i < wr.size(); i++) {
-      for (int j = 0; j < this->routing_table.size(); j++) {
+    for(int i = 0; i < (int)wr.size(); i++) {
+      for (int j = 0; j < (int)this->routing_table.size(); j++) {
         if (wr[i].prefix == this->routing_table[j].network) {
           updated_rt.erase(updated_rt.begin() + j - removed);
           removed++;
@@ -230,10 +232,9 @@ namespace ns3 {
     std::vector<NLRIs> what_to_withdraw = withdrawnRoutes;
     int removed = 0;
 
-    for(int i = 0; i < withdrawnRoutes.size(); i++) {
-      for (int j = 0; j < this->routing_table.size(); j++) {
-        if (withdrawnRoutes[i].prefix == this->routing_table[j].network && 
-              this->routing_table[j].int_ip != intf) {
+    for(int i = 0; i < (int)withdrawnRoutes.size(); i++) {
+      for (int j = 0; j < (int)this->routing_table.size(); j++) {
+        if (withdrawnRoutes[i].prefix == this->routing_table[j].network && this->routing_table[j].int_ip != intf) {
           what_to_withdraw.erase(what_to_withdraw.begin() + j - removed);
           removed++;
         }
@@ -244,7 +245,7 @@ namespace ns3 {
   }
 
   void Router::print_RT() {
-    for (int i = 0; i < this->routing_table.size(); i++) {
+    for (int i = 0; i < (int)this->routing_table.size(); i++) {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
         << this->routing_table[i].weight << " " << this->routing_table[i].loc_pref << " "
         << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
@@ -255,7 +256,7 @@ namespace ns3 {
   }
 
   void Router::set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip){
-    for (int i = 0; i < this->routing_table.size(); i++) {
+    for (int i = 0; i < (int)this->routing_table.size(); i++) {
       if (this->routing_table[i].network == neigh_ip) {
         if (this->routing_table[i].next_hop == "0.0.0.0") {
           this->routing_table[i].next_hop = int_ip;
@@ -344,6 +345,8 @@ namespace ns3 {
               new_peer.path = p.value;
             } else if (p.type == 5) {
               new_peer.MED = std::stoi(p.value);
+            } else if (p.type == 6) {
+              new_peer.trust = std::stoi(p.value)/100.0;
             }
         }  
         this->routing_table.push_back(new_peer);
@@ -357,7 +360,7 @@ namespace ns3 {
   */
   float Router::get_trust_from_interface_name(int num) {
     // Iterate over the interfaces vector and return the index of the interface with the name passed as parameter
-    for(int i = 0; i < (int) interfaces.size(); i++) {
+    for(int i = 0; i < (int)interfaces.size(); i++) {
       // name is composed by eth plus the number passed as parameter
       std::string if_name = "eth"+std::to_string(num);
       if(interfaces[i].name == if_name) {
@@ -374,6 +377,14 @@ namespace ns3 {
     }
     // if not found return 0
     return 0; 
+  }
+
+  void Router::update_trust(std::string intf, int int_num) {
+    for(int i = 0; i < (int)this->routing_table.size(); i++) {
+      if (this->routing_table[i].next_hop == intf) {
+        this->routing_table[i].trust = this->get_trust_from_interface_name(int_num);
+      }
+    }
   }
 }  // namespace ns3
 

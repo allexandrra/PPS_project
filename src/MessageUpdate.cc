@@ -83,6 +83,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
     if(msg.total_path_atr_len > 0) {
         for(Path_atrs p : msg.path_atr) {
+            //std::cout << p.type << " " << p.lenght << " " << p.value << std::endl;
             std::string aux = "";
             if(p.optional == 1) {
                 aux.append("1");
@@ -233,7 +234,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
         }
 
         //while (!stream.eofbit)
-        for (int i = 0; i < msg.total_path_atr_len/5; i++) {
+        for (int i = 0; i < msg.total_path_atr_len/6; i++) {
             NLRIs new_nlri;
 
             std::bitset<8> length;
@@ -314,6 +315,12 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
                                 loc_RIB.push_back(r);
                             }
                             break;
+                        case 6: // trust
+                            if (std::stoi(atr.value)/100.0 < p.trust) {
+                                //std::cout << "aici 5\n\n";
+                                loc_RIB.push_back(r);
+                            }
+                            break;
                         default:
                             std::cout << "No prefereces met.\n\n";
                     }
@@ -341,7 +348,7 @@ std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, 
     for (NLRIs n : nlri) {
         Route new_route;
         new_route.nlri = n;
-        for(int j = i; j < i+5; j++) {
+        for(int j = i; j < i+6; j++) {
             new_route.path_atr.push_back(path_atr[j]);
         }
         i+=5;

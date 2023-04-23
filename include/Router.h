@@ -220,6 +220,7 @@ namespace ns3 {
             std::string make_string_from_IP(Ipv4Address ip);
             void add_to_RT(std::vector<Route> loc_rib, std::string neight);
             std::string mask_create(int mask);
+            void update_trust(std::string intf, int int_num);
 
             /**
              * @brief Method for adding a new interface to the router Infaces vector

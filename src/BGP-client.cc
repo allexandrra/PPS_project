@@ -110,7 +110,7 @@ namespace ns3 {
 		std::vector<Path_atrs> path_atributes;
 
 		for (Peer p : r.get_router_rt()) {
-			// weight 1, loc pref 2, next hop 3, AS 4, MED 5
+			// weight 1, loc pref 2, next hop 3, AS 4, MED 5, trust 6
 			if (p.next_hop != not_send_ip) {
 				Path_atrs atrib_w;
 				atrib_w.type = 1;
@@ -157,11 +157,21 @@ namespace ns3 {
 				atrib_med.partial = 0;
 				atrib_med.extended_lenght = 0;
 
+				Path_atrs atrib_trust;
+				atrib_trust.type = 6;
+				atrib_trust.lenght = 0;
+				atrib_trust.value = to_string((int)(p.trust * 100));
+				atrib_trust.optional = 0;
+				atrib_trust.transitive = 0;
+				atrib_trust.partial = 0;
+				atrib_trust.extended_lenght = 0;
+
 				path_atributes.push_back(atrib_w);
 				path_atributes.push_back(atrib_lf);
 				path_atributes.push_back(atrib_nh);
 				path_atributes.push_back(atrib_as);
 				path_atributes.push_back(atrib_med);
+				path_atributes.push_back(atrib_trust);
 			}
 		}
 
@@ -257,14 +267,15 @@ namespace ns3 {
 			std::vector<Path_atrs> path_atr = buildPA(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 			std::vector<NLRIs> nlri = buildNLRI(*r, r->make_string_from_IP(toAddress.GetIpv4()));
 
-			std::cout << "\n Router " << r->get_router_AS() << " sends first UPDATE message\n\n";
+			std::cout << "\n Router " << r->get_router_AS() << " sends first UPDATE message.\n\n";
 			MessageUpdate msg = MessageUpdate(path_atr.size(), path_atr, nlri);
 			//msgStreamUpdate << "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 0000000000100011 00000010 0000000000000000 0000000000000101 00000000 00000001 00000000 20 00000000 00000010 00000000 10 00000000 00000011 00000000 0.0.0.0 00000000 00000100 00000000 3 00000000 00000101 00000000 100 00011000 1150" << "\0";
 			msgStreamUpdate << msg << "\0";
 
+			//std::cout << msgStreamUpdate.str() << std::endl;
+
 			Ptr<Packet> packetUpdate = Create<Packet>((uint8_t*) msgStreamUpdate.str().c_str(), msgStreamUpdate.str().length()+1);
 			this->Send(socket, packetUpdate);
-			//std::cout << msgStreamUpdate.str() << std::endl;
 
 		} else if(msg.get_type() == 2){
 			NS_LOG_INFO("Update message sunt aici 4");
@@ -272,7 +283,7 @@ namespace ns3 {
 			std::stringstream(packet) >> msgRcv;
 
 			std::cout << " Client UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
-				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
+				msgRcv.get_total_path_atr_len()/6 << " new routes."<< std::endl;
 
 			std::vector<NLRIs> new_nlri;
 			std::vector<Path_atrs> new_pa;
@@ -462,7 +473,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// TODO: update the routing table using the value of total trust
-				
+				r->update_trust(r->make_string_from_IP(intf.ip_address), int_num);
 				
 
 			} else {

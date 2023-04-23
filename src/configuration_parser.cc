@@ -107,10 +107,10 @@ std::vector<Router> load_configuration() {
                 
         }
 
-        for (int j = 0; j < routers.size(); j++) {
+        for (int j = 0; j < (int)routers.size(); j++) {
             std::vector<int> neighs = routers[j].get_router_neigh();
 
-            for (int i = 0; i < neighs.size(); i++) {
+            for (int i = 0; i < (int)neighs.size(); i++) {
                 for (Router nr: routers) {
                     if (neighs[i] == nr.get_router_AS()) {
                         //std::cout << "se adauga vecin\n";

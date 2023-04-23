@@ -225,7 +225,6 @@ namespace ns3 {
 			// Parse the OPEN message to extract all the correct fields
 			MessageOpen msgRcv;
 			std::stringstream(packet) >> msgRcv;
-			
 
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
 
@@ -277,11 +276,12 @@ namespace ns3 {
 
 		} else if(msg.get_type() == 2) {
 			NS_LOG_INFO("Update message sunt aici 5");
+			//std::cout << packet << std::endl;
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
 			std::cout << " Server UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
-				msgRcv.get_total_path_atr_len()/5 << " new routes."<< std::endl;
+				msgRcv.get_total_path_atr_len()/6 << " new routes."<< std::endl;
 
 			//std::cout << packet << std::endl;
 
@@ -480,6 +480,7 @@ namespace ns3 {
 				r->set_interface(intf, int_num);
 
 				// TODO: update the routing table using the value of the total trust
+				r->update_trust(r->make_string_from_IP(intf.ip_address), int_num);
 				
 				//Create a new TRUSTRATE message
 				std::stringstream msgStream;
