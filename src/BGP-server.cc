@@ -443,6 +443,7 @@ namespace ns3 {
 				}
 
 				// update the interface	
+				intf.set_last_update_time(Simulator::Now().GetSeconds());
 				r->set_interface(intf, int_num);
 
 				// update the routing table using the value of the total trust
