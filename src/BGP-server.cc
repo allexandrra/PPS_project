@@ -77,6 +77,7 @@ namespace ns3 {
 		if (m_socket == 0) {
 			m_tid = TypeId::LookupByName("ns3::TcpSocketFactory");
 			m_socket = Socket::CreateSocket(GetNode(), m_tid);
+			m_socket->SetAttribute("SegmentSize", UintegerValue(1448));
 			InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
 			m_socket->Bind(local);
 			m_socket->Listen();

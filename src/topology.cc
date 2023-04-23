@@ -110,6 +110,7 @@ std::vector<Router> createLinks(std::vector<Router> routers) {
             PointToPointHelper p2p;
             p2p.SetDeviceAttribute("DataRate", StringValue("100Mbps"));
             p2p.SetChannelAttribute("Delay", StringValue("1ms"));
+            p2p.SetDeviceAttribute("Mtu", UintegerValue (5000));
 
             NetDeviceContainer ndc = p2p.Install(nc);
 
@@ -226,6 +227,7 @@ std::vector<Router> createBGPConnections(std::vector<Router> routers) {
 
                 // Tcp SENDER -> now on the as2
                 Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(routers[neighbourIndex].get_router_node().Get(0), TcpSocketFactory::GetTypeId());
+                ns3TcpSocket->SetAttribute("SegmentSize", UintegerValue(1448));
                 Ptr<BGPClient> clientApp = CreateObject<BGPClient>();
                 clientApp->Setup(ns3TcpSocket, receiverAddress, startClient, stopClient);
 
