@@ -637,7 +637,7 @@ void userInputCallback(std::vector<Router>* routers) {
                     std::string ip1, ip2;
                     int type, value, lenght;
                 
-                    std::cout << "The policy contains the value modification of one preference for a given link. The options are 1 for weight, 2 for local preference, 5 for MED. \n";
+                    std::cout << "The policy contains the value modification of one preference for a given link. The options are 1 for weight, 2 for local preference, 5 for MED, 6 for trust. \n";
                     std::cout << "Enter the two routers that the policy applies to: ";
                     std::cin >> ip1 >> ip2 >> type >> value >> lenght;
 
