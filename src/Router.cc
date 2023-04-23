@@ -26,6 +26,7 @@ namespace ns3 {
     this->AS = AS;
     //Convert ASip to string to store it as BGP ID
     std::stringstream ip;
+    AS_ip.Print(ip);
     this->router_ID = ip.str();
     this->AS_ip = AS_ip;
     this->AS_mask = AS_mask;
