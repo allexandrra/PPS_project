@@ -121,21 +121,10 @@ namespace ns3 {
 		}
 	}
 
-
-	//--------------------------
-	inline bool isSetBitServer(int n, int index){
-		return n & (1 << index);
-	}
-
-	int popcount1Server(int n){
-		int count = 0;
-		int digits = static_cast<int>(std::floor(std::log2(n))) + 1;
-		for(int i = 0 ; i < digits ; ++i){
-			if(isSetBitServer(n,i)) ++count;
-		}
-		return count;
-	}
-
+	/**
+	 * @brief Handle the read on data from the socket 
+	 * @param socket The socket on which the data is received
+	*/
 	void BGPServer::HandleRead (Ptr<Socket> socket){
 		NS_LOG_FUNCTION(this << socket);
 
@@ -276,13 +265,14 @@ namespace ns3 {
 			r->set_interface(intf, int_num);
 
 		} else if(msg.get_type() == 2) {
+			// Parse the UPDATE message to extract all the correct fields
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
 			std::cout << " Server UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
 				msgRcv.get_total_path_atr_len()/6 << " new routes."<< std::endl;
 
-			// Get receiving address
+			// Get receiving address and interface
 			Address to;
 			Router *r = this->get_router();
 			socket->GetSockName(to);
@@ -290,18 +280,22 @@ namespace ns3 {
 			int int_num = r->get_router_int_num_from_ip(toAddress.GetIpv4());
 			Interface intf = r->get_router_int()[int_num];	
 
+			// Create the necessary vectors to store the new routes and the routes to remove
 			std::vector<NLRIs> new_nlri;
 			std::vector<Path_atrs> new_pa;
 			std::vector<NLRIs> new_wr;
 
+			// Check if there are unfeasable routes to remove
 			if (msgRcv.get_unfeasable_route_len() > 0) {
 				new_wr = r->remove_routes_if_necessary(msgRcv.get_withdrawn_routes(), r->make_string_from_IP(intf.ip_address));
 			}
 
+			// Check if there are new routes to add
 			if(msgRcv.get_total_path_atr_len() > 0) {
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
 				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
 					
+				// Create the local RIB for the new routes
 				for (int i = 0; i < (int)locRib.size(); i++) {
 					for (int j = 0; j < (int)locRib[i].path_atr.size(); j++) {
 						if (locRib[i].path_atr[j].type == 4) {
@@ -317,17 +311,24 @@ namespace ns3 {
 					new_nlri.push_back(locRib[i].nlri);
 				}
 					
+				// Get the from address of the UPDATE message
 				Address from;
 				socket->GetPeerName(from);
 				InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom(from);
+
+				// Add the new routes to the routing table
 				r->add_to_RT(locRib, r->make_string_from_IP(fromAddress.GetIpv4()));
 			}
 			
+			// Create the UPDATE message to send back to the client
 			std::stringstream msgStream;
 
+			// Check if the interface is up
 			if(intf.status) {
 				MessageUpdate msgToSend;
 
+				// Check if there are new routes to send
+				// Create the UPDATE message to send back to the client according to the new routes
 				if (new_wr.size() > 0 || new_pa.size() > 0) {
 					if (new_wr.size() > 0 && new_pa.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
 						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
@@ -337,44 +338,38 @@ namespace ns3 {
 						msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
 					}
 
+					// Send the UPDATE message to the client
 					msgStream << msgToSend << '\0';
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 					this->Send(socket,packet);
-
-					// std::vector<Interface> interfaces = r->get_router_int();
-					// for (int j=0; j<(int)interfaces.size(); j++) {
-					// 	if(interfaces[j].status) {
-					// 		if(interfaces[j].client) { 
-					// 		    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-					// 		} else if (interfaces[j].server){
-					// 		    interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-					// 		}
-					// 	}
-					// }
 
 				} else {
 					NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS()  << " does not have new updates to send.");
 				}
 			} else {
+				// interface is down, send notification message
 				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [UPDATE READ SERVER]");
 
 				std::stringstream msgStream;
 				MessageNotification msg = MessageNotification(6,0);
 				msgStream << msg << '\0';
 
+				// create the notification packet
 				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 				this->Send(socket, packet);
 
 				intf.client.reset();
 				intf.server.reset();
 
+				// set the interface status
 				r->set_interface_status(int_num, false);
 				//this->StopApplication();
 			}
 
-    		//intf.set_max_hold_time(max_hold_time);
+			// Update the last update time of the interface for the holdtime 
 			intf.set_last_update_time(Simulator::Now().GetSeconds());
 			r->set_interface(intf, int_num);
+			
 		} else if(msg.get_type() == 3){ 
 
 			// Parse the NOTIFICATION message to extract the error code and the error subcode
@@ -516,6 +511,7 @@ namespace ns3 {
 
 
 		} else {
+			// Misterous message received
 			NS_LOG_INFO("Received another type of message");
 		}	
 

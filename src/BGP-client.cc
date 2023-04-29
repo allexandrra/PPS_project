@@ -59,10 +59,19 @@ namespace ns3 {
 		m_stop    = stopTime;
 	}
 
+
+	/**
+	 * @brief Method to test if the nth bit of a number is set
+	*/
 	inline bool isSetBit(int n, int index){
 		return n & (1 << index);
 	}
 
+	/**
+	 * @brief Method to count the number of set bits in a number
+	 * @param n Number whose set bits are to be counted
+	 * @return Number of set bits in n
+	*/
 	int popcount1(int n){
 		int count = 0;
 		int digits = static_cast<int>(std::floor(std::log2(n))) + 1;
@@ -72,9 +81,17 @@ namespace ns3 {
 		return count;
 	}
 
+
+	/**
+	 * @brief Method to build the NLRI field of the UPDATE process
+	 * @param r Router whose routing table is to be used to build the NLRI
+	 * @param not_send_ip IP address of the peer to which the UPDATE message is not to be sent
+	 * @return Vector of NLRIs
+	*/
 	std::vector<NLRIs> buildNLRI(Router r, std::string not_send_ip) {
 		std::vector<NLRIs> nlri;
 
+		// New NLRI structure
 		NLRIs new_nlri;
 
 		for (Peer p : r.get_router_rt()) {
@@ -106,6 +123,14 @@ namespace ns3 {
 		return nlri;
 	}
 
+
+	/**
+	 * @brief Method to build the PA field of the UPDATE process
+	 * @param r Router whose routing table is to be used to build the WITHDRAWN
+	 * @param not_send_ip IP address of the peer to which the UPDATE message is not to be sent
+	 * @param AS AS number of the router
+	 * @return Vector of Path attributes
+	*/
 	std::vector<Path_atrs> buildPA(Router r, std::string not_send_ip, int AS) {
 		std::vector<Path_atrs> path_atributes;
 
@@ -274,24 +299,32 @@ namespace ns3 {
 			this->Send(socket, packetUpdate);
 
 		} else if(msg.get_type() == 2){
+			// unpack the packet into a real MessageUpdate object as the type in the header is 2 (UPDATE)
 			MessageUpdate msgRcv;
 			std::stringstream(packet) >> msgRcv;
 
 			std::cout << " Client UPDATE message with " << msgRcv.get_unfeasable_route_len() << " routes to remove and " << 
 				msgRcv.get_total_path_atr_len()/6 << " new routes."<< std::endl;
 
+			// define the vectors that will contain the new routes for the response
 			std::vector<NLRIs> new_nlri;
 			std::vector<Path_atrs> new_pa;
 			std::vector<NLRIs> new_wr;
 
+			// check if the message contains any unfeasable routes
 			if (msgRcv.get_unfeasable_route_len() > 0) {
+				// remove the routes that are unfeasable 
 				new_wr = r->remove_routes_if_necessary(msgRcv.get_withdrawn_routes(), r->make_string_from_IP(intf.ip_address));
 			}
 
+			// check if the message contains any new routes
 			if(msgRcv.get_total_path_atr_len() > 0) {
+				// add the new routes to the RIBin
 				std::vector<Route> ribIn = msgRcv.add_to_RIBin(msgRcv.get_path_atr(), msgRcv.get_NLRI());
+				// perform a check of the preferences of the routes 
 				std::vector<Route> locRib = msgRcv.check_preferences(ribIn, r->get_router_rt());
-					
+
+				// using the locRib build the new path attributes and the new NLRI	
 				for (int i = 0; i < (int)locRib.size(); i++) {
 					for (int j = 0; j < (int)locRib[i].path_atr.size(); j++) {
 						if (locRib[i].path_atr[j].type == 4) {
@@ -307,17 +340,23 @@ namespace ns3 {
 					new_nlri.push_back(locRib[i].nlri);
 				}
 					
+				// Get the IP address of the sender
 				Address from;
 				socket->GetPeerName(from);
 				InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom(from);
+
+				// add the new routes to the RIBout
 				r->add_to_RT(locRib, r->make_string_from_IP(fromAddress.GetIpv4()));
 			}
-			
+
+			//create the message to send
 			std::stringstream msgStream;
 
+			// check if the interface is still up
 			if(intf.status) {
 				MessageUpdate msgToSend;
 
+				// check if the new we or pa contains any routes and creaft the message accordingly
 				if (new_wr.size() > 0 || new_pa.size() > 0) {
 					if (new_wr.size() > 0 && new_pa.size() > 0 && new_wr.size() < msgRcv.get_unfeasable_route_len()) {
 						msgToSend = MessageUpdate(new_wr.size(), new_wr, new_pa.size(), new_pa, new_nlri);
@@ -327,24 +366,17 @@ namespace ns3 {
 						msgToSend = MessageUpdate(new_pa.size(), new_pa, new_nlri);
 					}
 
+					// create the packet and send it in the socket
 					msgStream << msgToSend << '\0';
 					Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 					this->Send(socket,packet);
-					// std::vector<Interface> interfaces = r->get_router_int();
-					// for (int j=0; j<(int)interfaces.size(); j++) {
-					// 	if(interfaces[j].status) {
-					// 		if(interfaces[j].client) { 
-					// 		    interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
-					// 		} else if (interfaces[j].server){
-					// 		    interfaces[j].server.value()->Send(interfaces[j].server.value()->get_socket(), packet);
-					// 		}
-					// 	}
-					// }
 
 				} else {
+					// if there are no new routes to send, print a msg and do not perform the send
 					NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS()  << " does not have new updates to send.");
 				}
 			} else {
+				// if the interface is down, print a msg and do not perform the send of the update but a send of the notification
 				NS_LOG_INFO("Interface " << intf.name << " of router " << r->get_router_AS() << " is down [UPDATE READ CLIENT]");
 
 				std::stringstream msgStream;
@@ -354,16 +386,21 @@ namespace ns3 {
 				Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
 				this->Send(socket, packet);
 
+				// reset the interface
 				intf.client.reset();
 				intf.server.reset();
 
+				// set the interface status to false
 				r->set_interface_status(int_num, false);
 				//this->StopApplication();
 			}
 
-    		//intf.set_max_hold_time(max_hold_time);
+			// update the last update time of the interface for the hold time
 			intf.set_last_update_time(Simulator::Now().GetSeconds());
+
+			// update the interface in the router
 			r->set_interface(intf, int_num);
+
 		} else if(msg.get_type() == 3){
 			// unpack the packet into a real MessageNotification object as the type in the header is 3 (NOTIFICATION)
 			MessageNotification msgRcv;
@@ -475,6 +512,7 @@ namespace ns3 {
 			}
 
 		} else {
+			// Unknown message type received
 			NS_LOG_INFO("Received another type of message");
 		}
   	}

@@ -35,15 +35,54 @@ namespace ns3 {
      * @brief Struct for storing information about the peers of a router
     */
     struct Peer {
+        /**
+         * @brief IP address of the network of the peer
+        */
         std::string network;
+
+        /**
+         * @brief mask of the network of the peer
+        */
         std::string mask;
+
+        /**
+         * @brief IP address of the next hop
+        */
         std::string next_hop;
+
+        /**
+         * @brief string that contains the path to the peer
+        */
         std::string path;
+
+        /**
+         * @brief weight of the route to the peer
+        */
         int weight;
+
+        /**
+         * @brief local preference of the route to the peer
+        */
         int loc_pref;
+
+        /**
+         * @brief AS path length of the route to the peer
+        */
         int AS_path_len;
+
+        /**
+         * @brief MED of the route to the peer
+        */
         int MED;
+
+        /*
+        * @brief Trust value of the peer
+        */
         float trust;
+
+        /**
+         * @brief IP of the local interface of the router that is connected to the peer
+        */
         std::string int_ip;
     };
 
@@ -168,9 +207,16 @@ namespace ns3 {
      * @brief Struct for storing information about the path attributes of a router
     */
     struct Path_atrs {
+        // Type of the attribute
         int type;
+
+        // Length of the attribute
         int lenght;
+
+        // Value of the attribute
         std::string value;
+
+        // Flags of the attribute
         uint8_t optional;
         uint8_t transitive;
         uint8_t partial;
@@ -181,7 +227,10 @@ namespace ns3 {
      * @brief Struct for storing information about the routes of a router
     */
     struct Route {
+        // Network Layer Reachability Information of a route
         NLRIs nlri;
+
+        // Path attributes of a route
         std::vector<Path_atrs> path_atr;
     };
 
@@ -213,17 +262,63 @@ namespace ns3 {
             Ipv4Mask get_router_ASmask();
             void apply_policy(Route update_route);
             
+            /**
+             * @brief Method for removing routes from the router routing table
+             * @param withdrawnRoutes Routes instances to be removed from the routing table
+            */
             void remove_route(std::vector<NLRIs> withdrawnRoutes);
+
+            /**
+             * @brief Method for removing routes from the router routing table if needed (remove duplicated routes)
+             * @param withdrawnRoutes Routes instances to be removed from the routing table
+             * @param intf Interface of the router that received the update
+             * @return Vector of updated NLRIs
+            */
             std::vector<NLRIs> remove_routes_if_necessary(std::vector<NLRIs> withdrawnRoutes, std::string intf);
+
+            /**
+             * @brief Method for printing the routes inside the router routing table
+            */
             void print_RT();
+
+            /**
+             * @brief Method for setting up the next hop of a route
+             * @param neigh_ip IP address of the net of the neighbour router
+             * @param int_ip IP address of the interface of the router that received the update
+             * @param neigh_int_ip IP address of the interface of the neighbour router
+            */
             void set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip);
+
+            /**
+             * @brief Method for converting an IP address from Ipv4Address ns3 class to string
+             * @param ip Ipv4Address instance to be converted
+             * @return String representation of the IP address
+            */
             std::string make_string_from_IP(Ipv4Address ip);
+
+            /**
+             * @brief Method for adding a new route to the router routing table
+             * @param loc_rib Vector of Route instances to be added to the routing table
+             * @param neight IP address of the neighbour router 
+            */
             void add_to_RT(std::vector<Route> loc_rib, std::string neight);
+
+            /**
+             * @brief Method for creating the string representation of subnet mask of the router
+             * @param mask Integer representation of the prefix of the mask
+             * @return String representation of the subnet mask (binary)
+            */
             std::string mask_create(int mask);
+
+            /**
+             * @brief Method for updating the router routing table during the update process
+             * @param intf Router interface where the trust should be updated
+             * @param int_num Number of the interface of the router that received the update
+            */
             void update_trust(std::string intf, int int_num);
 
             /**
-             * @brief Method for adding a new interface to the router Infaces vector
+             * @brief Method for updating the trust value of an interface of the router
              * @param interface Interface struct instance to be added
             */
             void add_interface(Interface interface);

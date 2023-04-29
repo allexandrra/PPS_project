@@ -6,7 +6,9 @@
 
 #include "../include/MessageTrustrate.h"
 
-
+/**
+ * @brief Constructors for MessageTrust with different parameters
+*/
 MessageTrustrate::MessageTrustrate() 
 : MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_TRUSTRATE_LEN, 5) {
   this->trust = DEFAULT_TRUST;
@@ -17,6 +19,10 @@ MessageTrustrate::MessageTrustrate(float trust)
   this->trust = trust;
 }
 
+/**
+ * @brief Getters for the trust attribute of the class
+ * @return the trust value
+*/
 float MessageTrustrate::get_trust() { return trust; }
 
 /**

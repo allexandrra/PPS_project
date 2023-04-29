@@ -67,8 +67,6 @@ namespace ns3 {
         packet->CopyData(buffer, packet->GetSize ());
         std::string packetData = std::string((char*)buffer);
 
-		//std::cout << "/n in tcp send " << unsigned(packet->GetSize()) << std::endl;
-
 		// Print information about the packet that we will send
 		// If we want to see the binary data of the packet, we can use uncomment the line below
 		std::cout   << "SEND [FROM: " << fromAddress.GetIpv4() 
@@ -92,7 +90,6 @@ namespace ns3 {
 			MessageOpen msgRcv;
 			std::stringstream(packetData) >> msgRcv;
 
-			//std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << std::endl;
 			std::cout << " OPEN message with content  AS: " << msgRcv.get_AS() << " \t HOLD TIME: " << msgRcv.get_hold_time() << "\t BGP ID: " <<  binary_to_dotted_notation(msgRcv.get_BGP_id()) << std::endl;
 		}else if(msg.get_type() == 2) {
 			MessageUpdate msgRcv;
@@ -148,9 +145,6 @@ namespace ns3 {
 			uint8_t *buffer = new uint8_t[packet->GetSize ()];
 			packet->CopyData(buffer, packet->GetSize ());
 			packetData = std::string((char*)buffer);
-
-			//std::cout << "/n in tcp " << packetData << std::endl;
-			//std::cout << "/n in tcp recv " << unsigned(packet->GetSize()) << std::endl;
 
 			Time rightNow = Simulator::Now() - m_startTime;
 			InetSocketAddress fromAddress = InetSocketAddress::ConvertFrom (from);

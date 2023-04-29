@@ -97,8 +97,7 @@ std::vector<Router> load_configuration() {
                 }
             }
 
-            // initialiaze routing table
-
+            // initialiaze routers array
             routers.push_back(router);
 
             // print the router info
@@ -107,13 +106,13 @@ std::vector<Router> load_configuration() {
                 
         }
 
+        // initialize the routing table of each router
         for (int j = 0; j < (int)routers.size(); j++) {
             std::vector<int> neighs = routers[j].get_router_neigh();
 
             for (int i = 0; i < (int)neighs.size(); i++) {
                 for (Router nr: routers) {
                     if (neighs[i] == nr.get_router_AS()) {
-                        //std::cout << "se adauga vecin\n";
                         struct Peer new_route;
 
                         std::stringstream tmp1;

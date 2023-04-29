@@ -100,11 +100,17 @@ namespace ns3 {
 
   /**
    * @brief Methods for updating the routing table of the router
+   * @param new_route Peer instance to be added to the routing table
   */
   void Router::push_new_route(Peer new_route) {
     this->routing_table.push_back(new_route);
   }
 
+  /**
+   * @brief Method for updating the routing table of the router
+   * @param network network address of the route to be updated
+   * @param atrib vector of Path_atrs instances containing the attributes of the route to be updated
+  */
   void Router::update_routing_table(std::string network, std::vector<Path_atrs> atrib) {
     for(int i = 0; i < (int)this->routing_table.size(); i++) {
       if(this->routing_table[i].network == network) {
@@ -128,6 +134,10 @@ namespace ns3 {
     }
   }
 
+  /**
+   * @brief Method for applying the local routing policy to the routing table of the router
+   * @param update_route Route instance containing the route to be updated
+  */
   void Router::apply_policy(Route update_route) {
     this->update_routing_table(update_route.nlri.prefix, update_route.path_atr);
   }
@@ -211,10 +221,16 @@ namespace ns3 {
     this->interfaces[num] = interface;
   }
 
+
+  /**
+  * @brief Method for removing routes from the router routing table
+  * @param withdrawnRoutes Routes instances to be removed from the routing table
+  */
   void Router::remove_route(std::vector<NLRIs> wr) {
     std::vector<Peer> updated_rt = this->routing_table;
     int removed = 0;
 
+    // iterate over the wr routes
     for(int i = 0; i < (int)wr.size(); i++) {
       for (int j = 0; j < (int)this->routing_table.size(); j++) {
         if (wr[i].prefix == this->routing_table[j].network) {
@@ -226,6 +242,12 @@ namespace ns3 {
     this->routing_table = updated_rt;
   }
 
+  /**
+   * @brief Method for removing routes from the router routing table if needed (remove duplicated routes)
+   * @param withdrawnRoutes Routes instances to be removed from the routing table
+   * @param intf Interface of the router that received the update
+   * @return Vector of updated NLRIs
+  */
   std::vector<NLRIs> Router::remove_routes_if_necessary(std::vector<NLRIs> withdrawnRoutes, std::string intf){
     std::vector<NLRIs> what_to_withdraw = withdrawnRoutes;
     int removed = 0;
@@ -242,6 +264,9 @@ namespace ns3 {
     return what_to_withdraw;
   }
 
+  /**
+   * @brief Method for printing the routes inside the router routing table
+  */
   void Router::print_RT() {
     for (int i = 0; i < (int)this->routing_table.size(); i++) {
       std::cout << this->routing_table[i].network << " " << this->routing_table[i].mask << " " 
@@ -249,8 +274,8 @@ namespace ns3 {
         << this->routing_table[i].next_hop << " " << this->routing_table[i].int_ip << " "
         << this->routing_table[i].AS_path_len << "   ";
       
-      //std::cout << this->routing_table[i].path << " ";
-      for(int j = 0; j < routing_table[i].path.size(); j++) {
+      // AS path is stored backwards
+      for(int j = 0; j < (int) routing_table[i].path.size(); j++) {
         std::cout << this->routing_table[i].path[j] << " ";
       }
        
@@ -258,6 +283,13 @@ namespace ns3 {
     }
   }
 
+
+  /**
+   * @brief Method for setting up the next hop of a route
+   * @param neigh_ip IP address of the net of the neighbour router
+   * @param int_ip IP address of the interface of the router that received the update
+   * @param neigh_int_ip IP address of the interface of the neighbour router
+  */
   void Router::set_next_hop(std::string neigh_ip, std::string int_ip, std::string neigh_int_ip){
     for (int i = 0; i < (int)this->routing_table.size(); i++) {
       if (this->routing_table[i].network == neigh_ip) {
@@ -269,12 +301,22 @@ namespace ns3 {
     }
   }
 
+  /**
+   * @brief Method for converting an IP address from Ipv4Address ns3 class to string
+   * @param ip Ipv4Address instance to be converted
+   * @return String representation of the IP address
+  */
   std::string Router::make_string_from_IP(Ipv4Address ip) {
     std::stringstream str_ip;
     ip.Print(str_ip);
     return str_ip.str();
   }
 
+  /**
+   * @brief Method for creating the string representation of subnet mask of the router
+   * @param mask Integer representation of the prefix of the mask
+   * @return String representation of the subnet mask (binary)
+  */
   std::string Router::mask_create(int mask) {
     std::string string_mask, octet1, octet2, octet3, octet4;
     int count = 0;
@@ -329,8 +371,12 @@ namespace ns3 {
     return string_mask;
   }
 
+  /**
+   * @brief Method for adding a new route to the router routing table
+   * @param loc_rib Vector of Route instances to be added to the routing table
+   * @param neight IP address of the neighbour router 
+  */
   void Router::add_to_RT(std::vector<Route> loc_rib, std::string neight) {
-
     for(Route r : loc_rib) {
         Peer new_peer;
         new_peer.int_ip = neight;
@@ -381,6 +427,11 @@ namespace ns3 {
     return 0; 
   }
 
+  /**
+   * @brief Method for updating the router routing table during the update process
+   * @param intf Router interface where the trust should be updated
+   * @param int_num Number of the interface of the router that received the update
+  */
   void Router::update_trust(std::string intf, int int_num) {
     for(int i = 0; i < (int)this->routing_table.size(); i++) {
       if (this->routing_table[i].next_hop == intf) {

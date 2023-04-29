@@ -9,6 +9,9 @@
 #include <vector>
 #include <bits/stdc++.h> 
 
+/**
+ * @brief Constructors for MessageUpdate with different parameters
+*/
 MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> withdraw_routes, uint16_t total_path_atr_len, std::vector<Path_atrs> path_atr, std::vector<NLRIs> NLRI) 
 : MessageHeader(MESSAGE_HEADER_LEN+MIN_MESSAGE_UPDATE_LEN, 2) {
     this->unfeasable_route_len = unfeasable_route_len;
@@ -37,7 +40,6 @@ MessageUpdate::MessageUpdate(uint16_t unfeasable_route_len, std::vector<NLRIs> w
 }
 
 MessageUpdate::MessageUpdate() : MessageHeader(2) {
-    //TODO
     this->unfeasable_route_len = 0;
     this->withdrawn_routes.resize(0);
     this->total_path_atr_len = 0;
@@ -45,12 +47,21 @@ MessageUpdate::MessageUpdate() : MessageHeader(2) {
     this->NLRI.resize(0);
 }
 
+/**
+ * @brief Define the getters of the various param of the class
+*/
 uint16_t MessageUpdate::get_unfeasable_route_len() { return unfeasable_route_len; }
 std::vector<NLRIs> MessageUpdate::get_withdrawn_routes() { return withdrawn_routes; }
 uint16_t MessageUpdate::get_total_path_atr_len() { return total_path_atr_len; }
 std::vector<Path_atrs> MessageUpdate::get_path_atr() { return path_atr; }
 std::vector<NLRIs> MessageUpdate::get_NLRI() { return NLRI; }
 
+/**
+ * @brief Overload of the << operator to print the MessageTrustrate fields into a binary bitstream
+ * @param stream the output stream
+ * @param msg the MessageOpen to print
+ * @return the output stream
+*/
 std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     std::stringstream strStreamMarker;
     std::copy(msg.marker.begin(), msg.marker.end(), std::ostream_iterator<int8_t>(strStreamMarker));
@@ -61,6 +72,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
     stream << std::bitset<16>(msg.unfeasable_route_len).to_string() << " ";
 
+    // read unfeasable_routes
     if(msg.unfeasable_route_len > 0) {
         for(NLRIs n : msg.withdrawn_routes) {
             stream << std::bitset<8>(n.prefix_lenght).to_string() << " ";
@@ -79,6 +91,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
 
     stream << std::bitset<16>(msg.total_path_atr_len).to_string() << " ";
 
+    // read path_atr
     if(msg.total_path_atr_len > 0) {
         for(Path_atrs p : msg.path_atr) {
             std::string aux = "";
@@ -109,6 +122,7 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
                 << std::bitset<8>(p.lenght).to_string() << " " << p.value << " ";
         }
 
+        // read NLRI of the path_atr
         for(NLRIs n : msg.NLRI) {
             stream << std::bitset<8>(n.prefix_lenght).to_string() << " ";
             size_t pos = 0;
@@ -127,6 +141,13 @@ std::ostream& operator<<(std::ostream& stream, const MessageUpdate& msg) {
     return stream;
 }
 
+
+/**
+ * @brief Overload of the >> operator to read the MessageTrustrate fields from a binary bitstream
+ * @param stream the input stream
+ * @param msg the MessageOpen to read
+ * @return the input stream
+*/
 std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
     // message header
     std::bitset<128> bit_marker;
@@ -150,6 +171,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
 
     msg.unfeasable_route_len = (uint16_t)bit_unfeasable_route_len.to_ulong();
 
+    // insert unfeasable_routes
     if (msg.unfeasable_route_len > 0) {
         for(int i = 0; i < (int)msg.unfeasable_route_len; i++) {
             NLRIs new_withdrawn_route;
@@ -176,6 +198,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
 
     msg.total_path_atr_len = (uint16_t)bit_total_path_atr_len.to_ulong();
 
+    // insert path_atr
     if (msg.total_path_atr_len > 0) {
         for (int i = 0; i < (int)msg.total_path_atr_len; i++) {
             Path_atrs new_path_atr;
@@ -202,6 +225,7 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
             msg.path_atr.push_back(new_path_atr);
         }
 
+        // insert NLRI of the path_atr
         for (int i = 0; i < msg.total_path_atr_len/6; i++) {
             NLRIs new_nlri;
 
@@ -225,6 +249,12 @@ std::istream & operator>>(std::istream & stream, MessageUpdate& msg) {
     return stream;
 }
 
+/**
+ * @brief Function to check if the router is a neighbour
+ * @param router the router to check
+ * @param req_router index of router to check
+ * @return true if the router is a neighbour, false otherwise
+*/
 bool MessageUpdate::check_neighbour(Router router, int req_router) {
     for (int n : router.get_router_neigh()) {
         if (n == req_router) 
@@ -233,6 +263,12 @@ bool MessageUpdate::check_neighbour(Router router, int req_router) {
     return false;
 }
 
+/**
+ * @brief Function to check local the preferences of the router
+ * @param new_routes the new routes to check
+ * @param routing_table the routing table of the router
+ * @return the new routes with the preferences
+ */
 vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, std::vector<Peer> routing_table) {
     vector<Route> loc_RIB;
     int is_new = 0;
@@ -290,6 +326,12 @@ vector<Route> MessageUpdate::check_preferences(std::vector<Route> new_routes, st
     return loc_RIB;
 }
 
+/**
+ * @brief Function to add the new routes to the RIBin
+ * @param path_atr the path attributes of the new routes
+ * @param nlri the nlri of the new routes
+ * @return the new routes
+ */
 std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, std::vector<NLRIs> nlri) {
     std::vector<Route> rib_in;
     int i = 0;
@@ -305,12 +347,4 @@ std::vector<Route> MessageUpdate::add_to_RIBin(std::vector<Path_atrs> path_atr, 
     }
 
     return rib_in;
-}
-
-void MessageUpdate::add_to_RIBout() {
-    
-}
-
-void MessageUpdate::add_to_FIB() { 
-
 }
