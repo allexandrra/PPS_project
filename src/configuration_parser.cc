@@ -35,7 +35,7 @@ std::vector<Router> load_configuration() {
 
     // Open the configuration file and create a stream with that
     std::ifstream f(string(filesystem::current_path()) +
-                    "/scratch/PPS_project/testConfig/configuration_topology1.json");
+                    "/scratch/PPS_project/configuration_file.json");
 
     // define the NS3 internet stack
     InternetStackHelper internet;
