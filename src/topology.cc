@@ -510,7 +510,8 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                 } else {
                     // send the notification message if the interface is down
-                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [disableLink]");
+
                     std::stringstream msgStream;
                     MessageNotification msg = MessageNotification(6,0);
                     msgStream << msg << '\0';
@@ -537,7 +538,6 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                     //create packet
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
-                    NS_LOG_INFO(msgStream.str());
 
                     // send the packet
                     if(interfaces[j].client) { 
@@ -546,11 +546,13 @@ void disable_router_link(std::vector<Router>* routers, int AS1, int AS2) {
 
                 } else {
                     // send the notification message if the interface is down
-                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [sendOpenMsg]");
+                    NS_LOG_INFO("Interface " << interfaces[j].name << " of router " << (*routers)[i].get_router_AS() << " is down [disableLink]");
+
                     std::stringstream msgStream;
                     MessageNotification msg = MessageNotification(6,0);
                     msgStream << msg << '\0';
                     Ptr<Packet> packet = Create<Packet>((uint8_t*) msgStream.str().c_str(), msgStream.str().length()+1);
+
                     if(interfaces[j].client) { 
                         interfaces[j].client.value()->Send(interfaces[j].client.value()->get_socket(), packet);
                     }
@@ -783,6 +785,7 @@ void userInputCallback(std::vector<Router>* routers) {
                     std::cout << "The policy contains the value modification of one preference for a given link. The options are 1 for weight, 2 for local preference, 5 for MED, 6 for trust. \n";
                     std::cout << "Enter the two routers that the policy applies to: ";
                     std::cin >> ip1 >> ip2 >> type >> value >> lenght;
+                    std::cout << std::endl;
 
                     NLRIs updated_nlri;
                     std::vector<Path_atrs> path_atr;
@@ -843,10 +846,10 @@ void userInputCallback(std::vector<Router>* routers) {
                             size_t pos = 0;
                             std::string token;
                             std::string mask = tmp2.str();
-                            std::cout << mask << "\n";
+
                             while ((pos = mask.find(".")) != std::string::npos) {
                                 token = mask.substr(0,pos);
-                                std::cout << token << "\n";
+
                                 if (stoi(token) == 255) 
                                     len += 8;
                                 else {
@@ -855,8 +858,6 @@ void userInputCallback(std::vector<Router>* routers) {
 
                                 mask.erase(0, pos+1);
                             }
-
-                            std::cout << len << "\n";
 
                             updated_nlri.prefix_lenght = len;
                             break;

@@ -1,0 +1,1692 @@
+emanuele@emanueleXPS13:~/Desktop/ns-allinone-3.36.1/ns-3.36.1$ ./ns3 run scratch/PPS_project/src/topology.cc 
+Loading topology
+Router 1 created, with IP: 1.1.0.0, and netmask: 255.255.0.0
+Router 2 created, with IP: 1.2.0.0, and netmask: 255.255.255.0
+Router 3 created, with IP: 10.0.0.0, and netmask: 255.255.0.0
+Router 4 created, with IP: 4.5.0.0, and netmask: 255.255.0.0
+Router 5 created, with IP: 5.0.0.0, and netmask: 255.0.0.0
+Router 6 created, with IP: 4.6.16.0, and netmask: 255.255.240.0
+Router 7 created, with IP: 1.2.1.0, and netmask: 255.255.255.0
+Router 8 created, with IP: 4.6.0.0, and netmask: 255.255.240.0
+Router 9 created, with IP: 2.2.0.0, and netmask: 255.255.0.0
+Router 10 created, with IP: 1.2.2.0, and netmask: 255.255.255.192
+
+Creating links
+Router 1 - Neighbours: 2 
+Router 2 - Neighbours: 1 8 3 7 
+Router 3 - Neighbours: 2 4 
+Router 4 - Neighbours: 3 5 
+Router 5 - Neighbours: 4 6 7 
+Router 6 - Neighbours: 5 10 
+Router 7 - Neighbours: 2 5 
+Router 8 - Neighbours: 2 9 
+Router 9 - Neighbours: 8 10 
+Router 10 - Neighbours: 9 6 
+
+Printing topology
+Router 1 has 1 interfaces: eth2 (160.0.0.1) 
+Router 2 has 4 interfaces: eth1 (160.0.0.2) eth8 (160.0.0.9) eth3 (160.0.0.13) eth7 (160.0.0.17) 
+Router 3 has 2 interfaces: eth2 (160.0.0.14) eth4 (160.0.0.25) 
+Router 4 has 2 interfaces: eth3 (160.0.0.26) eth5 (160.0.0.33) 
+Router 5 has 3 interfaces: eth4 (160.0.0.34) eth6 (160.0.0.41) eth7 (160.0.0.45) 
+Router 6 has 2 interfaces: eth5 (160.0.0.42) eth10 (160.0.0.53) 
+Router 7 has 2 interfaces: eth2 (160.0.0.18) eth5 (160.0.0.46) 
+Router 8 has 2 interfaces: eth2 (160.0.0.10) eth9 (160.0.0.69) 
+Router 9 has 2 interfaces: eth8 (160.0.0.70) eth10 (160.0.0.77) 
+Router 10 has 2 interfaces: eth6 (160.0.0.54) eth9 (160.0.0.78) 
+
+BGP state: IDLE
+
+Create BGP applications
+Router 1 is server on interface eth2 and router 2 is client on interface eth1
+Router 2 is server on interface eth8 and router 8 is client on interface eth2
+Router 2 is server on interface eth3 and router 3 is client on interface eth2
+Router 2 is server on interface eth7 and router 7 is client on interface eth2
+Router 3 is server on interface eth4 and router 4 is client on interface eth3
+Router 4 is server on interface eth5 and router 5 is client on interface eth4
+Router 5 is server on interface eth6 and router 6 is client on interface eth5
+Router 5 is server on interface eth7 and router 7 is client on interface eth5
+Router 6 is server on interface eth10 and router 10 is client on interface eth6
+Router 8 is server on interface eth9 and router 9 is client on interface eth8
+Router 9 is server on interface eth10 and router 10 is client on interface eth9
+
+BGP state: CONNECT
+
+Sending open messages
+
+BGP state: OPEN SENT
+BGP state: OPEN CONFIRM
+
+
+Start sending KEEPALIVE messages every 30 seconds
+
+BGP state: ESTABLISHED
+
+
+Sending update messages
+
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 1 OPEN message with content  AS: 2 	 HOLD TIME: 0	 BGP ID: 1.2.0.0
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 1 OPEN message with content  AS: 3 	 HOLD TIME: 0	 BGP ID: 10.0.0.0
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 1 OPEN message with content  AS: 4 	 HOLD TIME: 0	 BGP ID: 4.5.0.0
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 1 OPEN message with content  AS: 5 	 HOLD TIME: 0	 BGP ID: 5.0.0.0
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 1 OPEN message with content  AS: 6 	 HOLD TIME: 0	 BGP ID: 4.6.16.0
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 1 OPEN message with content  AS: 7 	 HOLD TIME: 0	 BGP ID: 1.2.1.0
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 1 OPEN message with content  AS: 7 	 HOLD TIME: 0	 BGP ID: 1.2.1.0
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 1 OPEN message with content  AS: 8 	 HOLD TIME: 0	 BGP ID: 4.6.0.0
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 1 OPEN message with content  AS: 9 	 HOLD TIME: 0	 BGP ID: 2.2.0.0
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 1 OPEN message with content  AS: 10 	 HOLD TIME: 0	 BGP ID: 1.2.2.0
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 1 OPEN message with content  AS: 10 	 HOLD TIME: 0	 BGP ID: 1.2.2.0
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 1.00304 OPEN message with content  AS: 2 	 HOLD TIME: 0	 BGP ID: 1.2.0.0
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 1.00304 OPEN message with content  AS: 1 	 HOLD TIME: 90	 BGP ID: 1.1.0.0
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 1.00304 OPEN message with content  AS: 3 	 HOLD TIME: 0	 BGP ID: 10.0.0.0
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 1.00304 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 1.00304 OPEN message with content  AS: 4 	 HOLD TIME: 0	 BGP ID: 4.5.0.0
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 1.00304 OPEN message with content  AS: 3 	 HOLD TIME: 90	 BGP ID: 10.0.0.0
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 1.00304 OPEN message with content  AS: 5 	 HOLD TIME: 0	 BGP ID: 5.0.0.0
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 1.00304 OPEN message with content  AS: 4 	 HOLD TIME: 90	 BGP ID: 4.5.0.0
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 1.00304 OPEN message with content  AS: 6 	 HOLD TIME: 0	 BGP ID: 4.6.16.0
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 1.00304 OPEN message with content  AS: 5 	 HOLD TIME: 90	 BGP ID: 5.0.0.0
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 1.00304 OPEN message with content  AS: 7 	 HOLD TIME: 0	 BGP ID: 1.2.1.0
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 1.00304 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 1.00304 OPEN message with content  AS: 7 	 HOLD TIME: 0	 BGP ID: 1.2.1.0
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 1.00304 OPEN message with content  AS: 5 	 HOLD TIME: 90	 BGP ID: 5.0.0.0
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 1.00304 OPEN message with content  AS: 8 	 HOLD TIME: 0	 BGP ID: 4.6.0.0
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 1.00304 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 1.00304 OPEN message with content  AS: 9 	 HOLD TIME: 0	 BGP ID: 2.2.0.0
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 1.00304 OPEN message with content  AS: 8 	 HOLD TIME: 90	 BGP ID: 4.6.0.0
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 1.00304 OPEN message with content  AS: 10 	 HOLD TIME: 0	 BGP ID: 1.2.2.0
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 1.00304 OPEN message with content  AS: 6 	 HOLD TIME: 90	 BGP ID: 4.6.16.0
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 1.00304 OPEN message with content  AS: 10 	 HOLD TIME: 0	 BGP ID: 1.2.2.0
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 1.00304 OPEN message with content  AS: 9 	 HOLD TIME: 90	 BGP ID: 2.2.0.0
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 0.00406512 OPEN message with content  AS: 1 	 HOLD TIME: 90	 BGP ID: 1.1.0.0
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 1.00407 UPDATE message with 0 routes to remove and 3 new routes.
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 0.00406512 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 0.00406512 OPEN message with content  AS: 3 	 HOLD TIME: 90	 BGP ID: 10.0.0.0
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 0.00406512 OPEN message with content  AS: 4 	 HOLD TIME: 90	 BGP ID: 4.5.0.0
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 1.00407 UPDATE message with 0 routes to remove and 2 new routes.
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 0.00406512 OPEN message with content  AS: 5 	 HOLD TIME: 90	 BGP ID: 5.0.0.0
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 0.00406512 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 0.00406512 OPEN message with content  AS: 5 	 HOLD TIME: 90	 BGP ID: 5.0.0.0
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 0.00406512 OPEN message with content  AS: 2 	 HOLD TIME: 90	 BGP ID: 1.2.0.0
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 0.00406512 OPEN message with content  AS: 8 	 HOLD TIME: 90	 BGP ID: 4.6.0.0
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 0.00406512 OPEN message with content  AS: 6 	 HOLD TIME: 90	 BGP ID: 4.6.16.0
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 0.00406512 OPEN message with content  AS: 9 	 HOLD TIME: 90	 BGP ID: 2.2.0.0
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 1.00407 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 1.00511 Server UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 1.00511 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 1.00512 Server UPDATE message with 0 routes to remove and 2 new routes.
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 1.00512 UPDATE message with 0 routes to remove and 2 new routes.
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 1.00514 Server UPDATE message with 0 routes to remove and 3 new routes.
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 1.00514 UPDATE message with 0 routes to remove and 3 new routes.
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 0.00614104 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth2 of router 8 does not have new updates to send.
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 0.00614112 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth2 of router 3 does not have new updates to send.
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 0.00614112 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth3 of router 4 does not have new updates to send.
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 0.00614112 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth2 of router 7 does not have new updates to send.
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 0.00614112 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth5 of router 7 does not have new updates to send.
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 0.00614128 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth5 of router 6 does not have new updates to send.
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 0.00614128 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth8 of router 9 does not have new updates to send.
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 0.00614128 Client UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth6 of router 10 does not have new updates to send.
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 0.00614136 Client UPDATE message with 0 routes to remove and 1 new routes.
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 1.00614 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 0.00617376 Client UPDATE message with 0 routes to remove and 2 new routes.
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 1.00617 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 0.006206 Client UPDATE message with 0 routes to remove and 3 new routes.
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 1.00621 UPDATE message with 0 routes to remove and 1 new routes.
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 1.00718 Server UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth10 of router 9 does not have new updates to send.
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 1.00721 Server UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth5 of router 4 does not have new updates to send.
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 1.00724 Server UPDATE message with 0 routes to remove and 1 new routes.
+Interface eth2 of router 1 does not have new updates to send.
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 3.50813 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 3.50813 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 3.50915 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 3.50915 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 2.51016 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 2.51016 KEEPALIVE message 
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.39
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.76
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.51
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.71
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.24
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.55
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.8
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.19
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.52
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.1
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 12.0081 TRUSTRATE message with content TRUST: 0.77
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.39
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.6
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.76
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.48
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.51
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.45
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.71
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.57
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.24
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.55
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.42
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 12.0091 TRUSTRATE message with TRUST: 0.8
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 12.0091 TRUSTRATE message with content TRUST: 0.41
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.19
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.59
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.52
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.55
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 12.0091 TRUSTRATE message with TRUST: 0.1
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 12.0091 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 12.0091 TRUSTRATE message with TRUST: 0.77
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 12.0091 TRUSTRATE message with content TRUST: 0.46
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.6
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.48
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.45
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.57
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.42
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.41
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.59
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.55
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 11.0102 TRUSTRATE message with content TRUST: 0.46
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 33.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 33.5081 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 33.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 33.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 32.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 32.5102 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 45: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 1
+
+The policy contains the value modification of one preference for a given link. The options are 1 for weight, 2 for local preference, 5 for MED, 6 for trust. 
+Enter the two routers that the policy applies to: 1.1.0.0
+1.2.0.0
+1
+100
+3
+
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 63.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 63.5081 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 63.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 63.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 62.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 62.5102 KEEPALIVE message 
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 93.5081 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 93.5081 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 93.5091 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 93.5091 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 92.5102 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 92.5102 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 105: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 5
+
+
+
+--------------- ROUTING TABLES ------------
+
+Router 1: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 100 10 160.0.0.1 160.0.0.2 1   2    100 0
+4.6.0.0 255.255.240.0 20 10 160.0.0.1 160.0.0.2 3   8 2 1    100 0
+1.0.0.0 255.255.0.0 20 10 160.0.0.1 160.0.0.2 3   3 2 1    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.1 160.0.0.2 3   7 2 1    100 0
+
+Router 2: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.1.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 1   1    100 0
+4.6.0.0 255.255.240.0 20 10 160.0.0.9 160.0.0.10 1   8    100 0
+10.0.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 1   3    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.17 160.0.0.18 1   7    100 0.481328
+4.5.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 3   4 3 2    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.17 160.0.0.18 3   5 7 2    100 0.481328
+2.2.0.0 255.255.0.0 20 10 160.0.0.9 160.0.0.10 3   9 8 2    100 0
+1.0.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 4   3 2 1 2    100 0
+
+Router 3: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.14 160.0.0.13 1   2    100 0
+4.5.0.0 255.255.0.0 20 10 160.0.0.25 160.0.0.26 1   4    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.25 160.0.0.26 3   5 4 3    100 0
+
+Router 4: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+10.0.0.0 255.255.0.0 20 10 160.0.0.26 160.0.0.25 1   3    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.33 160.0.0.34 1   5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.33 160.0.0.34 3   6 5 4    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.33 160.0.0.34 3   7 5 4    100 0
+
+Router 5: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.34 160.0.0.33 1   4    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.41 160.0.0.42 1   6    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.45 160.0.0.46 1   7    100 0
+1.2.0.0 255.255.255.0 20 10 160.0.0.45 160.0.0.46 3   2 7 5    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.41 160.0.0.42 3   1 0 6 5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.34 160.0.0.33 4   6 5 4 5    100 0
+
+Router 6: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+5.0.0.0 255.0.0.0 20 10 160.0.0.42 160.0.0.41 1   5    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.53 160.0.0.54 1   1 0    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.53 160.0.0.54 3   9 1 0 6    100 0
+
+Router 7: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.18 160.0.0.17 1   2    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.46 160.0.0.45 1   5    100 0
+
+Router 8: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.10 160.0.0.9 1   2    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.69 160.0.0.70 1   9    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.69 160.0.0.70 3   1 0 9 8    100 0
+
+Router 9: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.70 160.0.0.69 1   8    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.77 160.0.0.78 1   1 0    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.77 160.0.0.78 3   6 1 0 9    100 0
+
+Router 10: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.78 160.0.0.77 1   9    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.54 160.0.0.53 1   6    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.78 160.0.0.77 4   6 1 0 9 1 0    100 0
+
+
+-------------------------------------------
+
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 123.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 123.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 123.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 123.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 122.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 122.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 132.008 TRUSTRATE message with content TRUST: 0.47
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 132.008 TRUSTRATE message with content TRUST: 0.59
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 132.008 TRUSTRATE message with content TRUST: 0.49
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 132.008 TRUSTRATE message with content TRUST: 0.58
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 132.008 TRUSTRATE message with content TRUST: 0.37
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 132.008 TRUSTRATE message with content TRUST: 0.5
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 132.008 TRUSTRATE message with content TRUST: 0.59
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 132.008 TRUSTRATE message with content TRUST: 0.4
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 132.008 TRUSTRATE message with content TRUST: 0.51
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 132.008 TRUSTRATE message with content TRUST: 0.33
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 132.008 TRUSTRATE message with content TRUST: 0.58
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.47
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.56
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.59
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.51
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.49
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.46
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.57
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.37
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.5
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.45
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 132.009 TRUSTRATE message with TRUST: 0.59
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 132.009 TRUSTRATE message with content TRUST: 0.46
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.4
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.53
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.51
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.53
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 132.009 TRUSTRATE message with TRUST: 0.33
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 132.009 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 132.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 132.009 TRUSTRATE message with content TRUST: 0.5
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.56
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.51
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.46
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.57
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.45
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.46
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.53
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.53
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.31
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 131.01 TRUSTRATE message with content TRUST: 0.5
+
+
+--------------- START VOTING TRUST SHARING ------------
+
+--------------- ROUTER: 1----------------
+First grade neighbor 2
+Second grade neighbor 8 with trust: 0.44435 [eth2]
+Second grade neighbor 3 with trust: 0.566616 [eth2]
+Second grade neighbor 7 with trust: 0.489823 [eth2]
+--------------- ROUTER: 2----------------
+First grade neighbor 1
+First grade neighbor 8
+Second grade neighbor 9 with trust: 0.5202 [eth8]
+First grade neighbor 3
+Second grade neighbor 4 with trust: 0.486033 [eth3]
+First grade neighbor 7
+Second grade neighbor 5 with trust: 0.469622 [eth7]
+--------------- ROUTER: 3----------------
+First grade neighbor 2
+Second grade neighbor 1 with trust: 0.562796 [eth2]
+Second grade neighbor 8 with trust: 0.44435 [eth2]
+Second grade neighbor 7 with trust: 0.489823 [eth2]
+First grade neighbor 4
+Second grade neighbor 5 with trust: 0.581588 [eth4]
+--------------- ROUTER: 4----------------
+First grade neighbor 3
+Second grade neighbor 2 with trust: 0.51393 [eth3]
+First grade neighbor 5
+Second grade neighbor 6 with trust: 0.357957 [eth5]
+Second grade neighbor 7 with trust: 0.553073 [eth5]
+--------------- ROUTER: 5----------------
+First grade neighbor 4
+Second grade neighbor 3 with trust: 0.464922 [eth4]
+First grade neighbor 6
+Second grade neighbor 10 with trust: 0.327208 [eth6]
+First grade neighbor 7
+Second grade neighbor 2 with trust: 0.450805 [eth7]
+--------------- ROUTER: 6----------------
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.579299 [eth5]
+Second grade neighbor 7 with trust: 0.553073 [eth5]
+First grade neighbor 1
+Second grade neighbor 2 with trust: 0.502624 [eth1]
+--------------- ROUTER: 7----------------
+First grade neighbor 2
+Second grade neighbor 1 with trust: 0.562796 [eth2]
+Second grade neighbor 8 with trust: 0.44435 [eth2]
+Second grade neighbor 3 with trust: 0.566616 [eth2]
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.579299 [eth5]
+Second grade neighbor 6 with trust: 0.357957 [eth5]
+--------------- ROUTER: 8----------------
+First grade neighbor 2
+Second grade neighbor 1 with trust: 0.562796 [eth2]
+Second grade neighbor 3 with trust: 0.566616 [eth2]
+Second grade neighbor 7 with trust: 0.489823 [eth2]
+First grade neighbor 9
+Second grade neighbor 10 with trust: 0.562283 [eth9]
+--------------- ROUTER: 9----------------
+First grade neighbor 8
+Second grade neighbor 2 with trust: 0.538304 [eth8]
+First grade neighbor 1
+Second grade neighbor 2 with trust: 0.502624 [eth1]
+--------------- ROUTER: 10----------------
+First grade neighbor 6
+Second grade neighbor 5 with trust: 0.315194 [eth6]
+First grade neighbor 9
+Second grade neighbor 8 with trust: 0.5388 [eth9]
+
+
+--------------- END VOTED TRUST SHARING ------------
+
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 153.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 153.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.45:179] [TO: 160.0.0.46:49154] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 153.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 153.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.46:49154] [FROM: 160.0.0.45:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 152.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 152.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 165: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 2
+
+Enter the two AS numbes of the routers that forms the link: 5
+7
+
+Disabling interface 2 on router 5
+Route to delete 1.2.1.0 24
+Route to delete 1.2.0.0 24
+Disabling interface 1 on router 7
+Route to delete 5.0.0.0 8
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 165 UPDATE message with 2 routes to remove and 0 new routes.
+Interface eth7 of router 5 is down [disableLink]
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 165 UPDATE message with 1 routes to remove and 0 new routes.
+Interface eth5 of router 7 is down [disableLink]
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 165.001 Server UPDATE message with 1 routes to remove and 0 new routes.
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 165.001 UPDATE message with 0 routes to remove and 0 new routes.
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 165.001 Server UPDATE message with 2 routes to remove and 0 new routes.
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 165.001 UPDATE message with 0 routes to remove and 0 new routes.
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 164.002 Client UPDATE message with 0 routes to remove and 0 new routes.
+Interface eth2 of router 7 does not have new updates to send.
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 164.002 Client UPDATE message with 0 routes to remove and 0 new routes.
+Interface eth4 of router 5 does not have new updates to send.
+[KEEPALIVE] Interface eth5 of router 7 is down, sending a notification message
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 166.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 166.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+[TRUSTRATE] Interface eth5 of router 7 is down, sending a notification message
+SEND [FROM: 160.0.0.46:49154] [TO: 160.0.0.45:179] at time 181.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+RECV [TO: 160.0.0.45:179] [FROM: 160.0.0.46:49154]  at time 181.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 183.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 183.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 183.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 183.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 182.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 182.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 213.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 213.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 213.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 213.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 212.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 212.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 225: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 5
+
+
+
+--------------- ROUTING TABLES ------------
+
+Router 1: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 100 10 160.0.0.1 160.0.0.2 1   2    100 0
+4.6.0.0 255.255.240.0 20 10 160.0.0.1 160.0.0.2 3   8 2 1    100 0
+1.0.0.0 255.255.0.0 20 10 160.0.0.1 160.0.0.2 3   3 2 1    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.1 160.0.0.2 3   7 2 1    100 0
+
+Router 2: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.1.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 1   1    100 0
+4.6.0.0 255.255.240.0 20 10 160.0.0.9 160.0.0.10 1   8    100 0.478034
+10.0.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 1   3    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.17 160.0.0.18 1   7    100 0.51393
+4.5.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 3   4 3 2    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.9 160.0.0.10 3   9 8 2    100 0.478034
+1.0.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 4   3 2 1 2    100 0
+
+Router 3: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.14 160.0.0.13 1   2    100 0
+4.5.0.0 255.255.0.0 20 10 160.0.0.25 160.0.0.26 1   4    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.25 160.0.0.26 3   5 4 3    100 0
+
+Router 4: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+10.0.0.0 255.255.0.0 20 10 160.0.0.26 160.0.0.25 1   3    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.33 160.0.0.34 1   5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.33 160.0.0.34 3   6 5 4    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.33 160.0.0.34 3   7 5 4    100 0
+
+Router 5: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.34 160.0.0.33 1   4    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.41 160.0.0.42 1   6    100 0
+1.2.0.0 255.255.255.0 20 10 160.0.0.45 160.0.0.46 3   2 7 5    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.41 160.0.0.42 3   1 0 6 5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.34 160.0.0.33 4   6 5 4 5    100 0
+
+Router 6: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+5.0.0.0 255.0.0.0 20 10 160.0.0.42 160.0.0.41 1   5    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.53 160.0.0.54 1   1 0    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.53 160.0.0.54 3   9 1 0 6    100 0
+
+Router 7: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.18 160.0.0.17 1   2    100 0
+
+Router 8: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+1.2.0.0 255.255.255.0 20 10 160.0.0.10 160.0.0.9 1   2    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.69 160.0.0.70 1   9    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.69 160.0.0.70 3   1 0 9 8    100 0
+
+Router 9: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.70 160.0.0.69 1   8    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.77 160.0.0.78 1   1 0    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.77 160.0.0.78 3   6 1 0 9    100 0
+
+Router 10: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.78 160.0.0.77 1   9    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.54 160.0.0.53 1   6    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.78 160.0.0.77 4   6 1 0 9 1 0    100 0
+
+
+-------------------------------------------
+
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 243.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 243.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 243.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 243.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 242.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 242.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 252.008 TRUSTRATE message with content TRUST: 0.47
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 252.008 TRUSTRATE message with content TRUST: 0.59
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 252.008 TRUSTRATE message with content TRUST: 0.49
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 252.008 TRUSTRATE message with content TRUST: 0.58
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 252.008 TRUSTRATE message with content TRUST: 0.37
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 252.008 TRUSTRATE message with content TRUST: 0.5
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 252.008 TRUSTRATE message with content TRUST: 0.4
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 252.008 TRUSTRATE message with content TRUST: 0.51
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 252.008 TRUSTRATE message with content TRUST: 0.33
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 252.008 TRUSTRATE message with content TRUST: 0.58
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.47
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.43
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.59
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.36
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.49
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.36
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.41
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.37
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.23
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.5
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.4
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.35
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.51
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.38
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 252.009 TRUSTRATE message with TRUST: 0.33
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 252.009 TRUSTRATE message with content TRUST: 0.42
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 252.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 252.009 TRUSTRATE message with content TRUST: 0.51
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.43
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.36
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.36
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.41
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.23
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.35
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.38
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.42
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 251.01 TRUSTRATE message with content TRUST: 0.51
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 273.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 273.508 KEEPALIVE message 
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.1:179] [TO: 160.0.0.2:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.13:179] [TO: 160.0.0.14:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.17:179] [TO: 160.0.0.18:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.9:179] [TO: 160.0.0.10:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 273.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 273.509 KEEPALIVE message 
+RECV [TO: 160.0.0.2:49153] [FROM: 160.0.0.1:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.14:49153] [FROM: 160.0.0.13:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.18:49153] [FROM: 160.0.0.17:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.10:49153] [FROM: 160.0.0.9:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 272.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 272.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 285: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 3
+
+Enter the AS number of the router to disable: 2
+
+Disabling interface 0 on router 1
+Route to delete 1.2.0.0 24
+Route to delete 4.6.0.0 20
+Route to delete 1.0.0.0 16
+Route to delete 1.2.1.0 24
+Disabling interface 0 on router 2
+Route to delete 1.1.0.0 16
+Route to delete 1.0.0.0 16
+Interface eth2 of router 1 is down [disableLink]
+Interface eth1 of router 2 is down [disableLink]
+Disabling interface 1 on router 2
+Route to delete 4.6.0.0 20
+Route to delete 2.2.0.0 16
+Disabling interface 0 on router 8
+Route to delete 1.2.0.0 24
+Interface eth1 of router 2 is down [disableLink]
+Interface eth8 of router 2 is down [disableLink]
+Interface eth2 of router 8 is down [disableLink]
+Disabling interface 2 on router 2
+Route to delete 10.0.0.0 16
+Route to delete 4.5.0.0 16
+Disabling interface 0 on router 3
+Route to delete 1.2.0.0 24
+Interface eth1 of router 2 is down [disableLink]
+Interface eth8 of router 2 is down [disableLink]
+Interface eth3 of router 2 is down [disableLink]
+Interface eth2 of router 3 is down [disableLink]
+Disabling interface 3 on router 2
+Route to delete 1.2.1.0 24
+Disabling interface 0 on router 7
+Route to delete 1.2.0.0 24
+Interface eth1 of router 2 is down [disableLink]
+Interface eth8 of router 2 is down [disableLink]
+Interface eth3 of router 2 is down [disableLink]
+Interface eth7 of router 2 is down [disableLink]
+Interface eth2 of router 7 is down [disableLink]
+Interface eth5 of router 7 is down [disableLink]
+[KEEPALIVE] Interface eth1 of router 2 is down, sending a notification message
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 286.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[KEEPALIVE] Interface eth2 of router 3 is down, sending a notification message
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 286.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[KEEPALIVE] Interface eth2 of router 7 is down, sending a notification message
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 286.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[KEEPALIVE] Interface eth2 of router 8 is down, sending a notification message
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 286.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 286.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 286.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 286.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 286.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+[TRUSTRATE] Interface eth1 of router 2 is down, sending a notification message
+SEND [FROM: 160.0.0.2:49153] [TO: 160.0.0.1:179] at time 301.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[TRUSTRATE] Interface eth2 of router 3 is down, sending a notification message
+SEND [FROM: 160.0.0.14:49153] [TO: 160.0.0.13:179] at time 301.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[TRUSTRATE] Interface eth2 of router 7 is down, sending a notification message
+SEND [FROM: 160.0.0.18:49153] [TO: 160.0.0.17:179] at time 301.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+[TRUSTRATE] Interface eth2 of router 8 is down, sending a notification message
+SEND [FROM: 160.0.0.10:49153] [TO: 160.0.0.9:179] at time 301.004 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0
+RECV [TO: 160.0.0.1:179] [FROM: 160.0.0.2:49153]  at time 301.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.13:179] [FROM: 160.0.0.14:49153]  at time 301.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.17:179] [FROM: 160.0.0.18:49153]  at time 301.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+RECV [TO: 160.0.0.9:179] [FROM: 160.0.0.10:49153]  at time 301.005 NOTIFICATION message with content  ERROR CODE: 6 	 ERROR SUBCODE: 0 closing the TCP connection
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 303.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 303.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 303.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 303.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 303.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 303.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 303.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 303.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 302.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 302.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 302.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 302.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 302.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 302.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 333.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 333.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 333.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 333.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 333.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 333.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 333.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 333.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 332.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 332.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 332.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 332.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 332.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 332.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 345: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 5
+
+
+
+--------------- ROUTING TABLES ------------
+
+Router 1: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.1 160.0.0.2 3   8 2 1    100 0
+1.0.0.0 255.255.0.0 20 10 160.0.0.1 160.0.0.2 3   3 2 1    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.1 160.0.0.2 3   7 2 1    100 0
+
+Router 2: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 3   4 3 2    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.9 160.0.0.10 3   9 8 2    100 0.502624
+1.0.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 4   3 2 1 2    100 0
+
+Router 3: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.25 160.0.0.26 1   4    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.25 160.0.0.26 3   5 4 3    100 0
+
+Router 4: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+10.0.0.0 255.255.0.0 20 10 160.0.0.26 160.0.0.25 1   3    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.33 160.0.0.34 1   5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.33 160.0.0.34 3   6 5 4    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.33 160.0.0.34 3   7 5 4    100 0
+
+Router 5: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.34 160.0.0.33 1   4    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.41 160.0.0.42 1   6    100 0
+1.2.0.0 255.255.255.0 20 10 160.0.0.45 160.0.0.46 3   2 7 5    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.41 160.0.0.42 3   1 0 6 5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.34 160.0.0.33 4   6 5 4 5    100 0
+
+Router 6: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+5.0.0.0 255.0.0.0 20 10 160.0.0.42 160.0.0.41 1   5    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.53 160.0.0.54 1   1 0    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.53 160.0.0.54 3   9 1 0 6    100 0
+
+Router 7: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+
+Router 8: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.69 160.0.0.70 1   9    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.69 160.0.0.70 3   1 0 9 8    100 0
+
+Router 9: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.70 160.0.0.69 1   8    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.77 160.0.0.78 1   1 0    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.77 160.0.0.78 3   6 1 0 9    100 0
+
+Router 10: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.78 160.0.0.77 1   9    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.54 160.0.0.53 1   6    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.78 160.0.0.77 4   6 1 0 9 1 0    100 0
+
+
+-------------------------------------------
+
+
+
+--------------- START VOTING TRUST SHARING ------------
+
+--------------- ROUTER: 1----------------
+First grade neighbor 2
+--------------- ROUTER: 2----------------
+First grade neighbor 1
+First grade neighbor 8
+Second grade neighbor 9 with trust: 0.352747 [eth8]
+First grade neighbor 3
+Second grade neighbor 4 with trust: 0.333468 [eth3]
+First grade neighbor 7
+--------------- ROUTER: 3----------------
+First grade neighbor 2
+First grade neighbor 4
+Second grade neighbor 5 with trust: 0.351521 [eth4]
+--------------- ROUTER: 4----------------
+First grade neighbor 3
+First grade neighbor 5
+Second grade neighbor 6 with trust: 0.354303 [eth5]
+--------------- ROUTER: 5----------------
+First grade neighbor 4
+Second grade neighbor 3 with trust: 0.363455 [eth4]
+First grade neighbor 6
+Second grade neighbor 10 with trust: 0.236576 [eth6]
+First grade neighbor 7
+--------------- ROUTER: 6----------------
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.41401 [eth5]
+First grade neighbor 1
+--------------- ROUTER: 7----------------
+First grade neighbor 2
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.41401 [eth5]
+Second grade neighbor 6 with trust: 0.354303 [eth5]
+--------------- ROUTER: 8----------------
+First grade neighbor 2
+First grade neighbor 9
+Second grade neighbor 10 with trust: 0.380279 [eth9]
+--------------- ROUTER: 9----------------
+First grade neighbor 8
+First grade neighbor 1
+--------------- ROUTER: 10----------------
+First grade neighbor 6
+Second grade neighbor 5 with trust: 0.230817 [eth6]
+First grade neighbor 9
+Second grade neighbor 8 with trust: 0.380749 [eth9]
+
+
+--------------- END VOTED TRUST SHARING ------------
+
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 363.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 363.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 363.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 363.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 363.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 363.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 363.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 363.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 362.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 362.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 362.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 362.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 362.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 362.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 372.008 TRUSTRATE message with content TRUST: 0.48
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 372.008 TRUSTRATE message with content TRUST: 0.58
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 372.008 TRUSTRATE message with content TRUST: 0.35
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 372.008 TRUSTRATE message with content TRUST: 0.52
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 372.008 TRUSTRATE message with content TRUST: 0.32
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 372.008 TRUSTRATE message with content TRUST: 0.56
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 372.009 TRUSTRATE message with TRUST: 0.48
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 372.009 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 372.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 372.009 TRUSTRATE message with content TRUST: 0.33
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 372.009 TRUSTRATE message with TRUST: 0.35
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 372.009 TRUSTRATE message with content TRUST: 0.2
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 372.009 TRUSTRATE message with TRUST: 0.52
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 372.009 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 372.009 TRUSTRATE message with TRUST: 0.32
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 372.009 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 372.009 TRUSTRATE message with TRUST: 0.56
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 372.009 TRUSTRATE message with content TRUST: 0.53
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.33
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.2
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 371.01 TRUSTRATE message with content TRUST: 0.53
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 393.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 393.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 393.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 393.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 393.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 393.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 393.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 393.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 392.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 392.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 392.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 392.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 392.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 392.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 405: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 5
+
+
+
+--------------- ROUTING TABLES ------------
+
+Router 1: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.1 160.0.0.2 3   8 2 1    100 0
+1.0.0.0 255.255.0.0 20 10 160.0.0.1 160.0.0.2 3   3 2 1    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.1 160.0.0.2 3   7 2 1    100 0
+
+Router 2: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.13 160.0.0.14 3   4 3 2    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.9 160.0.0.10 3   9 8 2    100 0.502624
+1.0.0.0 255.255.0.0 20 10 160.0.0.2 160.0.0.1 4   3 2 1 2    100 0
+
+Router 3: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.25 160.0.0.26 1   4    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.25 160.0.0.26 3   5 4 3    100 0
+
+Router 4: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+10.0.0.0 255.255.0.0 20 10 160.0.0.26 160.0.0.25 1   3    100 0
+5.0.0.0 255.0.0.0 20 10 160.0.0.33 160.0.0.34 1   5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.33 160.0.0.34 3   6 5 4    100 0
+1.2.1.0 255.255.255.0 20 10 160.0.0.33 160.0.0.34 3   7 5 4    100 0
+
+Router 5: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.5.0.0 255.255.0.0 20 10 160.0.0.34 160.0.0.33 1   4    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.41 160.0.0.42 1   6    100 0
+1.2.0.0 255.255.255.0 20 10 160.0.0.45 160.0.0.46 3   2 7 5    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.41 160.0.0.42 3   1 0 6 5    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.34 160.0.0.33 4   6 5 4 5    100 0
+
+Router 6: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+5.0.0.0 255.0.0.0 20 10 160.0.0.42 160.0.0.41 1   5    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.53 160.0.0.54 1   1 0    100 0
+2.2.0.0 255.255.0.0 20 10 160.0.0.53 160.0.0.54 3   9 1 0 6    100 0
+
+Router 7: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+
+Router 8: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.69 160.0.0.70 1   9    100 0
+1.2.2.0 255.255.255.0 20 10 160.0.0.69 160.0.0.70 3   1 0 9 8    100 0
+
+Router 9: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+4.6.0.0 255.255.240.0 20 10 160.0.0.70 160.0.0.69 1   8    100 0
+1.2.2.0 255.255.255.192 20 10 160.0.0.77 160.0.0.78 1   1 0    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.77 160.0.0.78 3   6 1 0 9    100 0
+
+Router 10: 
+NET      MASK      WEI LEN   L.INT     N.HOP   P.LEN  PATH  MED  TRUST
+2.2.0.0 255.255.0.0 20 10 160.0.0.78 160.0.0.77 1   9    100 0
+4.6.16.0 255.255.240.0 20 10 160.0.0.54 160.0.0.53 1   6    100 0
+4.6.1.6 255.255.240.0 20 10 160.0.0.78 160.0.0.77 4   6 1 0 9 1 0    100 0
+
+
+-------------------------------------------
+
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 423.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 423.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 423.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 423.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 423.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 423.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 423.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 423.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 422.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 422.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 422.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 422.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 422.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 422.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 453.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 453.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 453.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 453.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 453.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 453.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 453.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 453.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 452.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 452.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 452.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 452.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 452.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 452.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 465: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 4
+
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 483.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 483.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 483.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 483.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 483.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 483.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 483.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 483.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 482.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 482.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 482.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 482.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 482.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 482.51 KEEPALIVE message 
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 492.008 TRUSTRATE message with content TRUST: 0.48
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 492.008 TRUSTRATE message with content TRUST: 0.58
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 492.008 TRUSTRATE message with content TRUST: 0.35
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 492.008 TRUSTRATE message with content TRUST: 0.52
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 492.008 TRUSTRATE message with content TRUST: 0.32
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 492.008 TRUSTRATE message with content TRUST: 0.56
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 492.009 TRUSTRATE message with TRUST: 0.48
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 492.009 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 492.009 TRUSTRATE message with TRUST: 0.58
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 492.009 TRUSTRATE message with content TRUST: 0.33
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 492.009 TRUSTRATE message with TRUST: 0.35
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 492.009 TRUSTRATE message with content TRUST: 0.2
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 492.009 TRUSTRATE message with TRUST: 0.52
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 492.009 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 492.009 TRUSTRATE message with TRUST: 0.32
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 492.009 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 492.009 TRUSTRATE message with TRUST: 0.56
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 492.009 TRUSTRATE message with content TRUST: 0.54
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.29
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.33
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.2
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.32
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 491.01 TRUSTRATE message with content TRUST: 0.54
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 513.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 513.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 513.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 513.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 513.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 513.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 513.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 513.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 512.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 512.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 512.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 512.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 512.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 512.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 525: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 4
+
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 543.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 543.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 543.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 543.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 543.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 543.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 543.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 543.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 542.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 542.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 542.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 542.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 542.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 542.51 KEEPALIVE message 
+
+
+--------------- START VOTING TRUST SHARING ------------
+
+--------------- ROUTER: 1----------------
+First grade neighbor 2
+--------------- ROUTER: 2----------------
+First grade neighbor 1
+First grade neighbor 8
+Second grade neighbor 9 with trust: 0.397489 [eth8]
+First grade neighbor 3
+Second grade neighbor 4 with trust: 0.367529 [eth3]
+First grade neighbor 7
+--------------- ROUTER: 3----------------
+First grade neighbor 2
+First grade neighbor 4
+Second grade neighbor 5 with trust: 0.280258 [eth4]
+--------------- ROUTER: 4----------------
+First grade neighbor 3
+First grade neighbor 5
+Second grade neighbor 6 with trust: 0.227639 [eth5]
+--------------- ROUTER: 5----------------
+First grade neighbor 4
+Second grade neighbor 3 with trust: 0.295976 [eth4]
+First grade neighbor 6
+Second grade neighbor 10 with trust: 0.204114 [eth6]
+First grade neighbor 7
+--------------- ROUTER: 6----------------
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.338195 [eth5]
+First grade neighbor 1
+--------------- ROUTER: 7----------------
+First grade neighbor 2
+First grade neighbor 5
+Second grade neighbor 4 with trust: 0.338195 [eth5]
+Second grade neighbor 6 with trust: 0.227639 [eth5]
+--------------- ROUTER: 8----------------
+First grade neighbor 2
+First grade neighbor 9
+Second grade neighbor 10 with trust: 0.330678 [eth9]
+--------------- ROUTER: 9----------------
+First grade neighbor 8
+First grade neighbor 1
+--------------- ROUTER: 10----------------
+First grade neighbor 6
+Second grade neighbor 5 with trust: 0.207373 [eth6]
+First grade neighbor 9
+Second grade neighbor 8 with trust: 0.324075 [eth9]
+
+
+--------------- END VOTED TRUST SHARING ------------
+
+SEND [FROM: 160.0.0.26:49153] [TO: 160.0.0.25:179] at time 573.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.34:49153] [TO: 160.0.0.33:179] at time 573.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.42:49153] [TO: 160.0.0.41:179] at time 573.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.70:49153] [TO: 160.0.0.69:179] at time 573.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.54:49153] [TO: 160.0.0.53:179] at time 573.508 KEEPALIVE message 
+SEND [FROM: 160.0.0.78:49154] [TO: 160.0.0.77:179] at time 573.508 KEEPALIVE message 
+RECV [TO: 160.0.0.25:179] [FROM: 160.0.0.26:49153]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.25:179] [TO: 160.0.0.26:49153] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.33:179] [FROM: 160.0.0.34:49153]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.33:179] [TO: 160.0.0.34:49153] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.41:179] [FROM: 160.0.0.42:49153]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.41:179] [TO: 160.0.0.42:49153] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.69:179] [FROM: 160.0.0.70:49153]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.69:179] [TO: 160.0.0.70:49153] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.53:179] [FROM: 160.0.0.54:49153]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.53:179] [TO: 160.0.0.54:49153] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.77:179] [FROM: 160.0.0.78:49154]  at time 573.509 KEEPALIVE message 
+SEND [FROM: 160.0.0.77:179] [TO: 160.0.0.78:49154] at time 573.509 KEEPALIVE message 
+RECV [TO: 160.0.0.26:49153] [FROM: 160.0.0.25:179]  at time 572.51 KEEPALIVE message 
+RECV [TO: 160.0.0.34:49153] [FROM: 160.0.0.33:179]  at time 572.51 KEEPALIVE message 
+RECV [TO: 160.0.0.42:49153] [FROM: 160.0.0.41:179]  at time 572.51 KEEPALIVE message 
+RECV [TO: 160.0.0.70:49153] [FROM: 160.0.0.69:179]  at time 572.51 KEEPALIVE message 
+RECV [TO: 160.0.0.54:49153] [FROM: 160.0.0.53:179]  at time 572.51 KEEPALIVE message 
+RECV [TO: 160.0.0.78:49154] [FROM: 160.0.0.77:179]  at time 572.51 KEEPALIVE message 
+
+
+Select one of the following to be executed at time 585: 
+
+[1] Add a new policy
+[2] Disable a link 
+[3] Disable a router 
+[4] Continue the simulation 
+[5] Print Routing tables 
+[6] Quit
+
+Choose a number: 6
